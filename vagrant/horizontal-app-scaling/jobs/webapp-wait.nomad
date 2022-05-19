@@ -2,7 +2,7 @@ job "webapp" {
   datacenters = ["dc1"]
 
   group "demo" {
-    count = 1
+    count = 3
 
     network {
       port "webapp_http" {}
@@ -28,21 +28,71 @@ job "webapp" {
       }
     }
 
-    update {
-      max_parallel = 0
-      health_check = "checks"
-      min_healthy_time = "10s"
-      healthy_deadline = "30s"
+    task "block_for_lock" {
+      driver = "docker"
+
+      artifact {
+        source = "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+        destination = "local/jq"
+      }
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
+      config {
+        image = "curlimages/curl:latest"
+        command = "/bin/sh"
+        args = ["-c", "local/lock.sh"]
+
+        mount {
+          type     = "bind"
+          source   = "local/jq"
+          target   = "/bin/jq"
+        }
+      }
+
+      template {
+        data = <<EOT
+{{ base64Decode "[[ fileContents ./templates/script.sh | b64enc ]]" }}
+
+EOT
+
+        destination = "local/lock.bash"
+      }
+
+      resources {
+        cpu    = 128
+        memory = 64
+      }
     }
 
     task "webapp" {
       driver = "docker"
-      #  kill_timeout = "10s"
 
       config {
         image = "hashicorp/demo-webapp-lb-guide"
         ports = ["webapp_http"]
       }
+
+
+      template {
+        data = <<EOT
+while :
+do
+  [ -d "${NOMAD_ALLOC_DIR}/${NOMAD_ALLOC_ID}.lock" ] && break
+  sleep 1
+done
+
+# the directory exists so we have the lock and can exec into the
+# main application
+exec [[ .my.application_args ]]
+
+EOT
+        destination = "local/wait.sh"
+      }
+
 
       env {
         PORT    = "${NOMAD_PORT_webapp_http}"
@@ -57,7 +107,6 @@ job "webapp" {
 
     task "toxiproxy" {
       driver = "docker"
-      kill_timeout = "30s"
 
       lifecycle {
         hook    = "prestart"
@@ -65,7 +114,7 @@ job "webapp" {
       }
 
       config {
-        image      = "shopify/toxiproxy:2.1.3"
+        image      = "shopify/toxiproxy:2.1.0"
         entrypoint = ["/entrypoint.sh"]
         ports      = ["toxiproxy_webapp"]
 
@@ -73,6 +122,24 @@ job "webapp" {
           "local/entrypoint.sh:/entrypoint.sh",
         ]
       }
+
+
+      template {
+        data = <<EOT
+while :
+do
+  [ -d "${NOMAD_ALLOC_DIR}/${NOMAD_ALLOC_ID}.lock" ] && break
+  sleep 1
+done
+
+# the directory exists so we have the lock and can exec into the
+# main application
+exec [[ .my.application_args ]]
+
+EOT
+        destination = "local/wait.sh"
+      }
+
 
       template {
         data = <<EOH

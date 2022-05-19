@@ -19,3 +19,5 @@ terraform.tfvars
 
 # Cleanup files
 .cleanup*
+vagrant/horizontal-app-scaling/083a4593.json
+vagrant/horizontal-app-scaling/5b36d91c.json
