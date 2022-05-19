@@ -37,7 +37,6 @@ module "hashistack_cluster" {
   client_instance_type    = var.client_instance_type
   client_count            = var.client_count
   nomad_autoscaler_image  = var.nomad_autoscaler_image
-  
   allowlist_ip            = (var.allowlist_ip == "" ? ["${module.my_ip_address.stdout}/32"] : var.allowlist_ip)
 }
 
