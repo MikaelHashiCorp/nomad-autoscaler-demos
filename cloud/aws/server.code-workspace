@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../etc/nomad.d"
+		},
+		{
+			"path": "../../etc/consul.d"
+		},
+		{
+			"path": "../../opt"
+		},
+		{
+			"path": "../../etc/systemd/system"
+		},
+		{
+			"path": "../../usr/local/bin"
+		}
+	]
+}
