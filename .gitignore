@@ -17,5 +17,8 @@
 # Terraform vars file
 # terraform.tfvars
 
+# Ignore tmp folder
+*tmp/*
+
 # Cleanup files
 .cleanup*
