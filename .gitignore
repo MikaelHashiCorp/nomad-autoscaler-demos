@@ -23,3 +23,4 @@
 # Cleanup files
 .cleanup*
 cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
+*.DS_Store

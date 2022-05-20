@@ -23,17 +23,17 @@ resource "aws_instance" "app_server" {
   tags = {
     Name = "ami-diagnosis-mikael-nomad"
   }
-}
 
-root_block_device {
+  root_block_device {
     volume_type           = "gp2"
     volume_size           = 16
     delete_on_termination = "true"
+  }
 }
 
 resource "aws_security_group" "primary" {
-  name   = var.stack_name
-  vpc_id = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
+  name   = "ami-diagnosis-mikael-nomad"
+  vpc_id = ""
 
   ingress {
     from_port   = 22
