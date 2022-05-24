@@ -13,10 +13,10 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 9090, host: 9090, host_ip: "127.0.0.1"    # Prometheus
   config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"    # Grafana
 
-  config.vm.hostname = "pack"
-  # config.vm.define "vb" do |vb|
-  #   vb.vm.hostname = "pack"
-  # end
+  # config.vm.hostname = "pack"
+  config.vm.define "pack" do |pack|
+    pack.vm.hostname = "pack"
+  end
 
   # Share current directory with jobs and configuration files with the VM. Add
   # the shared files in a sub-dir.
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
   # VM configuration.
   config.vm.provider "virtualbox" do |vb|
     vb.customize [ "modifyvm", :id, "--uartmode1", "file", File::NULL ] # https://bugs.launchpad.net/cloud-images/+bug/1874453
-    vb.memory = "40"
+    vb.memory = "4096"
     vb.cpus = 2
   end
 
