@@ -50,6 +50,7 @@ Vagrant.configure("2") do |config|
 
     nomad_version=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
     consul_version=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+    nomad_pack_version="0.0.1-techpreview2"
 
     # Download and install Docker.
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -72,13 +73,15 @@ Vagrant.configure("2") do |config|
     pushd /tmp/downloads
     curl --silent --show-error --remote-name-all \
       https://releases.hashicorp.com/nomad/${nomad_version}/nomad_${nomad_version}_linux_amd64.zip \
-      https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip
+      https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip \
+      https://releases.hashicorp.com/nomad-pack/${nomad_pack_version}/nomad-pack_${nomad_pack_version}_linux_amd64.zip
     unzip nomad_${nomad_version}_linux_amd64.zip
     unzip consul_${consul_version}_linux_amd64.zip
+    unzip nomad-pack_${nomad_pack_version}_linux_amd64.zip
     mkdir -p /opt/hashicorp/bin
-    mv nomad consul /opt/hashicorp/bin
-    chmod +x /opt/hashicorp/bin/{nomad,consul}
-    ln -s /opt/hashicorp/bin/{nomad,consul} /usr/local/bin
+    mv nomad consul nomad-pack /opt/hashicorp/bin
+    chmod +x /opt/hashicorp/bin/{nomad,consul,nomad-pack}
+    ln -s /opt/hashicorp/bin/{nomad,consul,nomad-pack} /usr/local/bin
     popd
 
     rm -fr /tmp/downloads
