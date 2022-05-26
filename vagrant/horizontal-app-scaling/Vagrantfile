@@ -36,6 +36,12 @@ Vagrant.configure("2") do |config|
   # Only runs when the VM is created.
   config.vm.provision "deps", type: "shell", inline: <<-SHELL
 
+    export DEBIAN_FRONTEND=noninteractive
+    # Suppress an apt-key warning about standard out not being a terminal. Use in this script is safe. (Doesn't seem to work)
+    # Seen =1, =true, =DontWarn
+    export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+    echo "APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE = ${APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE}"
+
     mkdir /tmp/downloads
 
     # Install dependencies.
