@@ -21,16 +21,12 @@ NOMAD_ALLOC_ID=${NOMAD_ALLOC_ID:-$(uuidgen)}
 NOMAD_ALLOC_DIR=${NOMAD_ALLOC_DIR:-./alloc}
 TTL_IN_SEC=${TTL_IN_SEC:-10}
 LEADER_KEY=${LEADER_KEY:-leader}
-REFRESH_WINDOW=$(( "$TTL_IN_SEC" / 2))
+REFRESH_WINDOW=$(( $TTL_IN_SEC / 2))
 
 # obtain a unique session identifier for this allocation. This has the
 # name of the job so that operators can easily determine all the open
 # sessions across the job
 session_body=$(printf '{"Name": "%s", "TTL": "%ss"}' "$NOMAD_JOB_ID" "$TTL_IN_SEC")
-
-# TODO: having some escaping issues here, might need:
-# -d "{\"Name\": \"${NOMAD_JOB_ID}\", \"TTL\": \"${TTL_IN_SEC}s\"}" \
-
 session_id=$(curl -s \
                   -X PUT \
                   --fail \
@@ -43,7 +39,8 @@ trap release EXIT
 # session so that we don't have to rely on this script never failing
 # to avoid deadlocking
 release() {
-    curl -X PUT "$CONSUL_ADDR/v1/kv/$LEADER_KEY?release=$session_id"
+    echo "releasing session $session_id"
+    curl --fail -X PUT "$CONSUL_ADDR/v1/kv/$LEADER_KEY?release=$session_id"
 }
 
 # try to obtain the lock
@@ -86,6 +83,12 @@ poll() {
         then
             try_lock
         fi
+
+        # we have to keep our session refreshed
+        curl --fail -s \
+             -o /dev/null \
+             -X PUT \
+             "$CONSUL_ADDR/v1/session/renew/$session_id"
 
         index=$(echo "$resp" | jq -r '.[0].ModifyIndex')
         sleep $REFRESH_WINDOW
