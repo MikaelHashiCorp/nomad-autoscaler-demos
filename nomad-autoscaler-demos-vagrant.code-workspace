@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../nomad-pack-community-registry/packs/consul_lock"
+		},
+		{
+			"path": "../../nomad_example_jobs/HCL2"
 		}
 	]
 }
