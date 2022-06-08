@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "~/.ssh"
+			"path": "."
 		},
 		{
-			"path": "cloud"
+			"path": "../../../../.ssh"
 		}
 	],
 	"settings": {}
