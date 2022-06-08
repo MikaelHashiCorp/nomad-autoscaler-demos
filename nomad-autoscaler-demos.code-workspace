@@ -2,13 +2,7 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../../../.ssh"
-		},
-    {
-      "path": "vagrant/horizontal-app-scaling"
-    }
+		}
 	],
 	"settings": {}
 }
