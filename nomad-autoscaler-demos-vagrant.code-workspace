@@ -8,9 +8,6 @@
 		},
 		{
 			"path": "vagrant/shared"
-		},
-		{
-			"path": "../nomad-pack-community-registry/packs/consul_lock"
 		}
 	]
 }

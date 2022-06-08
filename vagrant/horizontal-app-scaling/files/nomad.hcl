@@ -13,11 +13,6 @@ client {
   host_volume "grafana" {
     path = "/opt/nomad-volumes/grafana"
   }
-
-  host_volume "consul_lock" {
-    path      = "/home/vagrant/nomad-autoscaler/jobs"
-    read_only = false
-  }
 }
 
 plugin "docker" {
