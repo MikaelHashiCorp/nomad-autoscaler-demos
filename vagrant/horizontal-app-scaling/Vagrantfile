@@ -12,6 +12,12 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 1936, host: 1936, host_ip: "127.0.0.1"    # HAProxy stats
   config.vm.network "forwarded_port", guest: 9090, host: 9090, host_ip: "127.0.0.1"    # Prometheus
   config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"    # Grafana
+  config.vm.network "forwarded_port", guest: 9002, host: 9002, host_ip: "127.0.0.1"    # Dashboard
+
+  # config.vm.hostname = "pack"
+  config.vm.define "pack" do |pack|
+    pack.vm.hostname = "pack"
+  end
 
   # Share current directory with jobs and configuration files with the VM. Add
   # the shared files in a sub-dir.
@@ -41,10 +47,12 @@ Vagrant.configure("2") do |config|
       gnupg-agent \
       jq \
       software-properties-common \
-      zip
+      zip \
+      net-tools
 
     nomad_version=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
     consul_version=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+    nomad_pack_version="0.0.1-techpreview2"
 
     # Download and install Docker.
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -67,14 +75,30 @@ Vagrant.configure("2") do |config|
     pushd /tmp/downloads
     curl --silent --show-error --remote-name-all \
       https://releases.hashicorp.com/nomad/${nomad_version}/nomad_${nomad_version}_linux_amd64.zip \
-      https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip
+      https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip \
+      https://releases.hashicorp.com/nomad-pack/${nomad_pack_version}/nomad-pack_${nomad_pack_version}_linux_amd64.zip
     unzip nomad_${nomad_version}_linux_amd64.zip
     unzip consul_${consul_version}_linux_amd64.zip
+    unzip nomad-pack_${nomad_pack_version}_linux_amd64.zip
     mkdir -p /opt/hashicorp/bin
-    mv nomad consul /opt/hashicorp/bin
-    chmod +x /opt/hashicorp/bin/{nomad,consul}
-    ln -s /opt/hashicorp/bin/{nomad,consul} /usr/local/bin
+    mv nomad consul nomad-pack /opt/hashicorp/bin
+    chmod +x /opt/hashicorp/bin/{nomad,consul,nomad-pack}
+    ln -s /opt/hashicorp/bin/{nomad,consul,nomad-pack} /usr/local/bin
     popd
+
+    # Download and install CNI Plugin
+    echo "Starting CIN Plugin Install"
+    pushd /tmp/downloads
+    curl --silent --show-error --remote-name-all -L -o cni-plugins.tgz "https://github.com/containernetworking/plugins/releases/download/v1.0.0/cni-plugins-linux-$( [ $(uname -m) = aarch64 ] && echo arm64 || echo amd64)"-v1.0.0.tgz
+    sudo mkdir -p /opt/cni/bin
+    sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
+    popd
+
+    # Configure to allow container traffic through the bridge network via iptables
+    echo "Configuring iptable bridge"
+    echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-arptables
+    echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-ip6tables
+    echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-iptables
 
     rm -fr /tmp/downloads
   SHELL
@@ -101,12 +125,13 @@ Vagrant.configure("2") do |config|
     # Copy across the config files.
     cp /home/vagrant/nomad-autoscaler-shared/consul.hcl /etc/consul.d/
     cp /home/vagrant/nomad-autoscaler/files/nomad.hcl /etc/nomad.d/
+    sudo cp /home/vagrant/nomad-autoscaler/files/10-net-bridge.conf /etc/sysctl.d/
 
     # Enable and start the daemons
     systemctl enable consul
-    systemctl start consul
+    systemctl restart consul
     sudo systemctl enable nomad
-    sudo systemctl start nomad
+    sudo systemctl restart nomad
   SHELL
 
 end

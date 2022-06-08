@@ -15,7 +15,13 @@
 .terraform
 
 # Terraform vars file
-terraform.tfvars
+# terraform.tfvars
+
+# Ignore tmp folder
+*tmp/*
 
 # Cleanup files
 .cleanup*
+cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
+*.DS_Store
+

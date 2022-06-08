@@ -1,0 +1,13 @@
+{
+    "folders": [
+		{
+			"path": "vagrant/horizontal-app-scaling"
+		},
+		{
+			"path": "../../../.ssh"
+		},
+		{
+			"path": "vagrant/shared"
+		}
+	]
+}
