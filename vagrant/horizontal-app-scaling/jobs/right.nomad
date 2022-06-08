@@ -34,7 +34,7 @@ job "right" {
 
       env {
         CONSUL_ADDR = "${attr.unique.network.ip-address}:8500"
-        LEADER_KEY = "leader"
+        LEADER_KEY = "alpine:latest"
       }
 
       config {
