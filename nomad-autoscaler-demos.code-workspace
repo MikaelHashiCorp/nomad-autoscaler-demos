@@ -5,7 +5,10 @@
 		},
 		{
 			"path": "../../../.ssh"
-		}
+		},
+    {
+      "path": "vagrant/horizontal-app-scaling"
+    }
 	],
 	"settings": {}
 }
