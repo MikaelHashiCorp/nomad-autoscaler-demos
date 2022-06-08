@@ -15,9 +15,13 @@
 .terraform
 
 # Terraform vars file
-terraform.tfvars
+# terraform.tfvars
+
+# Ignore tmp folder
+*tmp/*
 
 # Cleanup files
 .cleanup*
-vagrant/horizontal-app-scaling/083a4593.json
-vagrant/horizontal-app-scaling/5b36d91c.json
+cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
+*.DS_Store
+
