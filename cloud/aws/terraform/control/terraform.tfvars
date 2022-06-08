@@ -9,5 +9,5 @@ server_instance_type    = "t3.medium"
 server_count            = "3"
 client_instance_type    = "t3.medium"
 client_count            = "1"
-allowlist_ip            = ["73.109.72.170/32", "97.113.151.211/32"]
+allowlist_ip            = ["73.109.72.170/32"]
 nomad_autoscaler_image  = "hashicorp/nomad-autoscaler:latest"
