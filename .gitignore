@@ -25,3 +25,5 @@
 cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
 *.DS_Store
 
+cloud/aws/terraform/control/.terraform.lock.hcl
+*.txt
