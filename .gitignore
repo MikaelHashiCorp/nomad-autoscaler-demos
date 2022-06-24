@@ -15,7 +15,7 @@
 .terraform
 
 # Terraform vars file
-# terraform.tfvars
+terraform.tfvars
 
 # Ignore tmp folder
 *tmp/*
@@ -27,3 +27,4 @@ cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
 
 cloud/aws/terraform/control/.terraform.lock.hcl
 *.txt
+*.hclic
