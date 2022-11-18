@@ -26,6 +26,15 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_type           = "gp2"
+      volume_size           = "16"
+      delete_on_termination = "true"
+    }
+  }
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
