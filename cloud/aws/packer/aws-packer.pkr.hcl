@@ -42,6 +42,11 @@ build {
   }
 
   provisioner "shell" {
+    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
+      "0",
+      "1",
+      "2"
+    ]
     inline = [
       "sudo fuser -v -k /var/cache/debconf/config.dat"
     ]
