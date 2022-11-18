@@ -1,5 +1,5 @@
-variable "created_email" {}
-variable "created_name" {}
+variable "created_email" { default = "mikael.sikora@hashicorp.com" }
+variable "created_name" { default = "mikael_sikora"}
 variable "region" { default = "us-east-1" }
 
 source "amazon-ebs" "hashistack" {
