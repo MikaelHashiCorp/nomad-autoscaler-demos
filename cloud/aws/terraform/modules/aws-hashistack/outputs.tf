@@ -57,3 +57,19 @@ output "ssh_file" {
     formatlist("Host %v.hs\n  User ubuntu\n  HostName %v\n", aws_instance.nomad_server.*.tags.Name, aws_instance.nomad_server.*.public_dns)
   ))
 }
+
+output "ebs_volume" {
+    value = <<EOM
+# volume registration
+type        = "csi"
+id          = "mysql"
+name        = "mysql"
+external_id = "${aws_ebs_volume.mysql.id}"
+plugin_id   = "aws-ebs0"
+
+capability {
+  access_mode     = "single-node-writer"
+  attachment_mode = "file-system"
+}
+EOM
+}
