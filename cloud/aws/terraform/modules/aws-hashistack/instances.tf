@@ -20,4 +20,14 @@ resource "aws_instance" "nomad_server" {
 
   user_data            = data.template_file.user_data_server.rendered
   iam_instance_profile = aws_iam_instance_profile.nomad_server.name
+
+
+  provisioner "remote-exec" {
+    inline = [
+      "curl -fsSL https://code-server.dev/install.sh | sh",
+      "sudo systemctl start code-server@$USER",
+      "sudo systemctl enable --now code-server@$USER"
+
+    ]
+  }
 }
