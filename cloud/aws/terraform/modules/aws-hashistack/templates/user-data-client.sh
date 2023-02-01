@@ -12,3 +12,4 @@ sudo mkfs -t xfs /dev/nvme1n1
 sudo mkdir /mnt/data
 sudo mount /dev/nvme1n1 /mnt/data
 sudo chown ubuntu:ubuntu data
+ln -s /mnt/data /home/ubuntu/data
