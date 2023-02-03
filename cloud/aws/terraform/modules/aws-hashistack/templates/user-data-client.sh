@@ -13,3 +13,7 @@ sudo mkdir /mnt/data
 sudo mount /dev/nvme1n1 /mnt/data
 sudo chown ubuntu:ubuntu data
 ln -s /mnt/data /home/ubuntu/data
+
+# Install ec2 Instance Connect
+sudo apt -y install ec2-instance-connect
+sudo apt -y install awscli
