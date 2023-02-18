@@ -1,14 +1,17 @@
 {
 	"folders": [
-		{
-			"path": "aws"
-		},
-		{
-			"path": "shared"
-		},
-		{
-			"path": "infrastructure"
-		}
-	],
+    {
+      "path": "aws"
+    },
+    {
+      "path": "shared"
+    },
+    {
+      "path": "infrastructure"
+    },
+    {
+      "path": "../../../../.ssh"
+    }
+  ],
   "settings": {}
 }

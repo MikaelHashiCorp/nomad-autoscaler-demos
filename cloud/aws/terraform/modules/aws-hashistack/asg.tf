@@ -35,14 +35,21 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
-  provisioner "remote-exec" {
-    inline = [
-      "curl -fsSL https://code-server.dev/install.sh | sh",
-      "sudo systemctl start code-server@$USER",
-      "sudo systemctl enable --now code-server@$USER"
 
-    ]
-  }
+  # connection {
+  #   type     = "ssh"
+  #   user     = "ubuntu"
+  #   password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
+  #   host     = "${aws_launch_template.nomad_client.*.public_ip}"
+  # }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "curl -fsSL https://code-server.dev/install.sh | sh",
+  #     "sudo systemctl start code-server@$USER",
+  #     "sudo systemctl enable --now code-server@$USER"
+
+  #   ]
+  # }
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
