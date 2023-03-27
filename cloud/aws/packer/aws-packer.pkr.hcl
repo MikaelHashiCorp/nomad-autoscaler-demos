@@ -1,5 +1,5 @@
-variable "created_email" {}
-variable "created_name" {}
+variable "created_email" { default = "mikael.sikora@hashicorp.com" }
+variable "created_name" { default = "mikael_sikora"}
 variable "region" { default = "us-east-1" }
 
 source "amazon-ebs" "hashistack" {
@@ -36,12 +36,22 @@ build {
   ]
 
   provisioner "shell" {
+    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
+      "0",
+      "1",
+      "2"
+    ]
     inline = [
       "echo set debconf to Noninteractive", 
       "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections" ]
   }
 
   provisioner "shell" {
+    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
+      "0",
+      "1",
+      "2"
+    ]
     inline = [
       "sudo fuser -v -k /var/cache/debconf/config.dat"
     ]

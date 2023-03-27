@@ -26,6 +26,30 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_type           = "gp2"
+      volume_size           = "16"
+      delete_on_termination = "true"
+    }
+  }
+
+  # connection {
+  #   type     = "ssh"
+  #   user     = "ubuntu"
+  #   password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
+  #   host     = "${aws_launch_template.nomad_client.*.public_ip}"
+  # }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "curl -fsSL https://code-server.dev/install.sh | sh",
+  #     "sudo systemctl start code-server@$USER",
+  #     "sudo systemctl enable --now code-server@$USER"
+
+  #   ]
+  # }
 }
 
 resource "aws_autoscaling_group" "nomad_client" {

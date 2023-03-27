@@ -23,5 +23,9 @@ CLI environment variables:
 export NOMAD_CLIENT_DNS=http://${module.hashistack_cluster.client_elb_dns}
 export NOMAD_ADDR=${module.hashistack_cluster.nomad_addr}
 
+EBS Volume Info
+- - - - - - - - 
+${module.hashistack_cluster.ebs_volume}
+
 CONFIGURATION
 }

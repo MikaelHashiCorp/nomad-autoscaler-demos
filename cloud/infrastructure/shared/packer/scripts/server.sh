@@ -34,6 +34,7 @@ sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.hcl
 sudo cp $CONFIGDIR/consul.hcl $CONSULCONFIGDIR
 sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
 
+sudo systemctl enable consul
 sudo systemctl start consul.service
 sleep 10
 export CONSUL_HTTP_ADDR=$IP_ADDRESS:8500
@@ -53,6 +54,7 @@ sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.hcl $NOMADCONFIGDIR
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
+sudo systemctl enable nomad
 sudo systemctl start nomad.service
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
