@@ -70,10 +70,6 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = "[
-      CONSULVERSION=
-      NOMADVERSION=
-    ]"
     script = "../../shared/packer/scripts/setup.sh"
   }
 }
