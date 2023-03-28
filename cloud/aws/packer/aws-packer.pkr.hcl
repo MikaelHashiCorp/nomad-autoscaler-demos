@@ -1,12 +1,12 @@
 variable "created_email" { default = "mikael.sikora@hashicorp.com" }
-variable "created_name" { default = "mikael_sikora"}
-variable "region" { default = "us-east-1" }
+variable "created_name"  { default = "mikael_sikora"}
+variable "region"        { default = "us-east-1" }
 
 source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = "ed25519"
-  ami_name      = "Hashistack {{timestamp}}"
+  ami_name      = "autosc-mws {{timestamp}}"
   region        = var.region
-  instance_type = "t3.medium"
+  instance_type = "t3a.medium"
 
   source_ami_filter {
     filters = {
@@ -70,6 +70,10 @@ build {
   }
 
   provisioner "shell" {
+    environment_vars = "[
+      CONSULVERSION=
+      NOMADVERSION=
+    ]"
     script = "../../shared/packer/scripts/setup.sh"
   }
 }
