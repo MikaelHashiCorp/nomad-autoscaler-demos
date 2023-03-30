@@ -15,16 +15,18 @@ cd /ops
 # Dependencies
 sudo apt-get update
 
-sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux dnsmasq
+sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux dnsmasq awscli ec2-instance-connect
 
 CONFIGDIR=/ops/config
 
-CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+CONSULVERSION=1.12.2
+# CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
-NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
+NOMADVERSION=1.1.1
+# NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
 NOMADCONFIGDIR=/etc/nomad.d
 NOMADDIR=/opt/nomad

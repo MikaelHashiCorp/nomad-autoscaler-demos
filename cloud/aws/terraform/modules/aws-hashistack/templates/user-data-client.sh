@@ -15,5 +15,4 @@ sudo chown ubuntu:ubuntu data
 ln -s /mnt/data /home/ubuntu/data
 
 # Install ec2 Instance Connect
-sudo apt -y install ec2-instance-connect
-sudo apt -y install awscli
+sudo apt -y install awscli ec2-instance-connect
