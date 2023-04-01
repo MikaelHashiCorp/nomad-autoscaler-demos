@@ -5,6 +5,8 @@ resource "aws_launch_template" "nomad_client" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
   user_data              = base64encode(data.template_file.user_data_client.rendered)
+  count                  = var.client_count
+
 
   iam_instance_profile {
     name = aws_iam_instance_profile.nomad_client.name
@@ -14,6 +16,7 @@ resource "aws_launch_template" "nomad_client" {
     resource_type = "instance"
     tags = {
       Name           = "${var.stack_name}-client"
+      PromptID       = "client"
       ConsulAutoJoin = "auto-join"
     }
   }
@@ -74,6 +77,11 @@ resource "aws_autoscaling_group" "nomad_client" {
   tag {
     key                 = "OwnerEmail"
     value               = var.owner_email
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "PromptID"
+    value               = "client"
     propagate_at_launch = true
   }
 }

@@ -7,6 +7,7 @@ resource "aws_instance" "nomad_server" {
 
   tags = {
     Name           = "${var.stack_name}-server-${count.index + 1}"
+    PromptID       = "server-${count.index + 1}"
     ConsulAutoJoin = "auto-join"
     OwnerName      = var.owner_name
     OwnerEmail     = var.owner_email
