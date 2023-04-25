@@ -65,7 +65,7 @@ resource "aws_autoscaling_group" "nomad_client" {
   load_balancers     = [aws_elb.nomad_client.name]
 
   launch_template {
-    id      = aws_launch_template.nomad_client.id
+    id      = aws_launch_template.nomad_client[*].id
     version = "$Latest"
   }
 
