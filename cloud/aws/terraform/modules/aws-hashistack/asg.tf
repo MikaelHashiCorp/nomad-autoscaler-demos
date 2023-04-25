@@ -5,8 +5,6 @@ resource "aws_launch_template" "nomad_client" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
   user_data              = base64encode(data.template_file.user_data_client.rendered)
-  count                  = var.client_count
-
 
   iam_instance_profile {
     name = aws_iam_instance_profile.nomad_client.name
@@ -16,8 +14,8 @@ resource "aws_launch_template" "nomad_client" {
     resource_type = "instance"
     tags = {
       Name           = "${var.stack_name}-client"
-      PromptID       = "client"
       ConsulAutoJoin = "auto-join"
+      PromptID       = "client"
     }
   }
 
@@ -38,21 +36,6 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
-
-  # connection {
-  #   type     = "ssh"
-  #   user     = "ubuntu"
-  #   password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
-  #   host     = "${aws_launch_template.nomad_client.*.public_ip}"
-  # }
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "curl -fsSL https://code-server.dev/install.sh | sh",
-  #     "sudo systemctl start code-server@$USER",
-  #     "sudo systemctl enable --now code-server@$USER"
-
-  #   ]
-  # }
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
