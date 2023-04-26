@@ -22,19 +22,15 @@ resource "aws_instance" "nomad_server" {
   user_data            = data.template_file.user_data_server.rendered
   iam_instance_profile = aws_iam_instance_profile.nomad_server.name
 
-  # connection {
-  #   type     = "ssh"
-  #   user     = "ubuntu"
-  #   password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
-  #   host     = "${aws_instance.nomad_server.*.public_ip}"
-  # }
-
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "curl -fsSL https://code-server.dev/install.sh | sh",
-  #     "sudo systemctl start code-server@$USER",
-  #     "sudo systemctl enable --now code-server@$USER"
-
-  #   ]
-  # }
+    connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
+    host     = "${aws_instance.nomad_server.0.public_ip}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect ec2-instance-connect-s3"
+    ]
+  }
 }

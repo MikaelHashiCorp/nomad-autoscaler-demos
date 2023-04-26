@@ -27,6 +27,17 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
+    host     = "${aws_instance.nomad_server.0.public_ip}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect ec2-instance-connect-s3"
+    ]
+  }
 
   block_device_mappings {
     device_name = "/dev/sda1"
