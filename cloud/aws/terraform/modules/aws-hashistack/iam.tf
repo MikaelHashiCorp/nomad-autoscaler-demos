@@ -8,6 +8,12 @@ resource "aws_iam_role" "nomad_server" {
   assume_role_policy = data.aws_iam_policy_document.nomad_server_assume.json
 }
 
+resource "aws_iam_role_policy_attachment" "nomad_server_direct_connect" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSDirectConnectFullAccess"
+  role       = aws_iam_role.nomad_server.name
+}
+
+
 resource "aws_iam_role_policy" "nomad_server" {
   name   = "nomad-server"
   role   = aws_iam_role.nomad_server.id
@@ -33,7 +39,6 @@ data "aws_iam_policy_document" "nomad_server" {
     actions = [
       "ec2:DescribeInstances",
       "ec2:DescribeTags",
-      "ec2-instance-connect:SendSSHPublicKey",
       "autoscaling:DescribeAutoScalingGroups",
     ]
 

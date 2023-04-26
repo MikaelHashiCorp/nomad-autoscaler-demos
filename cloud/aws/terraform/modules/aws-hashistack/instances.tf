@@ -13,6 +13,12 @@ resource "aws_instance" "nomad_server" {
     OwnerEmail     = var.owner_email
   }
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional"
+    http_put_response_hop_limit = 1
+  }
+
   root_block_device {
     volume_type           = "gp2"
     volume_size           = var.root_block_device_size
@@ -25,12 +31,14 @@ resource "aws_instance" "nomad_server" {
     connection {
     type     = "ssh"
     user     = "ubuntu"
-    password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
+    private_key = file("${path.module}/.ssh/support_nomad_dev-access-key-mikael.pem")
     host     = "${aws_instance.nomad_server.0.public_ip}"
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect ec2-instance-connect-s3"
+      "set -e",
+      "sudo apt-get update",
+      "sudo apt-get install -y ec2-instance-connect awscli"
     ]
   }
 }

@@ -19,6 +19,12 @@ resource "aws_launch_template" "nomad_client" {
     }
   }
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional"
+    http_put_response_hop_limit = 1
+  }
+
   block_device_mappings {
     device_name = "/dev/xvdd"
     ebs {
@@ -27,18 +33,6 @@ resource "aws_launch_template" "nomad_client" {
       delete_on_termination = "true"
     }
   }
-  connection {
-    type     = "ssh"
-    user     = "ubuntu"
-    password = "${path.module}.ssh/support_nomad_dev-access-key-mikael.pem"
-    host     = "${aws_instance.nomad_server.0.public_ip}"
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect ec2-instance-connect-s3"
-    ]
-  }
-
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {
@@ -46,6 +40,19 @@ resource "aws_launch_template" "nomad_client" {
       volume_size           = "16"
       delete_on_termination = "true"
     }
+  }
+
+
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("${path.module}/.ssh/support_nomad_dev-access-key-mikael.pem")
+    host     = "${aws_instance.nomad_server.0.public_ip}"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli"
+    ]
   }
 }
 
