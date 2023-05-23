@@ -16,7 +16,7 @@ variable "server_vm_size" {
 variable "server_count" {
   description = "The number of servers to provision."
   type        = number
-  default     = 1
+  default     = 3
 }
 
 variable "client_vm_size" {

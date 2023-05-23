@@ -6,6 +6,7 @@ resource "azurerm_linux_virtual_machine" "servers" {
   name                = "server-${count.index + 1}"
   location            = azurerm_resource_group.hashistack.location
   resource_group_name = azurerm_resource_group.hashistack.name
+  availability_set_id = azurerm_availability_set.hashistack.id
   size                = var.server_vm_size
   source_image_id     = data.azurerm_image.hashistack.id
   custom_data         = base64encode(data.template_file.user_data_server.rendered)

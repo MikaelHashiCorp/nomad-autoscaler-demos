@@ -6,7 +6,7 @@ variable "client_secret" {}
 variable "resource_group" {}
 variable "subscription_id" {}
 variable "location" { default = "East US" }
-variable "image_name" { default = "hashistack" }
+variable "image_name" { default = "hcs-autosc-main-mws" }
 
 source "azure-arm" "hashistack" {
   azure_tags = {
