@@ -1,0 +1,77 @@
+2023-05-22T19:51:26.180Z [INFO]  agent: Starting Nomad Autoscaler agent
+2023-05-22T19:51:26.180Z [INFO]  agent: Nomad Autoscaler agent configuration:
+2023-05-22T19:51:26.180Z [INFO]  agent: 
+2023-05-22T19:51:26.180Z [INFO]  agent:         Bind Addrs: 0.0.0.0
+2023-05-22T19:51:26.180Z [INFO]  agent:          Log Level: info
+2023-05-22T19:51:26.180Z [INFO]  agent:            Plugins: //plugins
+2023-05-22T19:51:26.180Z [INFO]  agent:           Policies: /local/policies/
+2023-05-22T19:51:26.180Z [INFO]  agent:            Version: v0.3.3 (22f88bb)
+2023-05-22T19:51:26.181Z [INFO]  agent: 
+2023-05-22T19:51:26.181Z [INFO]  agent: Nomad Autoscaler agent started! Log data will stream in below:
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-apm
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=prometheus
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=target-value
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-target
+2023-05-22T19:51:26.184Z [INFO]  agent.http_server: server now listening for connections: address=0.0.0.0:28434
+2023-05-22T19:51:26.191Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=azure-vmss
+2023-05-22T19:51:26.193Z [INFO]  policy_eval: starting workers: cluster=10 horizontal=10
+2023-05-22T19:51:26.196Z [INFO]  file_policy_source: starting file policy monitor: file=/local/policies/hashistack.hcl name=cluster_policy policy_id=f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c
+2023-05-22T19:51:56.490Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:52:26.375Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=88872adf-4d67-0827-742b-ea778013ff09 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:52:56.375Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=25b8ed6a-9ad2-2540-fdbe-ec2b4669c4de policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:53:26.376Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=1a0e24bb-cb02-9aa7-84db-d438ec7067f0 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:53:56.387Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=4ed33a85-f38e-1dab-d828-d68ef06e03c8 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:54:26.374Z [INFO]  policy_eval.worker: scaling target: id=1ee98063-e3d3-bfb8-0a0a-b311da370f22 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=1 to=2 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:55:26.378Z [INFO]  policy_eval.worker: scaling target: id=0606ede1-d208-7a50-6ce9-2e49be5ab41a policy_id=f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c queue=cluster target=azure-vmss from=1 to=2 reason="scaling up because factor is 1.125128" meta=map[nomad_policy_id:f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c]
+2023-05-22T19:55:56.375Z [INFO]  policy_eval.worker: scaling target: id=76cc817f-7a33-0757-203c-7a7c027fcf99 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:56:04.985Z [INFO]  internal_plugin.azure-vmss: successfully performed and verified scaling out: action=scale_out desired_count=2 vmss_name=clients
+2023-05-22T19:56:56.474Z [INFO]  policy_eval.worker: scaling target: id=d61d6c4c-4fcb-0baa-e2d7-c6d90ee6d613 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:56:56.479Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=343c0765-2729-3b76-7005-0240aa08cb81 eval_token=103c0a75-c695-c41d-dc7b-a56635c5c99b id=d61d6c4c-4fcb-0baa-e2d7-c6d90ee6d613 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:56:56.479Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=343c0765-2729-3b76-7005-0240aa08cb81 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=103c0a75-c695-c41d-dc7b-a56635c5c99b count=1 limit=1
+2023-05-22T19:57:26.375Z [INFO]  policy_eval.worker: scaling target: id=7b9b78ed-26f0-1f1e-33bd-0e34b3c4daa5 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:57:26.380Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=7b8570f5-f42f-8c0e-197f-a90b86bb80d7 eval_token=b1dae29d-fe9b-19cd-753e-c5171e48eef4 id=7b9b78ed-26f0-1f1e-33bd-0e34b3c4daa5 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:57:26.380Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=7b8570f5-f42f-8c0e-197f-a90b86bb80d7 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=b1dae29d-fe9b-19cd-753e-c5171e48eef4 count=1 limit=1
+2023-05-22T19:57:56.375Z [INFO]  policy_eval.worker: scaling target: id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.800000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:57:56.380Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=958a5e8a-9113-8a8d-457f-a0cbc30286ae eval_token=a3704522-daf5-908e-ab95-7d7dd0178ff6 id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:57:56.380Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=958a5e8a-9113-8a8d-457f-a0cbc30286ae policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=a3704522-daf5-908e-ab95-7d7dd0178ff6 count=1 limit=1
+2023-05-22T19:51:26.180Z [INFO]  agent: Starting Nomad Autoscaler agent
+2023-05-22T19:51:26.180Z [INFO]  agent: Nomad Autoscaler agent configuration:
+2023-05-22T19:51:26.180Z [INFO]  agent: 
+2023-05-22T19:51:26.180Z [INFO]  agent:         Bind Addrs: 0.0.0.0
+2023-05-22T19:51:26.180Z [INFO]  agent:          Log Level: info
+2023-05-22T19:51:26.180Z [INFO]  agent:            Plugins: //plugins
+2023-05-22T19:51:26.180Z [INFO]  agent:           Policies: /local/policies/
+2023-05-22T19:51:26.180Z [INFO]  agent:            Version: v0.3.3 (22f88bb)
+2023-05-22T19:51:26.181Z [INFO]  agent: 
+2023-05-22T19:51:26.181Z [INFO]  agent: Nomad Autoscaler agent started! Log data will stream in below:
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-apm
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=prometheus
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=target-value
+2023-05-22T19:51:26.184Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-target
+2023-05-22T19:51:26.184Z [INFO]  agent.http_server: server now listening for connections: address=0.0.0.0:28434
+2023-05-22T19:51:26.191Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=azure-vmss
+2023-05-22T19:51:26.193Z [INFO]  policy_eval: starting workers: cluster=10 horizontal=10
+2023-05-22T19:51:26.196Z [INFO]  file_policy_source: starting file policy monitor: file=/local/policies/hashistack.hcl name=cluster_policy policy_id=f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c
+2023-05-22T19:51:56.490Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:52:26.375Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=88872adf-4d67-0827-742b-ea778013ff09 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:52:56.375Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=25b8ed6a-9ad2-2540-fdbe-ec2b4669c4de policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:53:26.376Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=1a0e24bb-cb02-9aa7-84db-d438ec7067f0 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:53:56.387Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=4ed33a85-f38e-1dab-d828-d68ef06e03c8 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-05-22T19:54:26.374Z [INFO]  policy_eval.worker: scaling target: id=1ee98063-e3d3-bfb8-0a0a-b311da370f22 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=1 to=2 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:55:26.378Z [INFO]  policy_eval.worker: scaling target: id=0606ede1-d208-7a50-6ce9-2e49be5ab41a policy_id=f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c queue=cluster target=azure-vmss from=1 to=2 reason="scaling up because factor is 1.125128" meta=map[nomad_policy_id:f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c]
+2023-05-22T19:55:56.375Z [INFO]  policy_eval.worker: scaling target: id=76cc817f-7a33-0757-203c-7a7c027fcf99 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:56:04.985Z [INFO]  internal_plugin.azure-vmss: successfully performed and verified scaling out: action=scale_out desired_count=2 vmss_name=clients
+2023-05-22T19:56:56.474Z [INFO]  policy_eval.worker: scaling target: id=d61d6c4c-4fcb-0baa-e2d7-c6d90ee6d613 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:56:56.479Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=343c0765-2729-3b76-7005-0240aa08cb81 eval_token=103c0a75-c695-c41d-dc7b-a56635c5c99b id=d61d6c4c-4fcb-0baa-e2d7-c6d90ee6d613 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:56:56.479Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=343c0765-2729-3b76-7005-0240aa08cb81 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=103c0a75-c695-c41d-dc7b-a56635c5c99b count=1 limit=1
+2023-05-22T19:57:26.375Z [INFO]  policy_eval.worker: scaling target: id=7b9b78ed-26f0-1f1e-33bd-0e34b3c4daa5 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.900000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:57:26.380Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=7b8570f5-f42f-8c0e-197f-a90b86bb80d7 eval_token=b1dae29d-fe9b-19cd-753e-c5171e48eef4 id=7b9b78ed-26f0-1f1e-33bd-0e34b3c4daa5 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:57:26.380Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=7b8570f5-f42f-8c0e-197f-a90b86bb80d7 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=b1dae29d-fe9b-19cd-753e-c5171e48eef4 count=1 limit=1
+2023-05-22T19:57:56.375Z [INFO]  policy_eval.worker: scaling target: id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=2 to=4 reason="scaling up because factor is 1.800000" meta=map[nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]
+2023-05-22T19:57:56.380Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=958a5e8a-9113-8a8d-457f-a0cbc30286ae eval_token=a3704522-daf5-908e-ab95-7d7dd0178ff6 id=b3de9b29-acc7-04ec-4307-adcb2e31cc0e policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal error="failed to scale target: failed to scale group /: Unexpected response code: 400 (job scaling blocked due to active deployment)"
+2023-05-22T19:57:56.380Z [WARN]  policy_eval.broker: eval delivery limit reached: eval_id=958a5e8a-9113-8a8d-457f-a0cbc30286ae policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 token=a3704522-daf5-908e-ab95-7d7dd0178ff6 count=1 limit=1
+2023-05-22T19:59:56.375Z [INFO]  policy_eval.worker: scaling target: id=4ed33a85-f38e-1dab-d828-d68ef06e03c8 policy_id=018e2d31-2a89-092c-68ee-a8a94c1fed46 queue=horizontal target=nomad-target from=4 to=1 reason="capped count from 0 to 1 to stay within limits" meta="map[nomad_autoscaler.count.capped:true nomad_autoscaler.count.original:0 nomad_autoscaler.reason_history:[scaling down because factor is 0.000000] nomad_policy_id:018e2d31-2a89-092c-68ee-a8a94c1fed46]"
+2023-05-22T20:00:26.400Z [INFO]  policy_eval.worker: scaling target: id=f04f717b-96b4-7f20-344d-fa87e512e92b policy_id=f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c queue=cluster target=azure-vmss from=2 to=1 reason="scaling down because factor is 0.426185" meta=map[nomad_policy_id:f5cf7ed1-c6a6-3d2f-5465-6bb0233ed86c]
+2023-05-22T20:00:26.455Z [INFO]  internal_plugin.azure-vmss: triggering drain on node: node_id=e80a75c2-0ac9-d5ce-678e-a7b3bd998aa6 deadline=5m0s
+2023-05-22T20:00:26.546Z [INFO]  internal_plugin.azure-vmss: received node drain message: node_id=e80a75c2-0ac9-d5ce-678e-a7b3bd998aa6 msg="Drain complete for node e80a75c2-0ac9-d5ce-678e-a7b3bd998aa6"
+2023-05-22T20:00:32.720Z [INFO]  internal_plugin.azure-vmss: received node drain message: node_id=e80a75c2-0ac9-d5ce-678e-a7b3bd998aa6 msg="All allocations on node "e80a75c2-0ac9-d5ce-678e-a7b3bd998aa6" have stopped"

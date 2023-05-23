@@ -1,5 +1,4 @@
 # ignore Vagrant related files
-*.log
 .vagrant
 
 # ignore GoLand IDE
@@ -14,8 +13,6 @@
 # Terraform module and provider directory.
 .terraform
 
-# Terraform vars file
-terraform.tfvars
 
 # Cleanup files
 .cleanup*
