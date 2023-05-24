@@ -13,5 +13,7 @@
       "path": "../../../../../../Library/CloudStorage/GoogleDrive-mikael.sikora@hashicorp.com/My Drive/1-support/1-tickets/110990_BNY"
     }
   ],
-  "settings": {}
+  "settings": {
+    "editor.stickyScroll.enabled": true
+  }
 }

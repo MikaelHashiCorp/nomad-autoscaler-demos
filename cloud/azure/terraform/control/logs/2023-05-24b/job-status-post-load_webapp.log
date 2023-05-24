@@ -1,0 +1,56 @@
+20230524T201452.548Z  === POST-LOAD ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-05-22T12:45:15-07:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        2       0         2        0       11        0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+17c117e4-61bf-3757-6b75-f00e607131aa  50        queued-allocs       blocked   N/A - In Progress
+142c1e57-038e-faef-6216-c8f7c9ecb4e4  50        deployment-watcher  complete  true
+bc94ad5c-9256-0e79-f725-d02d5c5c0c29  50        queued-allocs       canceled  true
+96eb45bf-4de2-504f-4825-a9287b887d1e  50        deployment-watcher  complete  true
+c63d424d-2ac8-c609-4ba4-f47314438cfa  50        queued-allocs       canceled  true
+37b19aff-e09a-96d1-d9c5-8454fac01d37  50        job-scaling         complete  true
+8319a019-779e-7c30-5b97-e755d0ee7a56  50        deployment-watcher  complete  false
+cb9ca41a-3b53-b560-41b8-7511a8b3b965  50        job-scaling         complete  false
+a6f87392-25b1-ca7a-be35-db3b25a4511f  50        deployment-watcher  complete  false
+7ec45dd5-c760-3cd6-452e-93e9e93dfb65  50        deployment-watcher  complete  false
+b2c2f6f8-6b6b-cd3b-cd4b-02debb4ce682  50        job-scaling         complete  false
+d448feeb-811b-a780-a58b-ad6c1fee60a5  50        deployment-watcher  complete  false
+8cadf648-738b-4e04-6ed1-5508fa058c32  50        job-scaling         complete  false
+554e32aa-00da-3376-ecc1-5e31c94f4df2  50        deployment-watcher  complete  false
+3b5fabc2-8931-ef86-69a6-13e3886807d3  50        deployment-watcher  complete  false
+bfd3ca4e-3ad9-ddcb-4f40-2c8c5c93e037  50        job-scaling         complete  false
+
+Placement Failure
+Task Group "demo":
+  * Resources exhausted on 1 nodes
+  * Class "hashistack" exhausted on 1 nodes
+  * Dimension "cpu" exhausted on 1 nodes
+
+Latest Deployment
+ID          = 7374281a-80c0-6edd-6f34-ea527ae3e582
+Status      = running
+Description = Deployment is running
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        2       2        0          2023-05-24T20:18:59Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+b5f231cb-78e8-0d13-bfd0-b285685ef117  37b19aff-e09a-96d1-d9c5-8454fac01d37  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        15       run      running   2023-05-24T13:08:43-07:00  2023-05-24T13:08:59-07:00
+6b0fa7cb-b7e5-d4ae-eb8f-2b6471171363  b2c2f6f8-6b6b-cd3b-cd4b-02debb4ce682  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        13       stop     complete  2023-05-24T12:47:03-07:00  2023-05-24T12:55:14-07:00
+2eb09200-8a7e-ff4a-d5a0-e06239cd71f1  bfd3ca4e-3ad9-ddcb-4f40-2c8c5c93e037  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        11       stop     complete  2023-05-24T12:31:56-07:00  2023-05-24T12:33:03-07:00
+cfbd841c-c062-4c72-a681-52f66250d6eb  37b19aff-e09a-96d1-d9c5-8454fac01d37  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        15       run      running   2023-05-21T22:42:17-07:00  2023-05-24T13:08:54-07:00

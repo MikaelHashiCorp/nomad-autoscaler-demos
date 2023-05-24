@@ -1,4 +1,4 @@
-job "autoscaler" {
+job "azure-autoscaler" {
   datacenters = ["dc1"]
 
   group "autoscaler" {

@@ -1,0 +1,43 @@
+20230524T195847.417Z  === POST-RECOVER ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-05-22T12:45:15-07:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       11        0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+8319a019-779e-7c30-5b97-e755d0ee7a56  50        deployment-watcher  complete  false
+cb9ca41a-3b53-b560-41b8-7511a8b3b965  50        job-scaling         complete  false
+a6f87392-25b1-ca7a-be35-db3b25a4511f  50        deployment-watcher  complete  false
+7ec45dd5-c760-3cd6-452e-93e9e93dfb65  50        deployment-watcher  complete  false
+b2c2f6f8-6b6b-cd3b-cd4b-02debb4ce682  50        job-scaling         complete  false
+d448feeb-811b-a780-a58b-ad6c1fee60a5  50        deployment-watcher  complete  false
+8cadf648-738b-4e04-6ed1-5508fa058c32  50        job-scaling         complete  false
+554e32aa-00da-3376-ecc1-5e31c94f4df2  50        deployment-watcher  complete  false
+3b5fabc2-8931-ef86-69a6-13e3886807d3  50        deployment-watcher  complete  false
+bfd3ca4e-3ad9-ddcb-4f40-2c8c5c93e037  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = 977b3e65-18e3-38af-a9eb-1d2c5cc7711a
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2023-05-24T20:05:17Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+6b0fa7cb-b7e5-d4ae-eb8f-2b6471171363  b2c2f6f8-6b6b-cd3b-cd4b-02debb4ce682  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        13       stop     complete  2023-05-24T12:47:03-07:00  2023-05-24T12:55:14-07:00
+2eb09200-8a7e-ff4a-d5a0-e06239cd71f1  bfd3ca4e-3ad9-ddcb-4f40-2c8c5c93e037  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        11       stop     complete  2023-05-24T12:31:56-07:00  2023-05-24T12:33:03-07:00
+cfbd841c-c062-4c72-a681-52f66250d6eb  cb9ca41a-3b53-b560-41b8-7511a8b3b965  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        14       run      running   2023-05-21T22:42:17-07:00  2023-05-24T12:55:18-07:00
