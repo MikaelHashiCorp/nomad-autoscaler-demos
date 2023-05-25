@@ -1,0 +1,47 @@
+20230524T231017.3NZ  === PRE-LOST ===
+ID                  = e56ab86a-3add-9850-fc28-db53f8059363
+Eval ID             = 3b0d4398-8eb0-1a95-60f4-ccac7e4bc39e
+Name                = azure-autoscaler.autoscaler[0]
+Node ID             = 85a5ac20-cd19-48bc-326f-2b9e34e0df00
+Node Name           = clients000001
+Job ID              = azure-autoscaler
+Job Version         = 6
+Client Status       = running
+Client Description  = Tasks are running
+Desired Status      = run
+Desired Description = <none>
+Created             = 2023-05-24T16:02:15-07:00
+Modified            = 2023-05-24T16:02:33-07:00
+Deployment ID       = d1cc3468-5973-45ae-2c88-063c3eb241b2
+Deployment Health   = healthy
+Evaluated Nodes     = 1
+Filtered Nodes      = 0
+Exhausted Nodes     = 0
+Allocation Time     = 141.308µs
+Failures            = 0
+
+Allocation Addresses:
+Label  Dynamic  Address
+*http  yes      10.0.2.8:22024
+
+Task "autoscaler" is "running"
+Task Resources:
+CPU       Memory          Disk     Addresses
+0/50 MHz  18 MiB/128 MiB  300 MiB  
+
+Task Events:
+Started At     = 2023-05-24T23:02:20Z
+Finished At    = N/A
+Total Restarts = 0
+Last Restart   = N/A
+
+Recent Events:
+Time                       Type        Description
+2023-05-24T16:02:20-07:00  Started     Task started by client
+2023-05-24T16:02:15-07:00  Driver      Downloading image
+2023-05-24T16:02:15-07:00  Task Setup  Building Task Directory
+2023-05-24T16:02:15-07:00  Received    Task received by client
+
+Placement Metrics
+Node                                  binpack  job-anti-affinity  node-affinity  node-reschedule-penalty  final score
+85a5ac20-cd19-48bc-326f-2b9e34e0df00  0.651    0                  0              0                        0.651

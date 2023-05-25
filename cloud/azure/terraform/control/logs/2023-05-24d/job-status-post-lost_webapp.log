@@ -1,0 +1,47 @@
+20230524T231151.805Z  === POST-LOST ===
+
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-05-22T12:45:15-07:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       15        0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+c79a7ce7-005a-419b-44b4-593a5d1f3a25  50        node-update         complete  false
+3b3e64a7-bf6f-a79c-985d-6396015bd89a  50        deployment-watcher  complete  false
+4fb6237d-49b4-e50f-c7da-5b80fdc59718  50        job-scaling         complete  false
+7986cf9c-21bd-47d3-7058-6c86149b39bb  50        deployment-watcher  complete  false
+829bfb73-721d-2f1f-7eec-544e6d5b7428  50        queued-allocs       complete  false
+37d341c5-ad29-bcd3-99a9-ea87e50cdd28  50        deployment-watcher  complete  true
+63cffba9-cb6b-d37a-a7d6-5f860bc56bd1  50        queued-allocs       canceled  true
+d5f989de-ad80-8e9d-2253-6667a3a812db  50        job-scaling         complete  true
+906c34bc-1277-b808-024d-e9ae76fd151f  50        deployment-watcher  complete  false
+1ef2a789-fbc5-5074-49e5-ac7227c55e59  50        deployment-watcher  complete  false
+4e78c538-cdb6-1d3e-f3cb-3c884631763d  50        job-scaling         complete  false
+dead4755-2836-98d2-083d-ba600ecdfd93  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = 8df06633-75e4-a0b9-3bf1-8159ae1865ce
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2023-05-24T23:18:02Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+e3834da0-6d5c-cd59-5486-17fe74f30011  829bfb73-721d-2f1f-7eec-544e6d5b7428  0a449540-efd5-c78a-c507-a81c9656c166  clients00000C  demo        19       stop     complete  2023-05-24T16:05:49-07:00  2023-05-24T16:08:01-07:00
+fa0c9f93-286f-a741-bdf1-8f6bce4e5b3b  829bfb73-721d-2f1f-7eec-544e6d5b7428  0a449540-efd5-c78a-c507-a81c9656c166  clients00000C  demo        19       stop     complete  2023-05-24T16:05:49-07:00  2023-05-24T16:08:05-07:00
+8b53537e-2635-e878-e54a-7459fd77998f  d5f989de-ad80-8e9d-2253-6667a3a812db  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        19       stop     complete  2023-05-24T16:03:51-07:00  2023-05-24T16:07:58-07:00
+cfbd841c-c062-4c72-a681-52f66250d6eb  4fb6237d-49b4-e50f-c7da-5b80fdc59718  85a5ac20-cd19-48bc-326f-2b9e34e0df00  clients000001  demo        20       run      running   2023-05-21T22:42:17-07:00  2023-05-24T16:08:02-07:00
