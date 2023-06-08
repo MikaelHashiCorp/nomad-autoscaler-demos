@@ -4,7 +4,6 @@ output "ip_addresses" {
 Server IPs:
 ${module.hashistack_cluster.server_addresses}
 
-
 To connect, add your private key and SSH into any client or server with
 `ssh ubuntu@PUBLIC_IP`. You can test the integrity of the cluster by running:
 
@@ -21,6 +20,7 @@ Webapp can be accessed at http://${module.hashistack_cluster.client_elb_dns}:80
 
 CLI environment variables:
 export NOMAD_CLIENT_DNS=http://${module.hashistack_cluster.client_elb_dns}
+export CONSUL_HTTP_ADDR=${module.hashistack_cluster.consul_addr}
 export NOMAD_ADDR=${module.hashistack_cluster.nomad_addr}
 
 EBS Volume Info

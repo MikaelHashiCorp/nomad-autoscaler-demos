@@ -7,11 +7,10 @@
       "path": "shared"
     },
     {
-      "path": "infrastructure"
-    },
-    {
       "path": "../../../../../.ssh"
     }
   ],
-  "settings": {}
+  "settings": {
+    "terminal.integrated.cwd": "."
+  }
 }
