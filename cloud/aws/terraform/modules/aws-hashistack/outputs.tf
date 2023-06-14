@@ -38,6 +38,10 @@ output "consul_addr" {
   value = "http://${aws_elb.nomad_server.dns_name}:8500"
 }
 
+output "vault_addr" {
+  value = "http://${aws_elb.nomad_server.dns_name}:8200"
+}
+
 output "hosts_file" {
   value = join("\n", concat(
     formatlist(" %-16s  %v.hs", aws_instance.nomad_server.*.public_ip, aws_instance.nomad_server.*.tags.Name)

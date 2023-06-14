@@ -22,6 +22,14 @@ resource "aws_security_group" "server_lb" {
     cidr_blocks = var.allowlist_ip
   }
 
+  # Vault HTTP API & UI.
+  ingress {
+    from_port   = 8200
+    to_port     = 8200
+    protocol    = "tcp"
+    cidr_blocks = var.allowlist_ip
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -98,6 +106,15 @@ resource "aws_security_group" "primary" {
   ingress {
     from_port       = 8500
     to_port         = 8500
+    protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
+    security_groups = [aws_security_group.server_lb.id]
+  }
+
+  # Vault
+  ingress {
+    from_port       = 8200
+    to_port         = 8200
     protocol        = "tcp"
     cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.server_lb.id]
