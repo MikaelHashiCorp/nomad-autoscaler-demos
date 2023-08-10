@@ -16,3 +16,4 @@
 
 # Cleanup files
 .cleanup*
+.DS_Store
