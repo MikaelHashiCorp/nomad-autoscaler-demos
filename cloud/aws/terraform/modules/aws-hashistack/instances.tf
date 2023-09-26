@@ -37,6 +37,7 @@ resource "aws_instance" "nomad_server" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
+      "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done", # wait for other apt processes
       "sudo apt-get update",
       "sudo apt-get install -y ec2-instance-connect awscli"
     ]
