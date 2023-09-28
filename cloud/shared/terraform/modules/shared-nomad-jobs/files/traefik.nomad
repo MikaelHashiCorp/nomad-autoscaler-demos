@@ -28,7 +28,7 @@ job "traefik" {
       driver = "docker"
 
       config {
-        image = "traefik:v2.2"
+        image = "traefik:v2.9"
         ports = ["api", "grafana", "prometheus", "webapp"]
 
         # Use `host` network so we can communicate with the Consul agent
