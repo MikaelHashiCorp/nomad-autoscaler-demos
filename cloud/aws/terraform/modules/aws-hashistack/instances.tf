@@ -29,10 +29,10 @@ resource "aws_instance" "nomad_server" {
   iam_instance_profile = aws_iam_instance_profile.nomad_server.name
 
     connection {
-    type     = "ssh"
-    user     = "ubuntu"
-    private_key = file("${path.module}/.ssh/support_nomad_dev-access-key-mikael.pem")
-    host     = "${aws_instance.nomad_server.0.public_ip}"
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = "${var.key_name}"
+    host        = "${aws_instance.nomad_server.0.public_ip}"
   }
   provisioner "remote-exec" {
     inline = [
