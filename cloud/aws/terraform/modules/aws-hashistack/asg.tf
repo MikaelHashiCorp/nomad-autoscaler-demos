@@ -46,12 +46,39 @@ resource "aws_launch_template" "nomad_client" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = "${var.key_name}"
+    private_key = file("~/.ssh/${var.key_name}.pem")
     host        = "${aws_instance.nomad_server.0.public_ip}"
   }
+}
+
+data "aws_instances" "all_instances" {
+  instance_tags = {
+    "aws:autoscaling:groupName" = "${var.stack_name}-nomad_client"
+  }
+}
+
+# This instance_provisioner_rerun allows updating the command lines to existing instances without
+# destroying and recreating the instances.
+resource "null_resource" "asg_provisioner_rerun" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  count = length(data.aws_instances.all_instances.ids)
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("~/.ssh/${var.key_name}.pem")
+    host        = element(data.aws_instances.all_instances.public_ips, count.index)
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli"
+      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli",
+      "sudo find /opt -type d -exec chmod g+s {} \\;",
+      "sudo chown -R root:ubuntu /opt",
+      "sudo chmod -R g+rX /opt"
     ]
   }
 }

@@ -59,6 +59,15 @@ job "traefik" {
   dashboard = true
   insecure  = true
 
+# [log]
+#     filePath = "local/traefik.log"
+#     level = "DEBUG"
+#     # format = "json"
+
+# [accessLog]
+#     filePath = "local/traefik-access.log"
+#     # format = "json"
+
 [metrics]
   [metrics.prometheus]
     addServicesLabels = true
