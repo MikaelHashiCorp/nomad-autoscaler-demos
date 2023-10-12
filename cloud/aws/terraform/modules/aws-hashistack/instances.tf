@@ -36,15 +36,28 @@ resource "aws_instance" "nomad_server" {
   }
 }
 
+# The locals below are used in the instance_provisioner_rerun
+locals {
+  remote_exec_commands_instance = [
+    "set -e",
+    "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
+    "sudo apt-get update",
+    "sudo apt-get install -y ec2-instance-connect awscli",
+    "sudo find /opt -type d -exec chmod g+s {} \\;",
+    "sudo chown -R root:ubuntu /opt",
+    "sudo chmod -R g+rX /opt"
+  ]
+
+  remote_exec_hash_instance = md5(join(",", local.remote_exec_commands_instance))
+}
+
 # This instance_provisioner_rerun allows updating the command lines to existing instances without
 # destroying and recreating the instances.
 resource "null_resource" "instance_provisioner_rerun" {
-  # The triggers will cause the provisioner to run every time you apply.
   triggers = {
-    always_run = "${timestamp()}"
+    remote_exec_hash = local.remote_exec_hash_instance
   }
 
-  # Using count to iterate over each aws_instance.nomad_server resource
   count = var.server_count
 
   connection {
@@ -55,14 +68,7 @@ resource "null_resource" "instance_provisioner_rerun" {
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "set -e",
-      "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
-      "sudo apt-get update",
-      "sudo apt-get install -y ec2-instance-connect awscli",
-      "sudo find /opt -type d -exec chmod g+s {} \\;",
-      "sudo chown -R root:ubuntu /opt",
-      "sudo chmod -R g+rX /opt"
-    ]
+    inline = local.remote_exec_commands_instance
   }
 }
+

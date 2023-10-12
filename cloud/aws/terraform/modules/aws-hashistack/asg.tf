@@ -57,11 +57,23 @@ data "aws_instances" "all_instances" {
   }
 }
 
-# This instance_provisioner_rerun allows updating the command lines to existing instances without
+# The locals below are used in the asg_provisioner_rerun
+locals {
+  remote_exec_commands = [
+    "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli",
+    "sudo find /opt -type d -exec chmod g+s {} \\;",
+    "sudo chown -R root:ubuntu /opt",
+    "sudo chmod -R g+rX /opt"
+  ]
+
+  remote_exec_hash = md5(join(",", local.remote_exec_commands))
+}
+
+# This asg_provisioner_rerun allows updating the command lines to existing instances without
 # destroying and recreating the instances.
 resource "null_resource" "asg_provisioner_rerun" {
   triggers = {
-    always_run = "${timestamp()}"
+    remote_exec_hash = local.remote_exec_hash
   }
 
   count = length(data.aws_instances.all_instances.ids)
@@ -74,14 +86,10 @@ resource "null_resource" "asg_provisioner_rerun" {
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli",
-      "sudo find /opt -type d -exec chmod g+s {} \\;",
-      "sudo chown -R root:ubuntu /opt",
-      "sudo chmod -R g+rX /opt"
-    ]
+    inline = local.remote_exec_commands
   }
 }
+
 
 resource "aws_autoscaling_group" "nomad_client" {
   name               = "${var.stack_name}-nomad_client"

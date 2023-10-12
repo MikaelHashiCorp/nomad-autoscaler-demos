@@ -12,7 +12,7 @@ job "grafana" {
       driver = "docker"
 
       config {
-        image = "grafana/grafana:7.4.2"
+        image = "grafana/grafana:latest"
         ports = ["grafana_ui"]
 
         volumes = [
@@ -40,12 +40,14 @@ EOF
 
       template {
         data        = <<EOF
+apiVersion: 1
+datasources:
 - name: 'default'
   org_id: 1
   folder: ''
   type: 'file'
   options:
-    folder: '/var/lib/grafana/dashboards'
+    path: '/var/lib/grafana/dashboards'
 EOF
         destination = "local/dashboard.yaml"
       }
@@ -68,7 +70,7 @@ EOH
 
       resources {
         cpu    = 100
-        memory = 64
+        memory = 256
       }
 
       service {
