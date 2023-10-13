@@ -42,7 +42,7 @@ locals {
     "set -e",
     "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
     "sudo apt-get update",
-    "sudo apt-get install -y ec2-instance-connect awscli",
+    "sudo apt-get install -y ec2-instance-connect awscli net-tools",
     "sudo find /opt -type d -exec chmod g+s {} \\;",
     "sudo chown -R root:ubuntu /opt",
     "sudo chmod -R g+rX /opt"
@@ -71,4 +71,3 @@ resource "null_resource" "instance_provisioner_rerun" {
     inline = local.remote_exec_commands_instance
   }
 }
-

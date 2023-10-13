@@ -60,7 +60,7 @@ data "aws_instances" "all_instances" {
 # The locals below are used in the asg_provisioner_rerun
 locals {
   remote_exec_commands = [
-    "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli",
+    "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli net-tools",
     "sudo find /opt -type d -exec chmod g+s {} \\;",
     "sudo chown -R root:ubuntu /opt",
     "sudo chmod -R g+rX /opt"
