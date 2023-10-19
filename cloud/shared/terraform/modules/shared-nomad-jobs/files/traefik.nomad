@@ -22,14 +22,18 @@ job "traefik" {
       port "webapp" {
         static = 80
       }
+
+      port "myapp" {
+        static = 8080
+      }
     }
 
     task "traefik" {
       driver = "docker"
 
       config {
-        image = "traefik:v2.9"
-        ports = ["api", "grafana", "prometheus", "webapp"]
+        image = "traefik:latest"
+        ports = ["api", "grafana", "prometheus", "webapp", "myapp"]
 
         # Use `host` network so we can communicate with the Consul agent
         # running in the host to access the service catalog.
@@ -55,18 +59,21 @@ job "traefik" {
   [entryPoints.webapp]
     address = ":{{ env "NOMAD_PORT_webapp" }}"
 
+  [entryPoints.myapp]
+    address = ":{{ env "NOMAD_PORT_myapp" }}"
+
 [api]
   dashboard = true
   insecure  = true
 
-# [log]
-#     filePath = "local/traefik.log"
-#     level = "DEBUG"
-#     # format = "json"
+[log]
+    filePath = "local/traefik.log"
+    level = "DEBUG"
+    # format = "json"
 
-# [accessLog]
-#     filePath = "local/traefik-access.log"
-#     # format = "json"
+[accessLog]
+    filePath = "local/traefik-access.log"
+    # format = "json"
 
 [metrics]
   [metrics.prometheus]
@@ -113,6 +120,20 @@ EOF
           name     = "alive"
           type     = "tcp"
           port     = "webapp"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+
+      service {
+        name         = "traefik-myapp"
+        port         = "myapp"
+        address_mode = "host"
+
+        check {
+          name     = "alive"
+          type     = "tcp"
+          port     = "myapp"
           interval = "10s"
           timeout  = "2s"
         }
