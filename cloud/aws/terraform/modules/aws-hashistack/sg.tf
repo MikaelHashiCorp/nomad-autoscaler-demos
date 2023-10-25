@@ -139,6 +139,7 @@ resource "aws_security_group" "primary" {
     from_port       = 8081
     to_port         = 8081
     protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.client_lb.id]
   }
 
@@ -153,6 +154,7 @@ resource "aws_security_group" "primary" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.client_lb.id]
   }
   
@@ -160,6 +162,7 @@ resource "aws_security_group" "primary" {
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.client_lb.id]
   }
   # Nomad dynamic port allocation range.
