@@ -13,7 +13,7 @@ packer {
 
 source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = "ed25519"
-  ami_name      = format("%s%s", var.name_prefix, "{{timestamp}}")
+  ami_name      = format("%s%s", var.name_prefix, "'-'{{timestamp}}")
   region        = var.region
   instance_type = "t3a.medium"
 
