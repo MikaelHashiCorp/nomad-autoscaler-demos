@@ -1,17 +1,26 @@
-variable "created_email" { default = "mikael.sikora@hashicorp.com" }
-variable "created_name"  { default = "mikael_sikora"}
-variable "region"        { default = "us-east-1" }
+# https://developer.hashicorp.com/nomad/tutorials/autoscaler/horizontal-cluster-scaling?in=nomad%2Fautoscaler#build-demo-environment-ami
+# The "packer build ."" command loads all the contents in the current directory.
+# USAGE:  source env-pkr-var.sh && packer init . && packer validate . && packer build .
+
+packer {
+  required_plugins {
+    amazon = {
+      source  = "github.com/hashicorp/amazon"
+      version = "~> 1"
+    }
+  }
+}
 
 source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = "ed25519"
-  ami_name      = "autosc-mws {{timestamp}}"
+  ami_name      = format("%s%s", var.name_prefix, "{{timestamp}}")
   region        = var.region
   instance_type = "t3a.medium"
 
   source_ami_filter {
     filters = {
       virtualization-type = "hvm"
-      name                = "ubuntu/images/*ubuntu-focal-20.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
       root-device-type    = "ebs"
     }
     owners      = ["099720109477"] # Canonical's owner ID
@@ -22,11 +31,15 @@ source "amazon-ebs" "hashistack" {
   ssh_username = "ubuntu"
 
   tags = {
-    OS_Version    = "Ubuntu"
-    Release       = "20.04"
-    Architecture  = "amd64"
-    Created_Email = var.created_email
-    Created_Name  = var.created_name
+    Name           = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
+    Architecture   = var.architecture
+    OS             = var.os
+    OS_Version     = var.os_version
+    CNI_Version    = var.cni_version
+    Consul_Version = var.consul_version
+    Nomad_Version  = var.nomad_version
+    Created_Email  = var.created_email
+    Created_Name   = var.created_name
   }
 }
 
@@ -71,5 +84,10 @@ build {
 
   provisioner "shell" {
     script = "../../shared/packer/scripts/setup.sh"
+    environment_vars = [
+      "CNIVERSION=${var.cni_version}",
+      "CONSULVERSION=${var.consul_version}",
+      "NOMADVERSION=${var.nomad_version}"
+    ]
   }
 }
