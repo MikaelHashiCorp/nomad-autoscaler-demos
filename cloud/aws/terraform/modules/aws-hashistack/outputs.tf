@@ -63,17 +63,17 @@ output "ssh_file" {
 }
 
 output "ebs_volume" {
-    value = <<EOM
-# volume registration
-type        = "csi"
-id          = "mysql"
-name        = "mysql"
-external_id = "${aws_ebs_volume.mysql.id}"
-plugin_id   = "aws-ebs0"
+  value = <<EOM
+    # volume registration
+    type        = "csi"
+    id          = "mysql"
+    name        = "mysql"
+    external_id = aws_ebs_volume.mysql[count.index].id
+    plugin_id   = "aws-ebs0"
 
-capability {
-  access_mode     = "single-node-writer"
-  attachment_mode = "file-system"
-}
-EOM
+    capability {
+      access_mode     = "single-node-writer"
+      attachment_mode = "file-system"
+    }
+  EOM
 }

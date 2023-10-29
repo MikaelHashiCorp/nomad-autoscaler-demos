@@ -30,6 +30,8 @@ module "hashistack_cluster" {
   region                  = var.region
   availability_zones      = var.availability_zones
   ami                     = var.ami
+  create_cni_resources    = var.create_cni_resources
+  create_ebs_resources    = var.create_ebs_resources
   key_name                = var.key_name
   stack_name              = var.stack_name
   server_instance_type    = var.server_instance_type
@@ -38,6 +40,7 @@ module "hashistack_cluster" {
   client_count            = var.client_count
   nomad_autoscaler_image  = var.nomad_autoscaler_image
   allowlist_ip            = (var.allowlist_ip == "" ? ["${module.my_ip_address.stdout}/32"] : var.allowlist_ip)
+
 }
 
 module "hashistack_jobs" {

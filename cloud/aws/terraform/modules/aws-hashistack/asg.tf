@@ -25,12 +25,15 @@ resource "aws_launch_template" "nomad_client" {
     http_put_response_hop_limit = 1
   }
 
-  block_device_mappings {
-    device_name = "/dev/xvdd"
-    ebs {
-      volume_type           = "gp2"
-      volume_size           = "50"
-      delete_on_termination = "true"
+  dynamic "block_device_mappings" {
+    for_each = var.create_ebs_resources ? [1] : []
+    content {
+      device_name = "/dev/xvdd"
+      ebs {
+        volume_type           = "gp2"
+        volume_size           = "50"
+        delete_on_termination = "true"
+      }
     }
   }
   block_device_mappings {
@@ -52,10 +55,12 @@ resource "aws_launch_template" "nomad_client" {
 }
 
 data "aws_instances" "all_instances" {
+  depends_on = [aws_autoscaling_group.nomad_client]
   instance_tags = {
     "aws:autoscaling:groupName" = "${var.stack_name}-nomad_client"
   }
 }
+
 
 # The locals below are used in the asg_provisioner_rerun
 locals {
@@ -76,7 +81,8 @@ resource "null_resource" "asg_provisioner_rerun" {
     remote_exec_hash = local.remote_exec_hash
   }
 
-  count = length(data.aws_instances.all_instances.ids)
+  count = var.client_count
+
 
   connection {
     type        = "ssh"
