@@ -1,0 +1,30 @@
+// https://www.mslinn.com/blog/2021/04/11/svcode-workspace-settings.html
+{
+  "remoteAuthority": "ssh-remote+ubuntu@{{HOST-IP}}",
+  "folders": [
+    {
+      "name": "ubuntu (client 1)",
+      "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/home/ubuntu/"
+    },
+    {
+      "name": "opt (client 1)",
+      "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/opt"
+    },
+    {
+      "name": "nomad.d (client 1)",
+      "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/nomad.d"
+    },
+    {
+      "name": "consul.d (client 1)",
+      "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/consul.d/"
+    },
+    {
+      "name": "system (client 1)",
+      "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/systemd/system"
+    },
+    {
+      "name": "shared (local)",
+      "uri": "file:///Users/mikael/1-support/shared"
+    }
+  ],
+}

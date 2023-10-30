@@ -45,7 +45,6 @@ resource "aws_launch_template" "nomad_client" {
     }
   }
 
-
   connection {
     type        = "ssh"
     user        = "ubuntu"
@@ -68,7 +67,13 @@ locals {
     "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli net-tools",
     "sudo find /opt -type d -exec chmod g+s {} \\;",
     "sudo chown -R root:ubuntu /opt",
-    "sudo chmod -R g+rX /opt"
+    "sudo chmod -R g+rX /opt",
+    "echo 'export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed \"s/.$//\")' >> ~/.bashrc",
+    "echo 'export INSTANCE_NAME=$(aws ec2 describe-tags --filters \"Name=resource-id,Values=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)\" \"Name=key,Values=PromptID\" --query \"Tags[0].Value\" --output text --region $${AWS_DEFAULT_REGION})' >> ~/.bashrc",
+    "echo \"alias env=\\\"env -0 | sort -z | tr '\\0' '\\n'\\\"\" >> ~/.bashrc",
+    "echo 'PS1=\"($INSTANCE_NAME)$PS1\"' >> ~/.bashrc",
+    "HOSTIP=$(hostname -I | awk '{print $1}')",
+    "sed \"s/{{HOST-IP}}/$HOSTIP/g\" autosc-stage-IP.code-workspace > autosc-stage-remote.code-workspace"
   ]
 
   remote_exec_hash = md5(join(",", local.remote_exec_commands))
@@ -83,12 +88,16 @@ resource "null_resource" "asg_provisioner_rerun" {
 
   count = var.client_count
 
-
   connection {
     type        = "ssh"
     user        = "ubuntu"
     private_key = file("~/.ssh/${var.key_name}.pem")
     host        = element(data.aws_instances.all_instances.public_ips, count.index)
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/templates/autosc-stage-IP.code-workspace"
+    destination = "/home/ubuntu/autosc-stage-IP.code-workspace"
   }
 
   provisioner "remote-exec" {

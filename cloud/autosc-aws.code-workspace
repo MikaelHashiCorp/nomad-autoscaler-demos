@@ -8,6 +8,9 @@
     },
     {
       "path": "../../../../../.ssh"
+    },
+    {
+      "path": "../../../../../1-support/shared/autosc"
     }
   ],
   "settings": {}
