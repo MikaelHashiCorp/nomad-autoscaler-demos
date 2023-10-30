@@ -1,9 +1,6 @@
 data_dir  = "/opt/nomad/data"
 bind_addr = "0.0.0.0"
-log_level = "TRACE"
-log_file  = "/opt/nomad/logs/"
-log_rotate_duration  = "24h"
-log_rotate_max_files = 3
+log_level = "DEBUG"
 
 telemetry {
   publish_allocation_metrics = true
@@ -13,7 +10,7 @@ telemetry {
 
 client {
   enabled    = true
-  node_class = "hashistack"
+  node_class = NODE_CLASS
 
   options {
     "driver.raw_exec.enable"    = "1"
@@ -22,6 +19,6 @@ client {
 }
 
 vault {
-  enabled = false
+  enabled = true
   address = "http://active.vault.service.consul:8200"
 }
