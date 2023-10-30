@@ -3,23 +3,23 @@
   "remoteAuthority": "ssh-remote+ubuntu@{{HOST-IP}}",
   "folders": [
     {
-      "name": "ubuntu (client 1)",
+      "name": "ubuntu ({{PROMPT-ID}})",
       "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/home/ubuntu/"
     },
     {
-      "name": "opt (client 1)",
+      "name": "opt ({{PROMPT-ID}})",
       "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/opt"
     },
     {
-      "name": "nomad.d (client 1)",
+      "name": "nomad.d ({{PROMPT-ID}})",
       "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/nomad.d"
     },
     {
-      "name": "consul.d (client 1)",
+      "name": "consul.d ({{PROMPT-ID}})",
       "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/consul.d/"
     },
     {
-      "name": "system (client 1)",
+      "name": "system ({{PROMPT-ID}})",
       "uri": "vscode-remote://ssh-remote+ubuntu@{{HOST-IP}}/etc/systemd/system"
     },
     {

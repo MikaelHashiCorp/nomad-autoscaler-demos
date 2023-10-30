@@ -85,6 +85,7 @@ data "aws_iam_policy_document" "nomad_client" {
       "autoscaling:UpdateAutoScalingGroup",
       "autoscaling:TerminateInstanceInAutoScalingGroup",
       "ec2:DescribeInstances",
+      "ec2:DescribeTags",
       "ec2-instance-connect:SendSSHPublicKey",
     ]
 
