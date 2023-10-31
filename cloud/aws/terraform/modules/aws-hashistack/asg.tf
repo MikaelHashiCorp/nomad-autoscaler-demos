@@ -23,6 +23,7 @@ resource "aws_launch_template" "nomad_client" {
     http_endpoint               = "enabled"
     http_tokens                 = "optional"
     http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
   }
 
   dynamic "block_device_mappings" {
@@ -65,10 +66,25 @@ data "aws_instances" "all_instances" {
 # The locals below are used in the asg_provisioner_rerun
 locals {
   remote_exec_commands = [
-    "sudo apt-get update && sudo apt-get install -y ec2-instance-connect awscli net-tools",
+    "set -e",
+    "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
+    "sudo apt-get update",
+    "sudo apt-get install -y ec2-instance-connect awscli net-tools",
     "sudo find /opt -type d -exec chmod g+s {} \\;",
     "sudo chown -R root:ubuntu /opt",
-    "sudo chmod -R g+rX /opt"
+    "sudo chmod -R g+rX /opt",
+    "cat <<EOL >> ~/.bashrc",
+      "alias env=\"env -0 | sort -z | tr '\\0' '\\n'\"",
+    "EOL",
+    "if ! grep -Fxq 'PS1=\"($INSTANCE_NAME)$PS1\"' ~/.bashrc ; then",
+    "  echo 'export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed \"s/.$//\")' >> ~/.bashrc",
+    "  echo 'export INSTANCE_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)' >> ~/.bashrc",
+    "  echo 'export PROMPTID=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/PromptID)' >> ~/.bashrc",
+    "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
+    "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
+    "  echo 'PS1=\"($PROMPTID)[Int: $PRIIP / Ext: $PUBIP]\\\\n$PS1\"' >> ~/.bashrc",
+    "fi", 
+    "sed -e \"s/{{HOST-IP}}/$HOSTIP/g\" -e \"s/{{PROMPT_ID}}/$PROMPTID/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
   ]
 
   remote_exec_hash = md5(join(",", local.remote_exec_commands))
@@ -91,6 +107,10 @@ resource "null_resource" "asg_provisioner_rerun" {
     host        = element(data.aws_instances.all_instances.public_ips, count.index)
   }
 
+  provisioner "file" {
+    source      = "${path.module}/templates/autosc-stage-IP.code-workspace"
+    destination = "/home/ubuntu/autosc-stage-IP.code-workspace"
+  }
   provisioner "remote-exec" {
     inline = local.remote_exec_commands
   }
