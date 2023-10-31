@@ -98,7 +98,7 @@ variable "allowlist_ip" {
 variable "nomad_autoscaler_image" {
   description = "The Docker image to use for the Nomad Autoscaler job."
   type        = string
-  default     = "hashicorp/nomad-autoscaler:0.3.3"
+  default     = "hashicorp/nomad-autoscaler:latest"
 }
 
 variable "create_ebs_resources" {
