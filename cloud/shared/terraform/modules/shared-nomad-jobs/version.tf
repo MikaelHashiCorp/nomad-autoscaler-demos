@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 0.13"
+  required_version = ">= 1.6"
+
   required_providers {
-    nomad = {
-      source  = "hashicorp/nomad"
-      version = ">= 2.0"
+    aws = {
+      version = "~> 3.72"
     }
   }
 }
