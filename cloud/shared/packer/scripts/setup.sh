@@ -56,6 +56,8 @@ sudo mkdir -p ${CONSULCONFIGDIR}
 sudo chmod 755 ${CONSULCONFIGDIR}
 sudo mkdir -p ${CONSULDIR}
 sudo chmod 755 ${CONSULDIR}
+sudo mkdir -p ${CONSULDIR}/logs
+sudo chmod 755 ${CONSULDIR}/logs
 
 # Nomad
 curl -sL -o nomad.zip ${NOMADDOWNLOAD}
@@ -70,6 +72,8 @@ sudo mkdir -p ${NOMADCONFIGDIR}
 sudo chmod 755 ${NOMADCONFIGDIR}
 sudo mkdir -p ${NOMADDIR}
 sudo chmod 755 ${NOMADDIR}
+sudo mkdir -p ${NOMADDIR}/logs
+sudo chmod 755 ${NOMADDIR}/logs
 
 # Docker
 distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
