@@ -52,13 +52,13 @@ locals {
     "cat <<EOL >> ~/.bashrc",
       "alias env=\"env -0 | sort -z | tr '\\0' '\\n'\"",
     "EOL",
-    "if ! grep -Fxq 'PS1=\"($INSTANCE_NAME)$PS1\"' ~/.bashrc ; then",
+    "if ! grep -Fxq 'PS1=\"$PROMPTID)[Int:\"' ~/.bashrc ; then",
     "  echo 'export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed \"s/.$//\")' >> ~/.bashrc",
     "  echo 'export INSTANCE_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)' >> ~/.bashrc",
     "  echo 'export PROMPTID=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/PromptID)' >> ~/.bashrc",
     "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
-    "  echo 'PS1=\"\\[\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\033[0m\\]\\n$PS1\"' >> ~/.bashrc",
+    "  echo 'PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\\\033[0m\\]\\\\n$PS1\"' >> ~/.bashrc",
     "fi" 
   ]
 
@@ -72,8 +72,8 @@ resource "null_resource" "instance_provisioner_rerun" {
     remote_exec_hash = local.remote_exec_hash_instance
   }
 
-  count = var.server_count
- 
+  depends_on = [aws_instance.nomad_server]
+  count      = var.server_count
 
   connection {
     type        = "ssh"
