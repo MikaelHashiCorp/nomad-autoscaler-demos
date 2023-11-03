@@ -15,7 +15,7 @@ resource "aws_launch_template" "nomad_client" {
     tags = {
       Name           = "${var.stack_name}-client"
       ConsulAutoJoin = "auto-join"
-      PromptID       = "client"
+      PromptID       = local.promptid
     }
   }
 
@@ -51,7 +51,7 @@ resource "aws_launch_template" "nomad_client" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = file("~/.ssh/${var.key_name}.pem")
-    host        = "${aws_instance.nomad_server.0.public_ip}"
+    host        = "${aws_instance.nomad_client.0.public_ip}"
   }
 }
 
@@ -65,6 +65,7 @@ data "aws_instances" "all_instances" {
 
 # The locals below are used in the asg_provisioner_rerun
 locals {
+  promptid = "client"
   remote_exec_commands = [
     "set -e",
     "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
@@ -76,15 +77,14 @@ locals {
     "cat <<EOL >> ~/.bashrc",
       "alias env=\"env -0 | sort -z | tr '\\0' '\\n'\"",
     "EOL",
-    "if ! grep -Fxq 'PS1=\"($INSTANCE_NAME)$PS1\"' ~/.bashrc ; then",
+    "if ! grep -Fxq 'PS1=\"($PROMPTID)[Int:\"' ~/.bashrc ; then",
     "  echo 'export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed \"s/.$//\")' >> ~/.bashrc",
     "  echo 'export INSTANCE_NAME=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)' >> ~/.bashrc",
     "  echo 'export PROMPTID=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/PromptID)' >> ~/.bashrc",
     "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
-    "  echo 'PS1=\"($PROMPTID)[Int: $PRIIP / Ext: $PUBIP]\\\\n$PS1\"' >> ~/.bashrc",
-    "fi", 
-    "sed -e \"s/{{HOST-IP}}/$HOSTIP/g\" -e \"s/{{PROMPT_ID}}/$PROMPTID/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
+    "  echo 'PS1=\"\\[\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\033[0m\\]\\n$PS1\"' >> ~/.bashrc",
+    "fi"
   ]
 
   remote_exec_hash = md5(join(",", local.remote_exec_commands))
@@ -99,7 +99,6 @@ resource "null_resource" "asg_provisioner_rerun" {
 
   count = var.client_count
 
-
   connection {
     type        = "ssh"
     user        = "ubuntu"
@@ -112,10 +111,16 @@ resource "null_resource" "asg_provisioner_rerun" {
     destination = "/home/ubuntu/autosc-stage-IP.code-workspace"
   }
   provisioner "remote-exec" {
-    inline = local.remote_exec_commands
+    inline = concat(
+      local.remote_exec_commands,
+      [
+        "echo 'The value of PRIIP is:   ' ${element(data.aws_instances.all_instances.private_ips, count.index)}",
+        "echo 'The value of PROMPTID is:' ${local.promptid}",
+        "sed -e \"s/{{HOST-IP}}/${element(data.aws_instances.all_instances.private_ips, count.index)}/g\" -e \"s/{{PROMPT-ID}}/${local.promptid}/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
+      ]
+    )
   }
 }
-
 
 resource "aws_autoscaling_group" "nomad_client" {
   name               = "${var.stack_name}-nomad_client"

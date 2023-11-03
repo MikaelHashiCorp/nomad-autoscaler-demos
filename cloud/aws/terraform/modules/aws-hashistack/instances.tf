@@ -39,6 +39,8 @@ resource "aws_instance" "nomad_server" {
 
 # The locals below are used in the instance_provisioner_rerun
 locals {
+  # priips-svr    = [for instance in aws_instance.nomad_server : instance.private_ip]
+  promptids     = [for index in range(var.server_count) : "server-${index + 1}"]
   remote_exec_commands_instance = [
     "set -e",
     "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
@@ -56,9 +58,8 @@ locals {
     "  echo 'export PROMPTID=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/PromptID)' >> ~/.bashrc",
     "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
-    "  echo 'PS1=\"($PROMPTID)[Int: $PRIIP / Ext: $PUBIP]\\\\n$PS1\"' >> ~/.bashrc",
-    "fi", 
-    "sed -e \"s/{{HOST-IP}}/$HOSTIP/g\" -e \"s/{{PROMPT_ID}}/$PROMPTID/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
+    "  echo 'PS1=\"\\[\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\033[0m\\]\\n$PS1\"' >> ~/.bashrc",
+    "fi" 
   ]
 
   remote_exec_hash_instance = md5(join(",", local.remote_exec_commands_instance))
@@ -72,6 +73,7 @@ resource "null_resource" "instance_provisioner_rerun" {
   }
 
   count = var.server_count
+ 
 
   connection {
     type        = "ssh"
@@ -86,6 +88,13 @@ resource "null_resource" "instance_provisioner_rerun" {
   }
 
   provisioner "remote-exec" {
-    inline = local.remote_exec_commands_instance
+    inline = concat(
+      local.remote_exec_commands_instance,
+      [
+        "echo 'The value of PRIIP is:   ' ${aws_instance.nomad_server[count.index].private_ip}",
+        "echo 'The value of PROMPTID is:' ${local.promptids[count.index]}",
+        "sed -e \"s/{{HOST-IP}}/${aws_instance.nomad_server[count.index].private_ip}/g\" -e \"s/{{PROMPT-ID}}/${local.promptids[count.index]}/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
+      ]
+    )
   }
 }
