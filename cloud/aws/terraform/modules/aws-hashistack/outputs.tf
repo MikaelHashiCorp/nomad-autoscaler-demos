@@ -49,11 +49,11 @@ output "hosts_file" {
 }
 
 output "client_asg_arn" {
-  value = aws_autoscaling_group.nomad_client[0].arn
+  value = aws_autoscaling_group.nomad_client.arn
 }
 
 output "client_asg_name" {
-  value = aws_autoscaling_group.nomad_client[0].name
+  value = aws_autoscaling_group.nomad_client.name
 }
 
 output "ssh_file" {
@@ -68,7 +68,7 @@ output "ebs_volume" {
     type        = "csi"
     id          = "mysql"
     name        = "mysql"
-    external_id = volume.id
+    external_id = aws_ebs_volume.mysql[count.index].id
     plugin_id   = "aws-ebs0"
 
     capability {

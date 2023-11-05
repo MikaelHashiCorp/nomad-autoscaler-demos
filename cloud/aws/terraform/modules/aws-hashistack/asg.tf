@@ -1,5 +1,4 @@
 resource "aws_launch_template" "nomad_client" {
-  count                  = var.client_count
   name_prefix            = "nomad-client"
   image_id               = var.ami
   instance_type          = var.client_instance_type
@@ -16,7 +15,7 @@ resource "aws_launch_template" "nomad_client" {
     tags = {
       Name           = "${var.stack_name}-client"
       ConsulAutoJoin = "auto-join"
-      PromptID       = "client-${local.client_numbers[count.index]}"
+      PromptID       = local.promptid
     }
   }
 
@@ -66,8 +65,7 @@ data "aws_instances" "all_instances" {
 
 # The locals below are used in the asg_provisioner_rerun
 locals {
-  max_size             = 20
-  client_numbers       = range(1, local.max_size + 1)
+  promptid = "client"
   remote_exec_commands = [
     "set -e",
     "while pgrep -u root 'apt|dpkg' >/dev/null; do sleep 10; done",
@@ -95,19 +93,18 @@ locals {
 # This asg_provisioner_rerun allows updating the command lines to existing instances without
 # destroying and recreating the instances.
 resource "null_resource" "asg_provisioner_rerun" {
-  count = var.client_count
-
   triggers = {
     remote_exec_hash = local.remote_exec_hash
-    promptid         = "client-${local.client_numbers[count.index]}"
   }
 
-connection {
-  type        = "ssh"
-  user        = "ubuntu"
-  private_key = file("~/.ssh/${var.key_name}.pem")
-  host        = element(data.aws_instances.all_instances.public_ips, count.index)
-}
+  count = var.client_count
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("~/.ssh/${var.key_name}.pem")
+    host        = element(data.aws_instances.all_instances.public_ips, count.index)
+  }
 
   provisioner "file" {
     source      = "${path.module}/templates/autosc-stage-IP.code-workspace"
@@ -115,28 +112,27 @@ connection {
   }
   provisioner "remote-exec" {
     inline = concat(
-    local.remote_exec_commands,
-    [
-      "echo 'The value of PRIIP is:   ' ${element(data.aws_instances.all_instances.private_ips, count.index)}",
-      "echo 'The value of PROMPTID is:' ${self.triggers["promptid"]}",
-      "sed -e \"s/{{HOST-IP}}/${element(data.aws_instances.all_instances.private_ips, count.index)}/g\" -e \"s/{{PROMPT-ID}}/${self.triggers["promptid"]}/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
+      local.remote_exec_commands,
+      [
+        "echo 'The value of PRIIP is:   ' ${element(data.aws_instances.all_instances.private_ips, count.index)}",
+        "echo 'The value of PROMPTID is:' ${local.promptid}",
+        "sed -e \"s/{{HOST-IP}}/${element(data.aws_instances.all_instances.private_ips, count.index)}/g\" -e \"s/{{PROMPT-ID}}/${local.promptid}/g\" /home/ubuntu/autosc-stage-IP.code-workspace > /home/ubuntu/autosc-stage-remote.code-workspace"
       ]
     )
   }
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
-  count              = var.client_count
-  name               = "${var.stack_name}-nomad_client-${local.client_numbers[count.index]}"
+  name               = "${var.stack_name}-nomad_client"
   availability_zones = var.availability_zones
   desired_capacity   = var.client_count
   min_size           = 0
-  max_size           = local.max_size
+  max_size           = 20
   depends_on         = [aws_instance.nomad_server]
   load_balancers     = [aws_elb.nomad_client.name]
 
   launch_template {
-    id      = aws_launch_template.nomad_client[count.index].id
+    id      = aws_launch_template.nomad_client.id
     version = "$Latest"
   }
 
@@ -152,7 +148,7 @@ resource "aws_autoscaling_group" "nomad_client" {
   }
   tag {
     key                 = "PromptID"
-    value               = "client-${local.client_numbers[count.index]}"
+    value               = "client"
     propagate_at_launch = true
   }
 }
