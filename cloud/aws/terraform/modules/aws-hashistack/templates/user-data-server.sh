@@ -8,4 +8,5 @@ sudo bash -c "NOMAD_BINARY=${nomad_binary} CONSUL_BINARY=${consul_binary}  /ops/
 rm -rf /ops/
 
 # Install ec2 Instance Connect
+echo "(user-data) Installing ec2 Instance Connect"
 sudo apt -y install awscli ec2-instance-connect

@@ -27,7 +27,7 @@ data "template_file" "nomad_autoscaler_jobspec" {
 
   vars = {
     nomad_autoscaler_image = var.nomad_autoscaler_image
-    client_asg_name        = aws_autoscaling_group.nomad_client.name
+    client_asg_name        = aws_autoscaling_group.nomad_client[0].name
   }
 }
 
