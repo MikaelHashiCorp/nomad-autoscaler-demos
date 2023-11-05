@@ -14,7 +14,7 @@ resource "aws_launch_template" "nomad_client" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name           = "${var.stack_name}-client"
+      Name           = "${var.stack_name}-client-${local.client_numbers[count.index]}"
       ConsulAutoJoin = "auto-join"
       PromptID       = "client-${local.client_numbers[count.index]}"
     }
@@ -126,17 +126,17 @@ connection {
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
-  count              = var.client_count
-  name               = "${var.stack_name}-nomad_client-${local.client_numbers[count.index]}"
+  count              = var.client_count > 0 ? 1 : 0 # Ensure that this evaluates to 1
+  name               = "${var.stack_name}-nomad_client"
   availability_zones = var.availability_zones
   desired_capacity   = var.client_count
-  min_size           = 0
+  min_size           = 1             # Ensure that this is at least 1
   max_size           = local.max_size
   depends_on         = [aws_instance.nomad_server]
   load_balancers     = [aws_elb.nomad_client.name]
 
   launch_template {
-    id      = aws_launch_template.nomad_client[count.index].id
+    id      = aws_launch_template.nomad_client[0].id
     version = "$Latest"
   }
 
@@ -152,7 +152,7 @@ resource "aws_autoscaling_group" "nomad_client" {
   }
   tag {
     key                 = "PromptID"
-    value               = "client-${local.client_numbers[count.index]}"
+    value               = "client-${count.index + 1}"
     propagate_at_launch = true
   }
 }
