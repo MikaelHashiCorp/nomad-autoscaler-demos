@@ -123,12 +123,11 @@ resource "null_resource" "asg_provisioner_rerun" {
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
-  count              = var.client_count
   name               = "${var.stack_name}-nomad_client"
   availability_zones = var.availability_zones
   desired_capacity   = var.client_count
   min_size           = 0
-  max_size           = local.max_size
+  max_size           = 20
   depends_on         = [aws_instance.nomad_server]
   load_balancers     = [aws_elb.nomad_client.name]
 
