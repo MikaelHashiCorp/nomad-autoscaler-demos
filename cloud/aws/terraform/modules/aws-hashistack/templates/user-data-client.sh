@@ -8,7 +8,6 @@ sudo bash -c "NOMAD_BINARY=${nomad_binary} CONSUL_BINARY=${consul_binary}  /ops/
 rm -rf /ops/
 
 # Mount data volume
-echo "(user-data) Mounting data volume..."
 sudo mkfs -t xfs /dev/nvme1n1
 sudo mkdir /mnt/data
 sudo mount /dev/nvme1n1 /mnt/data
@@ -16,5 +15,4 @@ sudo chown ubuntu:ubuntu data
 ln -s /mnt/data /home/ubuntu/data
 
 # Install ec2 Instance Connect
-echo "(user-data) Installing ec2 Instance Connect..."
 sudo apt -y install awscli ec2-instance-connect
