@@ -29,4 +29,10 @@ resource "aws_ebs_volume" "mysql" {
   count              = var.create_cni_resources ? 1 : 0
   availability_zone  = var.availability_zones[0]
   size               = 40
+
+  tags = {
+    Name           = "${var.stack_name}-mysql"
+    OwnerName      = var.owner_name
+    OwnerEmail     = var.owner_email
+  }
 }
