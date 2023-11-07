@@ -68,7 +68,7 @@ output "ebs_volume" {
     type        = "csi"
     id          = "mysql"
     name        = "mysql"
-    external_id = aws_ebs_volume.mysql[count.index].id
+    external_id = aws_ebs_volume.mysql.id
     plugin_id   = "aws-ebs0"
 
     capability {
