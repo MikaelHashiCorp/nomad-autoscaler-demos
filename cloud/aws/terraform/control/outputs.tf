@@ -19,6 +19,7 @@ Grafana dashboard can be accessed at http://${module.hashistack_cluster.client_e
 Traefik can be accessed at http://${module.hashistack_cluster.client_elb_dns}:8081
 Prometheus can be accessed at http://${module.hashistack_cluster.client_elb_dns}:9090
 Webapp can be accessed at http://${module.hashistack_cluster.client_elb_dns}:80
+Myapp can be accessed at http://${module.hashistack_cluster.client_elb_dns}:8080/myapp
 
 CLI environment variables:
 export NOMAD_CLIENT_DNS=http://${module.hashistack_cluster.client_elb_dns}

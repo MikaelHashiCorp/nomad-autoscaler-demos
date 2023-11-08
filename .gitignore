@@ -23,6 +23,9 @@ terraform.tfvars
 # Ignore tmp folder
 *tmp/*
 
+# Ignore Tests folder
+cloud/shared/tests
+
 # Cleanup files
 .cleanup*
 cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl

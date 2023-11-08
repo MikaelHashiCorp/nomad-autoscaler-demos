@@ -32,3 +32,8 @@ resource "nomad_job" "webapp" {
   depends_on = [null_resource.wait_for_nomad_api]
   jobspec    = file("${path.module}/files/webapp.nomad")
 }
+
+resource "nomad_job" "myapp" {
+  depends_on = [null_resource.wait_for_nomad_api]
+  jobspec    = file("${path.module}/files/myapp.nomad")
+}

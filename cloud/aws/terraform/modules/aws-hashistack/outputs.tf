@@ -62,18 +62,13 @@ output "ssh_file" {
   ))
 }
 
-output "ebs_volume" {
-    value = <<EOM
-# volume registration
-type        = "csi"
-id          = "mysql"
-name        = "mysql"
-external_id = "${aws_ebs_volume.mysql.id}"
-plugin_id   = "aws-ebs0"
-
-capability {
-  access_mode     = "single-node-writer"
-  attachment_mode = "file-system"
+locals {
+  ebs_volume_value = length(aws_ebs_volume.mysql) > 0 ? format(
+    "# volume registration\n    type        = \"csi\"\n    id          = \"mysql\"\n    name        = \"mysql\"\n    external_id = \"%s\"\n    plugin_id   = \"aws-ebs0\"\n\n    capability {\n      access_mode     = \"single-node-writer\"\n      attachment_mode = \"file-system\"\n    }\n",
+    aws_ebs_volume.mysql[0].id
+  ) : ""
 }
-EOM
+
+output "ebs_volume" {
+  value = local.ebs_volume_value
 }

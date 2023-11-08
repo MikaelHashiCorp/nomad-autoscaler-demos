@@ -15,24 +15,29 @@ cd /ops
 # Dependencies
 sudo apt-get update
 
-sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux dnsmasq awscli ec2-instance-connect
+sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux awscli ec2-instance-connect
+echo -e "\nInstalling DNSMASQ.  Ignore por 53 errors\n"
+sudo apt-get install -y dnsmasq
 
 CONFIGDIR=/ops/config
 
-CONSULVERSION=1.12.2
+# CONSULVERSION=1.12.2
 # CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
+echo "CONSULDOWNLOAD=${CONSULDOWNLOAD}"
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
-NOMADVERSION=1.1.1
+# NOMADVERSION=1.1.1
 # NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
+echo "NOMADDOWNLOAD=${NOMADDOWNLOAD}"
 NOMADCONFIGDIR=/etc/nomad.d
 NOMADDIR=/opt/nomad
 
-CNIVERSION=0.8.5
-CNIDOWNLOAD=https://github.com/containernetworking/plugins/releases/download/v${CNIVERSION}/cni-plugins-linux-amd64-v${CNIVERSION}.tgz
+# CNIVERSION=v1.3.0
+CNIDOWNLOAD=https://github.com/containernetworking/plugins/releases/download/${CNIVERSION}/cni-plugins-linux-amd64-${CNIVERSION}.tgz
+echo "CNIDOWNLOAD=${CNIDOWNLOAD}"
 CNIDIR=/opt/cni
 
 # Disable the firewall
@@ -51,6 +56,8 @@ sudo mkdir -p ${CONSULCONFIGDIR}
 sudo chmod 755 ${CONSULCONFIGDIR}
 sudo mkdir -p ${CONSULDIR}
 sudo chmod 755 ${CONSULDIR}
+sudo mkdir -p ${CONSULDIR}/logs
+sudo chmod 755 ${CONSULDIR}/logs
 
 # Nomad
 curl -sL -o nomad.zip ${NOMADDOWNLOAD}
@@ -65,6 +72,8 @@ sudo mkdir -p ${NOMADCONFIGDIR}
 sudo chmod 755 ${NOMADCONFIGDIR}
 sudo mkdir -p ${NOMADDIR}
 sudo chmod 755 ${NOMADDIR}
+sudo mkdir -p ${NOMADDIR}/logs
+sudo chmod 755 ${NOMADDIR}/logs
 
 # Docker
 distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')

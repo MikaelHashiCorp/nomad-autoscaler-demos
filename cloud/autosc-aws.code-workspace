@@ -1,16 +1,21 @@
 {
 	"folders": [
     {
+      "name": "aws",
       "path": "aws"
     },
     {
+      "name": "shared",
       "path": "shared"
     },
     {
+      "name": ".ssh",
       "path": "../../../../../.ssh"
+    },
+    {
+      "name": "autosc",
+      "path": "../../../../../1-support/shared/autosc"
     }
   ],
-  "settings": {
-    "terminal.integrated.cwd": "."
-  }
+  "settings": {}
 }

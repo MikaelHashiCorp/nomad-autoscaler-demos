@@ -98,5 +98,17 @@ variable "allowlist_ip" {
 variable "nomad_autoscaler_image" {
   description = "The Docker image to use for the Nomad Autoscaler job."
   type        = string
-  default     = "hashicorp/nomad-autoscaler:0.3.3"
+  default     = "hashicorp/nomad-autoscaler:latest"
+}
+
+variable "create_cni_resources" {
+  description = "Create CNI EBS volumes and mounts."
+  type        = bool
+  default     = false  # can be true 
+}
+
+variable "create_ebs_resources" {
+  description = "Flag to control whether EBS resources in this module should be created"
+  default = false
+  type    = bool
 }

@@ -50,6 +50,14 @@ resource "aws_security_group" "client_lb" {
     cidr_blocks = var.allowlist_ip
   }
 
+  # Echo-HTTP.
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = var.allowlist_ip
+  }
+
   # Grafana metrics dashboard.
   ingress {
     from_port   = 3000
@@ -131,6 +139,7 @@ resource "aws_security_group" "primary" {
     from_port       = 8081
     to_port         = 8081
     protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.client_lb.id]
   }
 
@@ -145,9 +154,17 @@ resource "aws_security_group" "primary" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
     security_groups = [aws_security_group.client_lb.id]
   }
-
+  
+    ingress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    cidr_blocks     = var.allowlist_ip
+    security_groups = [aws_security_group.client_lb.id]
+  }
   # Nomad dynamic port allocation range.
   ingress {
     from_port       = 20000

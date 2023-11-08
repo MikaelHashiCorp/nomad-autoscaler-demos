@@ -1,4 +1,6 @@
 #!/bin/bash
+echo -e "\nInstalling CLIENT...\n"
+
 SHAREDDIR=/ops/
 CONFIGDIR=$SHAREDDIR/config
 SCRIPTDIR=$SHAREDDIR/scripts
@@ -60,6 +62,7 @@ export NOMAD_ADDR=http://$IP_ADDRESS:4646
 echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
 
 # dnsmasq config
+echo -e "\nConfiguring DNSMASQ...\n"
 echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
 sudo cp /ops/config/10-consul.dnsmasq /etc/dnsmasq.d/10-consul
 sudo cp /ops/config/99-default.dnsmasq.$CLOUD /etc/dnsmasq.d/99-default
