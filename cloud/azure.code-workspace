@@ -1,10 +1,16 @@
 {
 	"folders": [
-		{
-			"path": "azure"
-		},
-		{
-			"path": "shared"
-		}
-	]
+    {
+      "path": "azure"
+    },
+    {
+      "path": "shared"
+    },
+    {
+      "path": "../../../../../.ssh"
+    },
+    {
+      "path": "../../../../../Library/CloudStorage/GoogleDrive-mikael.sikora@hashicorp.com/My Drive/1-support/shared/autosc"
+    }
+  ]
 }
