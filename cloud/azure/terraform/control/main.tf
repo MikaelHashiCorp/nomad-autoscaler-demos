@@ -11,12 +11,13 @@ terraform {
   }
 }
 
-provider "nomad" {
-  address = module.hashistack_cluster.nomad_addr
-}
 
 provider "azurerm" {
   features {}
+}
+
+provider "nomad" {
+  address = module.hashistack_cluster.nomad_addr
 }
 
 module "my_ip_address" {
@@ -28,7 +29,7 @@ module "my_ip_address" {
 module "hashistack_cluster" {
   source = "../modules/azure-hashistack"
 
-  allowlist_ip = ["${module.my_ip_address.stdout}/32"]
+  allowlist_ip = (var.allowlist_ip == "" ? ["${module.my_ip_address.stdout}/32"] : var.allowlist_ip)
 }
 
 module "hashistack_jobs" {

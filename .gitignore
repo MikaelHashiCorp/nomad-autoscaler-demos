@@ -17,3 +17,4 @@
 # Cleanup files
 .cleanup*
 .DS_Store
+cloud/azure/terraform/control/terraform.tfvars
