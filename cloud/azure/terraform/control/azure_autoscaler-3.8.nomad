@@ -1,18 +1,18 @@
-job "autoscaler" {
+job "autoscaler-3.8" {
   datacenters = ["dc1"]
 
-  group "autoscaler" {
+  group "autoscaler-3.8" {
     count = 1
 
     network {
       port "http" {}
     }
 
-    task "autoscaler" {
+    task "autoscaler-3.8" {
       driver = "docker"
 
       config {
-        image   = "hashicorp/nomad-autoscaler:0.3.3"
+        image   = "hashicorppreview/nomad-autoscaler:0.3.8-dev-dev"
         command = "nomad-autoscaler"
 
         args = [
@@ -25,6 +25,9 @@ job "autoscaler" {
           "${NOMAD_PORT_http}",
           "-policy-dir",
           "${NOMAD_TASK_DIR}/policies/",
+          "-log-level",
+          "TRACE",
+          "-enable-debug",
         ]
 
         ports = ["http"]
@@ -89,7 +92,7 @@ scaling "cluster_policy" {
     }
 
     target "azure-vmss" {
-      resource_group      = "hcs-autosc-main-mws-resolved-mallard"
+      resource_group      = "hcs-autosc-main-mws-eminent-arachnid"
       vm_scale_set        = "clients"
       node_class          = "hashistack"
       node_drain_deadline = "5m"

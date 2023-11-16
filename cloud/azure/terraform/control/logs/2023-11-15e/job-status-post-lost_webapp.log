@@ -1,0 +1,50 @@
+
+20231116T014016.721Z  === POST-LOST ===
+
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-15T16:53:32-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = <none>
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        2       0         2        0       0         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+dbff79cb-965f-38c0-8aee-94ac2b63890f  50        queued-allocs       blocked   N/A - In Progress
+39fb6acc-6ec7-cc58-353e-fef5ab18b091  50        deployment-watcher  complete  true
+35339e03-4c95-3297-296a-ae10d10dc620  50        queued-allocs       canceled  true
+0ce8e312-d6f3-4531-55a8-c6f5531d6db3  50        job-scaling         complete  true
+aca3f6f0-8eb5-f568-584c-9d65d5657ec5  50        deployment-watcher  complete  false
+7d6bf2eb-ebb8-10c2-a73b-2c5f6c92416e  50        deployment-watcher  complete  false
+d1becb3e-841b-eadc-674b-c6f4a129bf14  50        job-scaling         complete  false
+5f755678-89da-cd35-7db2-5e13133b6cce  50        deployment-watcher  complete  false
+989e67e4-b4f0-6947-f349-21de410820be  50        job-register        complete  false
+
+Placement Failure
+Task Group "demo":
+  * Resources exhausted on 1 nodes
+  * Class "hashistack" exhausted on 1 nodes
+  * Dimension "cpu" exhausted on 1 nodes
+
+Latest Deployment
+ID          = c03dbfba-a0f3-0a66-5988-fbf194552456
+Status      = running
+Description = Deployment is running
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        2       2        0          2023-11-16T01:46:10Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status   Created                    Modified
+50da56ff-02f2-7e39-170c-faeb1da66d09  0ce8e312-d6f3-4531-55a8-c6f5531d6db3  0d325062-9546-a027-93ee-0fd506292991  clients000000  demo        2        run      running  2023-11-15T17:35:00-08:00  2023-11-15T17:36:11-08:00
+1e63b2aa-24d9-9651-a19d-7c23d5628f41  0ce8e312-d6f3-4531-55a8-c6f5531d6db3  0d325062-9546-a027-93ee-0fd506292991  clients000000  demo        2        run      running  2023-11-15T16:53:32-08:00  2023-11-15T17:36:11-08:00

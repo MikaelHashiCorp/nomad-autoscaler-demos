@@ -1,0 +1,134 @@
+
+20231115T225157.518Z  === DURING-LOAD ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-15T09:51:53-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        2       0         2        0       4         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+7bed801f-ed1b-0252-f26f-d4cf1424d97f  50        queued-allocs       blocked   N/A - In Progress
+486b2e1f-dfe0-cefa-6733-15c674417f18  50        deployment-watcher  complete  true
+b1c3a6b5-1360-4dee-5c4f-71c674948214  50        queued-allocs       canceled  true
+f9690861-0df3-2ad2-b79d-4c80886de27f  50        job-scaling         complete  true
+14281f48-73dd-23ad-a9ad-e94d663f3977  50        deployment-watcher  complete  false
+edc65947-114a-80ce-7ec8-18f6486dcb1d  50        deployment-watcher  complete  false
+ebe8874f-4b6b-c1bc-649a-a08faadfc30a  50        job-scaling         complete  false
+949a0716-a799-c78b-1d65-d3705c1b2b53  50        deployment-watcher  complete  false
+f8cdcceb-66ea-3a22-d24b-98926adbdb4e  50        job-scaling         complete  false
+4bc10143-d73f-365e-3133-b2ad1e2af30d  50        deployment-watcher  complete  false
+15f14993-0f57-8816-d3e2-c1566905edbd  50        queued-allocs       canceled  true
+299e1912-8c0e-52c5-42d5-453ddec33650  50        deployment-watcher  complete  true
+d4786f00-4e67-b110-de70-e83855ca1196  50        queued-allocs       canceled  true
+256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  50        job-scaling         complete  true
+023f1ae9-e889-4403-be46-77a27fe5283d  50        deployment-watcher  complete  false
+b7dfff92-b074-8715-194d-15128b29992e  50        deployment-watcher  complete  false
+a2d0eaf9-8146-9b0b-213e-cc7642e08fd7  50        job-scaling         complete  false
+c399e09b-8c51-8ffb-b234-79212e6c5473  50        node-update         complete  false
+9cf5bc2a-13d1-12f0-1494-c4904741a0db  50        deployment-watcher  complete  false
+778a1c09-e302-5185-2df6-f8ce5e96dc7b  50        job-scaling         complete  false
+1dc10ab1-1be3-7f94-a2b9-b21153cb8b4b  50        deployment-watcher  complete  false
+b8c3935e-f3ae-443e-5ba8-3eab12e2136a  50        queued-allocs       complete  false
+d0d3c8ee-c911-ff24-581e-2bc980d06e42  50        deployment-watcher  complete  true
+0b2c600a-e160-25b4-dc2f-81de4e6b7e42  50        queued-allocs       canceled  true
+4589f289-72ca-8c72-6ef2-4bebad098622  50        job-scaling         complete  true
+
+Placement Failure
+Task Group "demo":
+  * Resources exhausted on 1 nodes
+  * Class "hashistack" exhausted on 1 nodes
+  * Dimension "cpu" exhausted on 1 nodes
+
+Latest Deployment
+ID          = fafe2830-347d-2836-c09b-fccee81140f1
+Status      = running
+Description = Deployment is running
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        2       2        0          2023-11-15T23:00:52Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+041d5ad8-fe5b-7014-f812-2f0970b7c5ad  f9690861-0df3-2ad2-b79d-4c80886de27f  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        8        run      running   2023-11-15T14:49:41-08:00  2023-11-15T14:50:52-08:00
+8f5bb22c-d218-b3c2-5a56-1abc03fd9b4f  256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        5        stop     complete  2023-11-15T13:55:27-08:00  2023-11-15T14:07:05-08:00
+4224b0f3-5070-4322-f948-3b2e9082610c  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+f259260d-e44b-053d-d103-8a3bcea435b9  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+62dd416e-6f87-9164-c3c1-f581b881dd87  4589f289-72ca-8c72-6ef2-4bebad098622  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        2        stop     complete  2023-11-15T13:42:31-08:00  2023-11-15T13:47:38-08:00
+c75b902b-bd38-2394-a405-8618858fcebe  f9690861-0df3-2ad2-b79d-4c80886de27f  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        8        run      running   2023-11-15T09:51:54-08:00  2023-11-15T14:50:52-08:00
+
+20231115T225316.822Z  === DURING-LOAD ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-15T09:51:53-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         4        0       4         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+7bed801f-ed1b-0252-f26f-d4cf1424d97f  50        queued-allocs       complete  false
+486b2e1f-dfe0-cefa-6733-15c674417f18  50        deployment-watcher  complete  true
+b1c3a6b5-1360-4dee-5c4f-71c674948214  50        queued-allocs       canceled  true
+f9690861-0df3-2ad2-b79d-4c80886de27f  50        job-scaling         complete  true
+14281f48-73dd-23ad-a9ad-e94d663f3977  50        deployment-watcher  complete  false
+edc65947-114a-80ce-7ec8-18f6486dcb1d  50        deployment-watcher  complete  false
+ebe8874f-4b6b-c1bc-649a-a08faadfc30a  50        job-scaling         complete  false
+949a0716-a799-c78b-1d65-d3705c1b2b53  50        deployment-watcher  complete  false
+f8cdcceb-66ea-3a22-d24b-98926adbdb4e  50        job-scaling         complete  false
+4bc10143-d73f-365e-3133-b2ad1e2af30d  50        deployment-watcher  complete  false
+15f14993-0f57-8816-d3e2-c1566905edbd  50        queued-allocs       canceled  true
+299e1912-8c0e-52c5-42d5-453ddec33650  50        deployment-watcher  complete  true
+d4786f00-4e67-b110-de70-e83855ca1196  50        queued-allocs       canceled  true
+256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  50        job-scaling         complete  true
+023f1ae9-e889-4403-be46-77a27fe5283d  50        deployment-watcher  complete  false
+b7dfff92-b074-8715-194d-15128b29992e  50        deployment-watcher  complete  false
+a2d0eaf9-8146-9b0b-213e-cc7642e08fd7  50        job-scaling         complete  false
+c399e09b-8c51-8ffb-b234-79212e6c5473  50        node-update         complete  false
+9cf5bc2a-13d1-12f0-1494-c4904741a0db  50        deployment-watcher  complete  false
+778a1c09-e302-5185-2df6-f8ce5e96dc7b  50        job-scaling         complete  false
+1dc10ab1-1be3-7f94-a2b9-b21153cb8b4b  50        deployment-watcher  complete  false
+b8c3935e-f3ae-443e-5ba8-3eab12e2136a  50        queued-allocs       complete  false
+d0d3c8ee-c911-ff24-581e-2bc980d06e42  50        deployment-watcher  complete  true
+0b2c600a-e160-25b4-dc2f-81de4e6b7e42  50        queued-allocs       canceled  true
+4589f289-72ca-8c72-6ef2-4bebad098622  50        job-scaling         complete  true
+
+Latest Deployment
+ID          = fafe2830-347d-2836-c09b-fccee81140f1
+Status      = running
+Description = Deployment is running
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        4       2        0          2023-11-15T23:00:52Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+1bee5d95-a15c-40e6-058f-376da8de1c8a  7bed801f-ed1b-0252-f26f-d4cf1424d97f  87297462-58fe-c473-2259-1ab28d14b370  clients000005  demo        8        run      running   2023-11-15T14:52:24-08:00  2023-11-15T14:52:38-08:00
+d2e94472-a5fb-e4e0-0b9b-bb915cff27db  7bed801f-ed1b-0252-f26f-d4cf1424d97f  87297462-58fe-c473-2259-1ab28d14b370  clients000005  demo        8        run      running   2023-11-15T14:52:24-08:00  2023-11-15T14:52:39-08:00
+041d5ad8-fe5b-7014-f812-2f0970b7c5ad  f9690861-0df3-2ad2-b79d-4c80886de27f  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        8        run      running   2023-11-15T14:49:41-08:00  2023-11-15T14:50:52-08:00
+8f5bb22c-d218-b3c2-5a56-1abc03fd9b4f  256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        5        stop     complete  2023-11-15T13:55:27-08:00  2023-11-15T14:07:05-08:00
+4224b0f3-5070-4322-f948-3b2e9082610c  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+f259260d-e44b-053d-d103-8a3bcea435b9  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+62dd416e-6f87-9164-c3c1-f581b881dd87  4589f289-72ca-8c72-6ef2-4bebad098622  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        2        stop     complete  2023-11-15T13:42:31-08:00  2023-11-15T13:47:38-08:00
+c75b902b-bd38-2394-a405-8618858fcebe  f9690861-0df3-2ad2-b79d-4c80886de27f  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        8        run      running   2023-11-15T09:51:54-08:00  2023-11-15T14:50:52-08:00

@@ -1,0 +1,49 @@
+
+20231115T215912.948Z  === POST-LOST ===
+
+ID                  = 7baddcbe-b76b-ff30-3a07-237aab6b85ee
+Eval ID             = d6cb9807-bcbd-c0e9-83f7-78261a5e2b47
+Name                = autoscaler.autoscaler[0]
+Node ID             = c18775fb-a619-388a-fe54-c4ef9e7df6d9
+Node Name           = clients000000
+Job ID              = autoscaler
+Job Version         = 0
+Client Status       = running
+Client Description  = Tasks are running
+Desired Status      = run
+Desired Description = <none>
+Created             = 2023-11-15T13:37:56-08:00
+Modified            = 2023-11-15T13:38:12-08:00
+Deployment ID       = d146255a-fc3e-3ee6-e459-6e45742632bb
+Deployment Health   = healthy
+Evaluated Nodes     = 1
+Filtered Nodes      = 0
+Exhausted Nodes     = 0
+Allocation Time     = 119.601µs
+Failures            = 0
+
+Allocation Addresses:
+Label  Dynamic  Address
+*http  yes      10.0.2.7:30696
+
+Task "autoscaler" is "running"
+Task Resources:
+CPU       Memory          Disk     Addresses
+1/50 MHz  16 MiB/128 MiB  300 MiB  
+
+Task Events:
+Started At     = 2023-11-15T21:38:01Z
+Finished At    = N/A
+Total Restarts = 0
+Last Restart   = N/A
+
+Recent Events:
+Time                       Type        Description
+2023-11-15T13:38:01-08:00  Started     Task started by client
+2023-11-15T13:37:56-08:00  Driver      Downloading image
+2023-11-15T13:37:56-08:00  Task Setup  Building Task Directory
+2023-11-15T13:37:56-08:00  Received    Task received by client
+
+Placement Metrics
+Node                                  binpack  job-anti-affinity  node-affinity  node-reschedule-penalty  final score
+c18775fb-a619-388a-fe54-c4ef9e7df6d9  0.651    0                  0              0                        0.651

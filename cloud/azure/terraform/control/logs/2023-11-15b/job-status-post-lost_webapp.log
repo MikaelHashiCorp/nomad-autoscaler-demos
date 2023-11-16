@@ -1,0 +1,62 @@
+
+20231115T215902.568Z  === POST-LOST ===
+
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-15T09:51:53-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        2       0         2        0       3         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+15f14993-0f57-8816-d3e2-c1566905edbd  50        queued-allocs       blocked   N/A - In Progress
+299e1912-8c0e-52c5-42d5-453ddec33650  50        deployment-watcher  complete  true
+d4786f00-4e67-b110-de70-e83855ca1196  50        queued-allocs       canceled  true
+256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  50        job-scaling         complete  true
+023f1ae9-e889-4403-be46-77a27fe5283d  50        deployment-watcher  complete  false
+b7dfff92-b074-8715-194d-15128b29992e  50        deployment-watcher  complete  false
+a2d0eaf9-8146-9b0b-213e-cc7642e08fd7  50        job-scaling         complete  false
+c399e09b-8c51-8ffb-b234-79212e6c5473  50        node-update         complete  false
+9cf5bc2a-13d1-12f0-1494-c4904741a0db  50        deployment-watcher  complete  false
+778a1c09-e302-5185-2df6-f8ce5e96dc7b  50        job-scaling         complete  false
+1dc10ab1-1be3-7f94-a2b9-b21153cb8b4b  50        deployment-watcher  complete  false
+b8c3935e-f3ae-443e-5ba8-3eab12e2136a  50        queued-allocs       complete  false
+d0d3c8ee-c911-ff24-581e-2bc980d06e42  50        deployment-watcher  complete  true
+0b2c600a-e160-25b4-dc2f-81de4e6b7e42  50        queued-allocs       canceled  true
+4589f289-72ca-8c72-6ef2-4bebad098622  50        job-scaling         complete  true
+b998d9a5-8042-0935-693f-de7ce8068d91  50        deployment-watcher  complete  false
+74ab4fff-6f36-b00a-636a-198e4f5b7db0  50        deployment-watcher  complete  false
+5419d71a-af2f-abd9-eaa3-eecfa582fb75  50        job-scaling         complete  false
+
+Placement Failure
+Task Group "demo":
+  * Resources exhausted on 1 nodes
+  * Class "hashistack" exhausted on 1 nodes
+  * Dimension "cpu" exhausted on 1 nodes
+
+Latest Deployment
+ID          = 8311ef9f-7c34-7de7-20a3-d5ee9c0200c7
+Status      = running
+Description = Deployment is running
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        2       2        0          2023-11-15T22:06:38Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+8f5bb22c-d218-b3c2-5a56-1abc03fd9b4f  256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        5        run      running   2023-11-15T13:55:27-08:00  2023-11-15T13:56:39-08:00
+4224b0f3-5070-4322-f948-3b2e9082610c  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+f259260d-e44b-053d-d103-8a3bcea435b9  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+62dd416e-6f87-9164-c3c1-f581b881dd87  4589f289-72ca-8c72-6ef2-4bebad098622  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        2        stop     complete  2023-11-15T13:42:31-08:00  2023-11-15T13:47:38-08:00
+c75b902b-bd38-2394-a405-8618858fcebe  256aeefd-e1fd-6bdc-50ca-0f7b3386e9a0  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        5        run      running   2023-11-15T09:51:54-08:00  2023-11-15T13:56:39-08:00

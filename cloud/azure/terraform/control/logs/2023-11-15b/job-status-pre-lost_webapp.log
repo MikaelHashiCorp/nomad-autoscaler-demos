@@ -1,0 +1,47 @@
+
+20231115T215137.762Z  === PRE-LOST ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-15T09:51:53-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = default
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       3         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+c399e09b-8c51-8ffb-b234-79212e6c5473  50        node-update         complete  false
+9cf5bc2a-13d1-12f0-1494-c4904741a0db  50        deployment-watcher  complete  false
+778a1c09-e302-5185-2df6-f8ce5e96dc7b  50        job-scaling         complete  false
+1dc10ab1-1be3-7f94-a2b9-b21153cb8b4b  50        deployment-watcher  complete  false
+b8c3935e-f3ae-443e-5ba8-3eab12e2136a  50        queued-allocs       complete  false
+d0d3c8ee-c911-ff24-581e-2bc980d06e42  50        deployment-watcher  complete  true
+0b2c600a-e160-25b4-dc2f-81de4e6b7e42  50        queued-allocs       canceled  true
+4589f289-72ca-8c72-6ef2-4bebad098622  50        job-scaling         complete  true
+b998d9a5-8042-0935-693f-de7ce8068d91  50        deployment-watcher  complete  false
+74ab4fff-6f36-b00a-636a-198e4f5b7db0  50        deployment-watcher  complete  false
+5419d71a-af2f-abd9-eaa3-eecfa582fb75  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = c6c1d5b8-84b2-ae12-e2d1-ebd29642aca3
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2023-11-15T21:57:41Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+4224b0f3-5070-4322-f948-3b2e9082610c  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+f259260d-e44b-053d-d103-8a3bcea435b9  b8c3935e-f3ae-443e-5ba8-3eab12e2136a  8adb1ae0-8ec1-d159-0dfc-6bb647d2d75b  clients000002  demo        2        stop     complete  2023-11-15T13:45:11-08:00  2023-11-15T13:47:38-08:00
+62dd416e-6f87-9164-c3c1-f581b881dd87  4589f289-72ca-8c72-6ef2-4bebad098622  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        2        stop     complete  2023-11-15T13:42:31-08:00  2023-11-15T13:47:38-08:00
+c75b902b-bd38-2394-a405-8618858fcebe  778a1c09-e302-5185-2df6-f8ce5e96dc7b  c18775fb-a619-388a-fe54-c4ef9e7df6d9  clients000000  demo        3        run      running   2023-11-15T09:51:54-08:00  2023-11-15T13:47:42-08:00

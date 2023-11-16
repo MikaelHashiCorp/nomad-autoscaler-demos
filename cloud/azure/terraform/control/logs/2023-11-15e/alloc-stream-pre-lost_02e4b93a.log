@@ -1,0 +1,793 @@
+2023-11-16T01:12:15.937Z [INFO]  agent: starting Nomad Autoscaler agent
+2023-11-16T01:12:15.937Z [INFO]  agent: Nomad Autoscaler agent configuration:
+2023-11-16T01:12:15.938Z [INFO]  agent
+2023-11-16T01:12:15.938Z [INFO]  agent:         Bind Addrs: 0.0.0.0
+2023-11-16T01:12:15.938Z [INFO]  agent:  High Availability: false
+2023-11-16T01:12:15.938Z [INFO]  agent:          Log Level: TRACE
+2023-11-16T01:12:15.938Z [INFO]  agent:            Plugins: //plugins
+2023-11-16T01:12:15.938Z [INFO]  agent:           Policies: /local/policies/
+2023-11-16T01:12:15.938Z [INFO]  agent:            Version: v0.3.8-dev (5aa5ee7)
+2023-11-16T01:12:15.938Z [INFO]  agent
+2023-11-16T01:12:15.938Z [INFO]  agent: Nomad Autoscaler agent started! Log data will stream in below
+2023-11-16T01:12:15.942Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=pass-through
+2023-11-16T01:12:15.942Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-target
+2023-11-16T01:12:15.942Z [INFO]  agent.http_server: server now listening for connections: address=0.0.0.0:21607
+2023-11-16T01:12:15.958Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=azure-vmss
+2023-11-16T01:12:15.958Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=nomad-apm
+2023-11-16T01:12:15.959Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=prometheus
+2023-11-16T01:12:15.959Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=target-value
+2023-11-16T01:12:15.959Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=threshold
+2023-11-16T01:12:15.959Z [INFO]  agent.plugin_manager: successfully launched and dispensed plugin: plugin_name=fixed-value
+2023-11-16T01:12:15.963Z [INFO]  policy_eval: starting workers: cluster=10 horizontal=10
+2023-11-16T01:12:15.963Z [INFO]  policy_manager: starting policy source: source=file
+2023-11-16T01:12:15.963Z [INFO]  policy_manager: starting policy source: source=nomad
+2023-11-16T01:12:15.963Z [DEBUG] nomad_policy_source: starting policy blocking query watcher
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=86473998-3673-a213-fde2-cc0a85015a93 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=7b477030-207a-f92a-412c-a247c0615387 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=37990a73-2170-6e5c-fb78-04832664791f queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=81af4e39-cced-107d-61f7-da3474c5ecd7 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=c586c49b-89ff-41ea-b466-5bafaa78136a queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=7fef6b55-b213-6890-2481-84afcf178b6d queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=de9b5291-7e1a-a530-a7ca-fbec43812654 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=a57c6dfa-81a6-af04-9bf0-afacccf94f1e queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=d6aeda00-a84e-5f21-e67f-651b87fee12a queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=585c0575-c918-3c18-a5a7-f8590648d7c9 queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=b869591a-d723-a134-0146-a6b06dca4a90 queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=965d67ef-357d-7983-fa64-0989fdc3740e queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=c595938e-6572-706e-f521-a9364e68b1c3 queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=38eee300-cb80-fcc4-1da0-1be5727d606b queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=a8b87924-f53c-5f48-f326-f5b60850a20e queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=b503c03a-688e-dd87-8241-0a86b146bec2 queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.worker: starting worker: id=e128c8ec-5cf4-757f-060c-b7df10d3904f queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: dequeue eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] policy_eval.broker: waiting for eval: queue=cluster
+2023-11-16T01:12:15.964Z [DEBUG] file_policy_source: starting file policy source ID monitor
+2023-11-16T01:12:15.965Z [TRACE] policy_manager: received policy IDs listing: num=1 policy_source=file
+2023-11-16T01:12:15.965Z [TRACE] policy_manager: creating new handler: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb policy_source=file
+2023-11-16T01:12:15.965Z [TRACE] policy_manager.policy_handler: starting policy handler: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:12:15.965Z [INFO]  file_policy_source: starting file policy monitor: file=/local/policies/hashistack.hcl name=cluster_policy policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:12:15.965Z [TRACE] policy_manager.policy_handler: received policy: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:12:16.106Z [TRACE] policy_manager: received policy IDs listing: num=1 policy_source=nomad
+2023-11-16T01:12:16.106Z [TRACE] policy_manager: creating new handler: policy_id=919e4680-6305-dec1-0534-886a9d15c506 policy_source=nomad
+2023-11-16T01:12:16.106Z [TRACE] policy_manager.policy_handler: starting policy handler: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:16.106Z [TRACE] nomad_policy_source: starting policy blocking query watcher: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:16.109Z [TRACE] policy_manager.policy_handler: received policy: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:17.155Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:12:22.156Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:12:27.158Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:12:32.160Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:12:37.162Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:12:42.165Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:12:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:47.111Z [DEBUG] internal_plugin.nomad-target: starting job status handler: Job=webapp
+2023-11-16T01:12:47.116Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=6760edb3-b0bb-c4dc-68ec-76b688c2d973 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=6760edb3-b0bb-c4dc-68ec-76b688c2d973 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=6760edb3-b0bb-c4dc-68ec-76b688c2d973 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=b929abfb-3b88-22a7-ddd8-c8bd14b910c5
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.worker: received policy for evaluation: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:12:47.116Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:12:47.116Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:11:47.116644247 +0000 UTC m=-28.810356588 2023-11-16 01:12:47.116644247 +0000 UTC m=+31.189643412}"
+2023-11-16T01:12:47.119Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.worker: no checks need to be executed: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.broker: ack eval: eval_id=6760edb3-b0bb-c4dc-68ec-76b688c2d973 token=b929abfb-3b88-22a7-ddd8-c8bd14b910c5 eval_id=6760edb3-b0bb-c4dc-68ec-76b688c2d973 token=b929abfb-3b88-22a7-ddd8-c8bd14b910c5
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:12:47.119Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:12:47.167Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=501ns
+2023-11-16T01:12:52.168Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=301ns
+2023-11-16T01:12:57.170Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:13:02.173Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=301ns
+2023-11-16T01:13:07.174Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:13:12.176Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:13:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=1bb3e270-9cf0-96c3-1aaf-008cd96162ad policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:13:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=1bb3e270-9cf0-96c3-1aaf-008cd96162ad policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:13:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=1bb3e270-9cf0-96c3-1aaf-008cd96162ad policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=6812b293-8ff6-9c33-9e71-9312a289ecad
+2023-11-16T01:13:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:13:17.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:13:17.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:13:17.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:12:17.111076831 +0000 UTC m=+1.184075996 2023-11-16 01:13:17.111076831 +0000 UTC m=+61.184075996}"
+2023-11-16T01:13:17.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=1bb3e270-9cf0-96c3-1aaf-008cd96162ad token=6812b293-8ff6-9c33-9e71-9312a289ecad eval_id=1bb3e270-9cf0-96c3-1aaf-008cd96162ad token=6812b293-8ff6-9c33-9e71-9312a289ecad
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:13:17.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:13:17.178Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:17.567Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:13:17.660Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:13:17.661Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:13:22.179Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:27.181Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:32.183Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:37.185Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:13:42.186Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=01db559c-1215-0b14-bd89-1c36d54e085c policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=01db559c-1215-0b14-bd89-1c36d54e085c policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=01db559c-1215-0b14-bd89-1c36d54e085c policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=fad94b03-3f63-cb82-76b8-57da1c69d790
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:13:47.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:13:47.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:12:47.111204274 +0000 UTC m=+31.184203439 2023-11-16 01:13:47.111204274 +0000 UTC m=+91.184203439}"
+2023-11-16T01:13:47.116Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=01db559c-1215-0b14-bd89-1c36d54e085c token=fad94b03-3f63-cb82-76b8-57da1c69d790 eval_id=01db559c-1215-0b14-bd89-1c36d54e085c token=fad94b03-3f63-cb82-76b8-57da1c69d790
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:13:47.116Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:13:47.188Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:13:52.190Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:13:57.190Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:14:02.193Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:14:07.195Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="19.304µs"
+2023-11-16T01:14:12.197Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:14:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:17.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=d0876463-3358-b08b-fbc8-c70b0ec52ae8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=d0876463-3358-b08b-fbc8-c70b0ec52ae8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=d0876463-3358-b08b-fbc8-c70b0ec52ae8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=297bf663-2934-afaa-a805-e91978813f92
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:14:17.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:14:17.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:13:17.111239932 +0000 UTC m=+61.184239197 2023-11-16 01:14:17.111239932 +0000 UTC m=+121.184239197}"
+2023-11-16T01:14:17.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=d0876463-3358-b08b-fbc8-c70b0ec52ae8 token=297bf663-2934-afaa-a805-e91978813f92 eval_id=d0876463-3358-b08b-fbc8-c70b0ec52ae8 token=297bf663-2934-afaa-a805-e91978813f92
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:14:17.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:14:17.198Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:14:17.567Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:14:17.598Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:14:17.598Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:14:22.200Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:27.201Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:32.204Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:37.205Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:42.207Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:14:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=694b39fd-51d6-cd8c-b8ad-431c529af996 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=694b39fd-51d6-cd8c-b8ad-431c529af996 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=694b39fd-51d6-cd8c-b8ad-431c529af996 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=18420f17-dd2b-7d5b-0cc3-01f75d1f1729
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:14:47.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:14:47.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:13:47.110988216 +0000 UTC m=+91.183987381 2023-11-16 01:14:47.110988216 +0000 UTC m=+151.183987381}"
+2023-11-16T01:14:47.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.broker: ack eval: eval_id=694b39fd-51d6-cd8c-b8ad-431c529af996 token=18420f17-dd2b-7d5b-0cc3-01f75d1f1729 eval_id=694b39fd-51d6-cd8c-b8ad-431c529af996 token=18420f17-dd2b-7d5b-0cc3-01f75d1f1729
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:14:47.115Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:14:47.209Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:14:52.211Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:14:57.212Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:15:02.214Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:15:07.216Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:15:12.218Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:15:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:15:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=8dc8f380-2f3c-f91b-3c0c-737c660eccb1 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=8dc8f380-2f3c-f91b-3c0c-737c660eccb1 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=8dc8f380-2f3c-f91b-3c0c-737c660eccb1 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=c21ac8de-2191-a0a3-458f-49381959e2a9
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:15:17.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:15:17.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:14:17.110484255 +0000 UTC m=+121.183483420 2023-11-16 01:15:17.110484255 +0000 UTC m=+181.183483420}"
+2023-11-16T01:15:17.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=8dc8f380-2f3c-f91b-3c0c-737c660eccb1 token=c21ac8de-2191-a0a3-458f-49381959e2a9 eval_id=8dc8f380-2f3c-f91b-3c0c-737c660eccb1 token=c21ac8de-2191-a0a3-458f-49381959e2a9
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:15:17.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:15:17.220Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:15:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:15:17.817Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:15:17.817Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:15:22.221Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:15:27.223Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=701ns
+2023-11-16T01:15:32.224Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:15:37.226Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:15:42.228Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:15:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=8c46a7b3-84d4-656c-9a81-7f5a050acc51 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=8c46a7b3-84d4-656c-9a81-7f5a050acc51 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=8c46a7b3-84d4-656c-9a81-7f5a050acc51 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=10948f10-135a-4046-28ff-c1e77955f6f2
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:15:47.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:15:47.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:14:47.111162375 +0000 UTC m=+151.184161540 2023-11-16 01:15:47.111162375 +0000 UTC m=+211.184161540}"
+2023-11-16T01:15:47.114Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.broker: ack eval: eval_id=8c46a7b3-84d4-656c-9a81-7f5a050acc51 token=10948f10-135a-4046-28ff-c1e77955f6f2 eval_id=8c46a7b3-84d4-656c-9a81-7f5a050acc51 token=10948f10-135a-4046-28ff-c1e77955f6f2
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:15:47.114Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:15:47.230Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:15:52.233Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:15:57.234Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:16:02.236Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:16:07.237Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:16:12.239Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:16:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:16:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=98f211af-8735-573c-fd5b-a3816f25d984 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:16:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=98f211af-8735-573c-fd5b-a3816f25d984 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:16:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=98f211af-8735-573c-fd5b-a3816f25d984 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=fac6debd-edff-6200-49eb-aff362d0d9dd
+2023-11-16T01:16:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:16:17.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:16:17.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:16:17.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:15:17.111077245 +0000 UTC m=+181.184076410 2023-11-16 01:16:17.111077245 +0000 UTC m=+241.184076410}"
+2023-11-16T01:16:17.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:16:17.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:16:17.116Z [DEBUG] policy_eval.worker: no checks need to be executed: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:16:17.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=98f211af-8735-573c-fd5b-a3816f25d984 token=fac6debd-edff-6200-49eb-aff362d0d9dd eval_id=98f211af-8735-573c-fd5b-a3816f25d984 token=fac6debd-edff-6200-49eb-aff362d0d9dd
+2023-11-16T01:16:17.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:17.116Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:16:17.116Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:16:17.240Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=501ns
+2023-11-16T01:16:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:16:17.596Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:16:17.596Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:16:22.242Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:16:27.244Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:16:32.246Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="19.103µs"
+2023-11-16T01:16:37.248Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:16:42.250Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:16:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:47.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=df01c28f-4b98-e5d6-4fa2-3bf0d0ec75db policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:16:47.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=df01c28f-4b98-e5d6-4fa2-3bf0d0ec75db policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:16:47.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=df01c28f-4b98-e5d6-4fa2-3bf0d0ec75db policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=8196de8a-3d60-13f3-dc65-7f03d8c61b5c
+2023-11-16T01:16:47.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:16:47.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:16:47.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:16:47.111Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:15:47.111092998 +0000 UTC m=+211.184092163 2023-11-16 01:16:47.111092998 +0000 UTC m=+271.184092163}"
+2023-11-16T01:16:47.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.broker: ack eval: eval_id=df01c28f-4b98-e5d6-4fa2-3bf0d0ec75db token=8196de8a-3d60-13f3-dc65-7f03d8c61b5c eval_id=df01c28f-4b98-e5d6-4fa2-3bf0d0ec75db token=8196de8a-3d60-13f3-dc65-7f03d8c61b5c
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:16:47.115Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:16:47.253Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:16:52.255Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=601ns
+2023-11-16T01:16:57.257Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:17:02.258Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:17:07.260Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:17:12.262Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:17:15.943Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:17:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=b0dffb86-8afa-fc42-b992-57b57c92e3df policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=b0dffb86-8afa-fc42-b992-57b57c92e3df policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=b0dffb86-8afa-fc42-b992-57b57c92e3df policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=c267ac0b-c0b5-9aac-f877-4ca71af3c959
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:17:17.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:17:17.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:16:17.11036886 +0000 UTC m=+241.183368025 2023-11-16 01:17:17.11036886 +0000 UTC m=+301.183368025}"
+2023-11-16T01:17:17.113Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:17:17.113Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:17:17.113Z [DEBUG] policy_eval.worker: no checks need to be executed: id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:17:17.113Z [DEBUG] policy_eval.broker: ack eval: eval_id=b0dffb86-8afa-fc42-b992-57b57c92e3df token=c267ac0b-c0b5-9aac-f877-4ca71af3c959 eval_id=b0dffb86-8afa-fc42-b992-57b57c92e3df token=c267ac0b-c0b5-9aac-f877-4ca71af3c959
+2023-11-16T01:17:17.114Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:17.114Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:17:17.114Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:17:17.264Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:17:17.567Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:17:17.655Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:17:17.655Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:17:22.266Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:17:27.267Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:17:32.269Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:17:37.271Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:17:42.273Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:17:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=1b26df8d-edc8-81f4-052e-69117497bb28 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=1b26df8d-edc8-81f4-052e-69117497bb28 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=1b26df8d-edc8-81f4-052e-69117497bb28 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=c28cc2d5-20dd-d9e6-12c7-b31d592c1ffc
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:17:47.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:17:47.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:16:47.110916158 +0000 UTC m=+271.183915323 2023-11-16 01:17:47.110916158 +0000 UTC m=+331.183915323}"
+2023-11-16T01:17:47.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=1b26df8d-edc8-81f4-052e-69117497bb28 token=c28cc2d5-20dd-d9e6-12c7-b31d592c1ffc eval_id=1b26df8d-edc8-81f4-052e-69117497bb28 token=c28cc2d5-20dd-d9e6-12c7-b31d592c1ffc
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:17:47.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:17:47.275Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="20.002µs"
+2023-11-16T01:17:52.278Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:17:57.280Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:18:02.282Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:18:07.284Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:18:12.285Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:18:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:18:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=82f73677-8da3-f710-7bb8-eec1cc6cbd11 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=82f73677-8da3-f710-7bb8-eec1cc6cbd11 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=82f73677-8da3-f710-7bb8-eec1cc6cbd11 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=05757aae-f1b4-8701-ce6b-8dd077ad3cc5
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:18:17.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:18:17.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:17:17.110502383 +0000 UTC m=+301.183501548 2023-11-16 01:18:17.110502383 +0000 UTC m=+361.183501548}"
+2023-11-16T01:18:17.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.broker: ack eval: eval_id=82f73677-8da3-f710-7bb8-eec1cc6cbd11 token=05757aae-f1b4-8701-ce6b-8dd077ad3cc5 eval_id=82f73677-8da3-f710-7bb8-eec1cc6cbd11 token=05757aae-f1b4-8701-ce6b-8dd077ad3cc5
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:18:17.115Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:18:17.287Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="19.402µs"
+2023-11-16T01:18:17.567Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:18:17.735Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:18:17.735Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:18:22.289Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:18:27.291Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:18:32.294Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:18:37.295Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:18:42.297Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:18:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=97dd391f-afd5-07ee-6404-e23965f33b4b policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=97dd391f-afd5-07ee-6404-e23965f33b4b policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=97dd391f-afd5-07ee-6404-e23965f33b4b policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=a818eabd-34e3-f98f-9a16-93d9f08200ea
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:18:47.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:18:47.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:17:47.1105217 +0000 UTC m=+331.183520865 2023-11-16 01:18:47.1105217 +0000 UTC m=+391.183520865}"
+2023-11-16T01:18:47.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=97dd391f-afd5-07ee-6404-e23965f33b4b token=a818eabd-34e3-f98f-9a16-93d9f08200ea eval_id=97dd391f-afd5-07ee-6404-e23965f33b4b token=a818eabd-34e3-f98f-9a16-93d9f08200ea
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:18:47.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:18:47.299Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:18:52.301Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:18:57.303Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:19:02.305Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:19:07.308Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:19:12.310Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:19:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:19:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=4745796a-3951-bd8a-7fcd-c3564876df33 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=4745796a-3951-bd8a-7fcd-c3564876df33 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=4745796a-3951-bd8a-7fcd-c3564876df33 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=1270254f-be2f-4dca-4afb-4d642facf29f
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:19:17.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:19:17.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:18:17.110991074 +0000 UTC m=+361.183990339 2023-11-16 01:19:17.110991074 +0000 UTC m=+421.183990339}"
+2023-11-16T01:19:17.113Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.worker: no checks need to be executed: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.broker: ack eval: eval_id=4745796a-3951-bd8a-7fcd-c3564876df33 token=1270254f-be2f-4dca-4afb-4d642facf29f eval_id=4745796a-3951-bd8a-7fcd-c3564876df33 token=1270254f-be2f-4dca-4afb-4d642facf29f
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:19:17.113Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:19:17.312Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:19:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:19:17.613Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:19:17.613Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:19:22.313Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:19:27.315Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:19:32.316Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:19:37.318Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:19:42.320Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:19:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=baa73b3f-e127-ffb5-f834-89d6274df717 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=baa73b3f-e127-ffb5-f834-89d6274df717 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=baa73b3f-e127-ffb5-f834-89d6274df717 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=15b64ac9-3f52-b3af-1b44-029ef6133372
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:19:47.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:19:47.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:18:47.110932694 +0000 UTC m=+391.183931959 2023-11-16 01:19:47.110932694 +0000 UTC m=+451.183931959}"
+2023-11-16T01:19:47.113Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.worker: no checks need to be executed: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.broker: ack eval: eval_id=baa73b3f-e127-ffb5-f834-89d6274df717 token=15b64ac9-3f52-b3af-1b44-029ef6133372 eval_id=baa73b3f-e127-ffb5-f834-89d6274df717 token=15b64ac9-3f52-b3af-1b44-029ef6133372
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:19:47.113Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:19:47.322Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:19:52.324Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:19:57.325Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:20:02.329Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:20:07.331Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=301ns
+2023-11-16T01:20:12.333Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:20:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:20:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=74229071-cc8e-2b11-ae30-d99250d4de64 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=74229071-cc8e-2b11-ae30-d99250d4de64 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=74229071-cc8e-2b11-ae30-d99250d4de64 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=f39bbd8d-161d-51d4-4e89-f78e962ddb5b
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.worker: received policy for evaluation: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:20:17.110Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:20:17.110Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:19:17.110926442 +0000 UTC m=+421.183925607 2023-11-16 01:20:17.110926442 +0000 UTC m=+481.183925607}"
+2023-11-16T01:20:17.112Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.worker: no checks need to be executed: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.broker: ack eval: eval_id=74229071-cc8e-2b11-ae30-d99250d4de64 token=f39bbd8d-161d-51d4-4e89-f78e962ddb5b eval_id=74229071-cc8e-2b11-ae30-d99250d4de64 token=f39bbd8d-161d-51d4-4e89-f78e962ddb5b
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:20:17.112Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:20:17.334Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:20:17.567Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:20:17.598Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:20:17.598Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:20:22.336Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:20:27.337Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:20:32.339Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:20:37.340Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:20:42.342Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:20:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=54afddf1-af0c-926d-ce6e-9269d9b05fc0 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:20:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=54afddf1-af0c-926d-ce6e-9269d9b05fc0 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:20:47.112Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=54afddf1-af0c-926d-ce6e-9269d9b05fc0 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=fc80cf3e-fb3f-87e0-f833-7e410fcbc23b
+2023-11-16T01:20:47.112Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:20:47.112Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:20:47.112Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:20:47.113Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:19:47.113104608 +0000 UTC m=+451.186103773 2023-11-16 01:20:47.113104608 +0000 UTC m=+511.186103773}"
+2023-11-16T01:20:47.116Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:20:47.116Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:20:47.116Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:20:47.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=54afddf1-af0c-926d-ce6e-9269d9b05fc0 token=fc80cf3e-fb3f-87e0-f833-7e410fcbc23b eval_id=54afddf1-af0c-926d-ce6e-9269d9b05fc0 token=fc80cf3e-fb3f-87e0-f833-7e410fcbc23b
+2023-11-16T01:20:47.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:20:47.117Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:20:47.117Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:20:47.343Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:20:52.346Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:20:57.347Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:02.350Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:07.352Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:12.354Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:15.943Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:21:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:17.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:17.112Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=f7fd0030-0d6a-d970-ab77-8cc47bbfb713 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:21:17.112Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=f7fd0030-0d6a-d970-ab77-8cc47bbfb713 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:21:17.112Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=f7fd0030-0d6a-d970-ab77-8cc47bbfb713 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=fc789ec3-6b71-0fa5-2dc7-c724ab118497
+2023-11-16T01:21:17.113Z [DEBUG] policy_eval.worker: received policy for evaluation: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:21:17.113Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:21:17.113Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:21:17.113Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:20:17.113870535 +0000 UTC m=+481.186869700 2023-11-16 01:21:17.113870535 +0000 UTC m=+541.186869700}"
+2023-11-16T01:21:17.118Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:21:17.119Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:21:17.119Z [DEBUG] policy_eval.worker: no checks need to be executed: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:21:17.119Z [DEBUG] policy_eval.broker: ack eval: eval_id=f7fd0030-0d6a-d970-ab77-8cc47bbfb713 token=fc789ec3-6b71-0fa5-2dc7-c724ab118497 eval_id=f7fd0030-0d6a-d970-ab77-8cc47bbfb713 token=fc789ec3-6b71-0fa5-2dc7-c724ab118497
+2023-11-16T01:21:17.120Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:17.120Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:21:17.120Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:21:17.356Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:21:17.699Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:21:17.699Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:21:22.357Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:27.359Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:32.362Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:21:37.364Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:21:42.366Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:21:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=467a8139-d8a2-8d30-667a-cbdb7908715e policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:21:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=467a8139-d8a2-8d30-667a-cbdb7908715e policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:21:47.112Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=467a8139-d8a2-8d30-667a-cbdb7908715e policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=98ed999a-698c-ca0e-57ab-ec1c57df835d
+2023-11-16T01:21:47.112Z [DEBUG] policy_eval.worker: received policy for evaluation: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:21:47.112Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:21:47.113Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:21:47.113Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:20:47.113253107 +0000 UTC m=+511.186252272 2023-11-16 01:21:47.113253107 +0000 UTC m=+571.186252272}"
+2023-11-16T01:21:47.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:21:47.116Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:21:47.116Z [DEBUG] policy_eval.worker: no checks need to be executed: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:21:47.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=467a8139-d8a2-8d30-667a-cbdb7908715e token=98ed999a-698c-ca0e-57ab-ec1c57df835d eval_id=467a8139-d8a2-8d30-667a-cbdb7908715e token=98ed999a-698c-ca0e-57ab-ec1c57df835d
+2023-11-16T01:21:47.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:21:47.117Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:21:47.117Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:21:47.367Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:21:52.369Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:21:57.371Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="19.801µs"
+2023-11-16T01:22:02.372Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:22:07.374Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:22:12.377Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:22:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:22:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:17.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:17.112Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=735ef1ff-df97-1a81-54e1-5fed4e1b57c5 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:22:17.112Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=735ef1ff-df97-1a81-54e1-5fed4e1b57c5 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:22:17.112Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=735ef1ff-df97-1a81-54e1-5fed4e1b57c5 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=7a7b046a-590a-8f63-85c9-5f4932d598b1
+2023-11-16T01:22:17.113Z [DEBUG] policy_eval.worker: received policy for evaluation: id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:22:17.115Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:22:17.115Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:22:17.116Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:21:17.11618658 +0000 UTC m=+541.189185745 2023-11-16 01:22:17.11618658 +0000 UTC m=+601.189185745}"
+2023-11-16T01:22:17.118Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:22:17.118Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:22:17.119Z [DEBUG] policy_eval.worker: no checks need to be executed: id=65c45693-077c-f9f0-58a2-f78ecf0a7a31 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:22:17.119Z [DEBUG] policy_eval.broker: ack eval: eval_id=735ef1ff-df97-1a81-54e1-5fed4e1b57c5 token=7a7b046a-590a-8f63-85c9-5f4932d598b1 eval_id=735ef1ff-df97-1a81-54e1-5fed4e1b57c5 token=7a7b046a-590a-8f63-85c9-5f4932d598b1
+2023-11-16T01:22:17.119Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:17.119Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:22:17.119Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:22:17.379Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:22:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:22:17.717Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:22:17.717Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:22:22.380Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:22:27.382Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:22:32.384Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:22:37.387Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:22:42.390Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:22:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=f46e8b9b-1fc4-2bdc-305c-fe1f31d06223 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:22:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=f46e8b9b-1fc4-2bdc-305c-fe1f31d06223 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:22:47.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=f46e8b9b-1fc4-2bdc-305c-fe1f31d06223 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=48fb87a0-26b9-4007-03e9-38eabd9af4d2
+2023-11-16T01:22:47.112Z [DEBUG] policy_eval.worker: received policy for evaluation: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:22:47.112Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:22:47.112Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:22:47.112Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:21:47.112736917 +0000 UTC m=+571.185736082 2023-11-16 01:22:47.112736917 +0000 UTC m=+631.185736082}"
+2023-11-16T01:22:47.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:22:47.116Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:22:47.116Z [DEBUG] policy_eval.worker: no checks need to be executed: id=eec6080f-e8e7-8c1f-ad00-c208ba687000 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:22:47.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=f46e8b9b-1fc4-2bdc-305c-fe1f31d06223 token=48fb87a0-26b9-4007-03e9-38eabd9af4d2 eval_id=f46e8b9b-1fc4-2bdc-305c-fe1f31d06223 token=48fb87a0-26b9-4007-03e9-38eabd9af4d2
+2023-11-16T01:22:47.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:22:47.117Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:22:47.117Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:22:47.392Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:22:52.394Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=401ns
+2023-11-16T01:22:57.396Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:23:02.398Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=801ns
+2023-11-16T01:23:07.400Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:23:12.401Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:23:15.943Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:23:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=7d101c2e-26ad-2527-7bdb-60d890f225eb policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:23:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=7d101c2e-26ad-2527-7bdb-60d890f225eb policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:23:17.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=7d101c2e-26ad-2527-7bdb-60d890f225eb policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=dcd85aa1-f8b8-62d6-6df7-2bdab82f3673
+2023-11-16T01:23:17.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:23:17.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:23:17.111Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:23:17.112Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:22:17.112254653 +0000 UTC m=+601.185253918 2023-11-16 01:23:17.112254653 +0000 UTC m=+661.185253918}"
+2023-11-16T01:23:17.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:23:17.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:23:17.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=86473998-3673-a213-fde2-cc0a85015a93 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:23:17.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=7d101c2e-26ad-2527-7bdb-60d890f225eb token=dcd85aa1-f8b8-62d6-6df7-2bdab82f3673 eval_id=7d101c2e-26ad-2527-7bdb-60d890f225eb token=dcd85aa1-f8b8-62d6-6df7-2bdab82f3673
+2023-11-16T01:23:17.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:17.116Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:23:17.116Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:23:17.403Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:23:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:23:17.596Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:23:17.596Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:23:22.404Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:23:27.406Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:23:32.407Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:23:37.410Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=301ns
+2023-11-16T01:23:42.412Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:23:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=fef8d4e4-b156-e7d2-337c-5bef264f53a8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:23:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=fef8d4e4-b156-e7d2-337c-5bef264f53a8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:23:47.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=fef8d4e4-b156-e7d2-337c-5bef264f53a8 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=11aaf64f-236b-9299-0a8a-27dbf33e31a2
+2023-11-16T01:23:47.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:23:47.112Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:23:47.112Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:23:47.112Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:22:47.112496415 +0000 UTC m=+631.185495580 2023-11-16 01:23:47.112496415 +0000 UTC m=+691.185495580}"
+2023-11-16T01:23:47.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:23:47.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:23:47.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7b477030-207a-f92a-412c-a247c0615387 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:23:47.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=fef8d4e4-b156-e7d2-337c-5bef264f53a8 token=11aaf64f-236b-9299-0a8a-27dbf33e31a2 eval_id=fef8d4e4-b156-e7d2-337c-5bef264f53a8 token=11aaf64f-236b-9299-0a8a-27dbf33e31a2
+2023-11-16T01:23:47.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:23:47.116Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:23:47.116Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:23:47.414Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=800ns
+2023-11-16T01:23:52.416Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration="20.901µs"
+2023-11-16T01:23:57.419Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:24:02.422Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:24:07.424Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:24:12.427Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:24:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:24:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:17.110Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=5a873784-39ee-0d42-29d5-eaed82a1fa3d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:24:17.110Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=5a873784-39ee-0d42-29d5-eaed82a1fa3d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:24:17.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=5a873784-39ee-0d42-29d5-eaed82a1fa3d policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=d10f1384-2ec3-a4eb-712e-c7a335fe7da8
+2023-11-16T01:24:17.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:24:17.112Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:24:17.112Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:24:17.112Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:23:17.112787884 +0000 UTC m=+661.185787049 2023-11-16 01:24:17.112787884 +0000 UTC m=+721.185787049}"
+2023-11-16T01:24:17.116Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:24:17.116Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:24:17.117Z [DEBUG] policy_eval.worker: no checks need to be executed: id=37990a73-2170-6e5c-fb78-04832664791f policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:24:17.117Z [DEBUG] policy_eval.broker: ack eval: eval_id=5a873784-39ee-0d42-29d5-eaed82a1fa3d token=d10f1384-2ec3-a4eb-712e-c7a335fe7da8 eval_id=5a873784-39ee-0d42-29d5-eaed82a1fa3d token=d10f1384-2ec3-a4eb-712e-c7a335fe7da8
+2023-11-16T01:24:17.117Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:17.117Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:24:17.117Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:24:17.429Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=701ns
+2023-11-16T01:24:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:24:17.614Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:24:17.614Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:24:22.434Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:24:27.436Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:24:32.438Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:24:37.440Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:24:42.441Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:24:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:47.112Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=8de17e0b-89b8-83e9-d8b9-3a8086f814cf policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:24:47.112Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=8de17e0b-89b8-83e9-d8b9-3a8086f814cf policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:24:47.113Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=8de17e0b-89b8-83e9-d8b9-3a8086f814cf policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=9fe27bed-9aab-9178-06cc-e4b880e38fe7
+2023-11-16T01:24:47.113Z [DEBUG] policy_eval.worker: received policy for evaluation: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:24:47.113Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:24:47.115Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:24:47.116Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:23:47.116387212 +0000 UTC m=+691.189386377 2023-11-16 01:24:47.116387212 +0000 UTC m=+751.189386377}"
+2023-11-16T01:24:47.119Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:24:47.119Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:24:47.119Z [DEBUG] policy_eval.worker: no checks need to be executed: id=81af4e39-cced-107d-61f7-da3474c5ecd7 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:24:47.120Z [DEBUG] policy_eval.broker: ack eval: eval_id=8de17e0b-89b8-83e9-d8b9-3a8086f814cf token=9fe27bed-9aab-9178-06cc-e4b880e38fe7 eval_id=8de17e0b-89b8-83e9-d8b9-3a8086f814cf token=9fe27bed-9aab-9178-06cc-e4b880e38fe7
+2023-11-16T01:24:47.120Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:24:47.120Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:24:47.120Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:24:47.443Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:24:52.444Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:24:57.446Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:25:02.448Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:25:07.449Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=301ns
+2023-11-16T01:25:12.451Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:25:15.942Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:25:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:17.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:17.112Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=2b3f88ad-8bbf-1bbd-0c8b-0685f240a287 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:25:17.112Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=2b3f88ad-8bbf-1bbd-0c8b-0685f240a287 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:25:17.112Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=2b3f88ad-8bbf-1bbd-0c8b-0685f240a287 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=cb9829f8-1eec-be7c-df7d-1f5569b8ed97
+2023-11-16T01:25:17.112Z [DEBUG] policy_eval.worker: received policy for evaluation: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:25:17.113Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:25:17.113Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:25:17.113Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:24:17.113540562 +0000 UTC m=+721.186539827 2023-11-16 01:25:17.113540562 +0000 UTC m=+781.186539827}"
+2023-11-16T01:25:17.117Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:25:17.117Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:25:17.117Z [DEBUG] policy_eval.worker: no checks need to be executed: id=c586c49b-89ff-41ea-b466-5bafaa78136a policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:25:17.117Z [DEBUG] policy_eval.broker: ack eval: eval_id=2b3f88ad-8bbf-1bbd-0c8b-0685f240a287 token=cb9829f8-1eec-be7c-df7d-1f5569b8ed97 eval_id=2b3f88ad-8bbf-1bbd-0c8b-0685f240a287 token=cb9829f8-1eec-be7c-df7d-1f5569b8ed97
+2023-11-16T01:25:17.118Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:17.118Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:25:17.118Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:25:17.453Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:25:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:25:17.599Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:25:17.599Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:25:22.456Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:25:27.458Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:25:32.460Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:25:37.462Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:25:42.464Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:25:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:47.111Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:47.112Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=15462f16-d1e6-c554-33b7-89e7dab30534 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:25:47.112Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=15462f16-d1e6-c554-33b7-89e7dab30534 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:25:47.113Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=15462f16-d1e6-c554-33b7-89e7dab30534 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=e9e32073-24ba-e864-6b9a-3206454074e3
+2023-11-16T01:25:47.113Z [DEBUG] policy_eval.worker: received policy for evaluation: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:25:47.113Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:25:47.113Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:25:47.113Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:24:47.113885265 +0000 UTC m=+751.186884530 2023-11-16 01:25:47.113885265 +0000 UTC m=+811.186884530}"
+2023-11-16T01:25:47.117Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:25:47.118Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:25:47.118Z [DEBUG] policy_eval.worker: no checks need to be executed: id=7fef6b55-b213-6890-2481-84afcf178b6d policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:25:47.118Z [DEBUG] policy_eval.broker: ack eval: eval_id=15462f16-d1e6-c554-33b7-89e7dab30534 token=e9e32073-24ba-e864-6b9a-3206454074e3 eval_id=15462f16-d1e6-c554-33b7-89e7dab30534 token=e9e32073-24ba-e864-6b9a-3206454074e3
+2023-11-16T01:25:47.118Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:25:47.118Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:25:47.119Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:25:47.466Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:25:52.467Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:25:57.469Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=300ns
+2023-11-16T01:26:02.471Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:07.473Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:12.475Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:15.943Z [DEBUG] internal_plugin.nomad-target: triggering run of handler garbage collection
+2023-11-16T01:26:17.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:17.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:17.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=6f4f2414-89fc-1c19-3825-599b3ea2e115 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:26:17.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=6f4f2414-89fc-1c19-3825-599b3ea2e115 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:26:17.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=6f4f2414-89fc-1c19-3825-599b3ea2e115 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=8f7ebdee-e91f-a8e1-14df-d6e6497682b1
+2023-11-16T01:26:17.111Z [DEBUG] policy_eval.worker: received policy for evaluation: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:26:17.111Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:26:17.112Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:26:17.112Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:25:17.11243362 +0000 UTC m=+781.185432785 2023-11-16 01:26:17.11243362 +0000 UTC m=+841.185432785}"
+2023-11-16T01:26:17.115Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:26:17.115Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:26:17.115Z [DEBUG] policy_eval.worker: no checks need to be executed: id=0656a35b-18be-67c5-ebaa-e3da446d23d4 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:26:17.116Z [DEBUG] policy_eval.broker: ack eval: eval_id=6f4f2414-89fc-1c19-3825-599b3ea2e115 token=8f7ebdee-e91f-a8e1-14df-d6e6497682b1 eval_id=6f4f2414-89fc-1c19-3825-599b3ea2e115 token=8f7ebdee-e91f-a8e1-14df-d6e6497682b1
+2023-11-16T01:26:17.116Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:17.116Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:26:17.116Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:26:17.477Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=700ns
+2023-11-16T01:26:17.566Z [TRACE] policy_manager.policy_handler: tick: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:26:17.652Z [WARN]  policy_manager.policy_handler: failed to get target status: policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb error="failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code=\"ResourceGroupNotFound\" Message=\"Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.\""
+2023-11-16T01:26:17.652Z [ERROR] policy_manager.policy_handler: failed to get Azure ScaleSet: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceGroupNotFound" Message="Resource group 'hcs-autosc-main-mws-eminent-arachnid' could not be found.": policy_id=98d39c45-cc00-11c3-e77e-2c4769c416cb
+2023-11-16T01:26:22.479Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:27.482Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:26:32.485Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=600ns
+2023-11-16T01:26:37.487Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
+2023-11-16T01:26:42.490Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:47.110Z [TRACE] policy_manager.policy_handler: tick: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:47.110Z [TRACE] policy_manager.policy_handler: sending policy for evaluation: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:47.111Z [DEBUG] policy_eval.broker: enqueue eval: eval_id=260be98e-21b9-628a-826a-ba457e1fa395 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:26:47.111Z [DEBUG] policy_eval.broker: eval enqueued: eval_id=260be98e-21b9-628a-826a-ba457e1fa395 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal token=""
+2023-11-16T01:26:47.111Z [DEBUG] policy_eval.broker: eval dequeued: queue=horizontal eval_id=260be98e-21b9-628a-826a-ba457e1fa395 policy_id=919e4680-6305-dec1-0534-886a9d15c506 token=a99d2c1c-a9f7-332a-a14c-61f7a34cee1f
+2023-11-16T01:26:47.112Z [DEBUG] policy_eval.worker: received policy for evaluation: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:26:47.113Z [DEBUG] policy_eval.worker.check_handler: received policy check for evaluation: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:26:47.114Z [DEBUG] policy_eval.worker.check_handler: querying source: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" source=prometheus
+2023-11-16T01:26:47.114Z [DEBUG] internal_plugin.prometheus: querying Prometheus: query="sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"})" range="{2023-11-16 01:25:47.114691895 +0000 UTC m=+811.187691060 2023-11-16 01:26:47.114691895 +0000 UTC m=+871.187691060}"
+2023-11-16T01:26:47.131Z [WARN]  policy_eval.worker.check_handler: no metrics available: check=avg_sessions id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal source=prometheus strategy=target-value target=nomad-target
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.worker: check avg_sessions selected in group : id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target direction=none count=0
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.worker: no checks need to be executed: id=de9b5291-7e1a-a530-a7ca-fbec43812654 policy_id=919e4680-6305-dec1-0534-886a9d15c506 queue=horizontal target=nomad-target
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.broker: ack eval: eval_id=260be98e-21b9-628a-826a-ba457e1fa395 token=a99d2c1c-a9f7-332a-a14c-61f7a34cee1f eval_id=260be98e-21b9-628a-826a-ba457e1fa395 token=a99d2c1c-a9f7-332a-a14c-61f7a34cee1f
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.broker: eval ack'd: policy_id=919e4680-6305-dec1-0534-886a9d15c506
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.broker: dequeue eval: queue=horizontal
+2023-11-16T01:26:47.131Z [DEBUG] policy_eval.broker: waiting for eval: queue=horizontal
+2023-11-16T01:26:47.493Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:52.495Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=400ns
+2023-11-16T01:26:57.497Z [TRACE] agent.http_server: request complete: method=GET path=/v1/health duration=500ns
