@@ -1,0 +1,47 @@
+
+20231116T230740.211Z  === POST-RECOVER ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-16T12:07:26-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = <none>
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       2         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+63f0ea7e-2db2-ab8a-47d7-da5d5d826906  50        deployment-watcher  complete  false
+68eaec77-ea3f-3152-3681-faf4cc514b5a  50        job-scaling         complete  false
+6b21a0a4-6b4a-888d-f69d-d75e4d4b2410  50        deployment-watcher  complete  false
+113a75d3-9dee-5cfc-a313-2c8e29be8376  50        queued-allocs       canceled  true
+451570cd-02c7-2eef-a9ff-51b1d7a5c368  50        deployment-watcher  complete  true
+4fa8c9cb-28d4-5bca-7fb1-fd45f5705bad  50        queued-allocs       canceled  true
+edc125b8-8da5-972b-1bf3-d4a1dc39c53d  50        deployment-watcher  complete  true
+53cb1f55-d9a2-c077-a193-c01870e7e697  50        queued-allocs       canceled  true
+9be9d994-3fdf-8a0d-b18c-84d3c2c2a590  50        job-scaling         complete  true
+b73925a9-fa6f-fb83-8aa1-09436ed06d87  50        deployment-watcher  complete  false
+e01d0382-5560-f8c4-e821-c885f59c754c  50        deployment-watcher  complete  false
+742f158f-2cb0-570e-e54c-b38738ea1a1b  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = 01beb8ca-6d1e-bd77-5c8c-ec003319b1df
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2023-11-16T23:16:39Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+617fe73c-7e6e-fecf-5fb2-d4e53226a9ac  9be9d994-3fdf-8a0d-b18c-84d3c2c2a590  8a66f8b9-5052-e6d5-ae5d-af51f4569e3b  clients000000  demo        2        stop     complete  2023-11-16T14:55:58-08:00  2023-11-16T15:06:36-08:00
+b51498a8-5fb9-ad13-f290-1893f73a4960  9be9d994-3fdf-8a0d-b18c-84d3c2c2a590  8a66f8b9-5052-e6d5-ae5d-af51f4569e3b  clients000000  demo        2        stop     complete  2023-11-16T14:54:58-08:00  2023-11-16T15:06:36-08:00
+8edd6b6e-6701-0586-54c2-d9491b70ac9e  68eaec77-ea3f-3152-3681-faf4cc514b5a  8a66f8b9-5052-e6d5-ae5d-af51f4569e3b  clients000000  demo        3        run      running   2023-11-16T12:07:26-08:00  2023-11-16T15:06:39-08:00

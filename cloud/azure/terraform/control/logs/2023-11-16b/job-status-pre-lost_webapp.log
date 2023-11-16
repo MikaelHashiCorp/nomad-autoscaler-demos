@@ -1,0 +1,34 @@
+
+20231116T225246.815Z  === PRE-LOST ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2023-11-16T12:07:26-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = <none>
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       0         0     0
+
+Evaluations
+ID                                    Priority  Triggered By  Status    Placement Failures
+442777e9-1dd4-caff-10f4-1490c96d9457  50        job-register  complete  false
+
+Latest Deployment
+ID          = ce795924-ffaf-4943-2eab-89752d04cc52
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2023-11-16T20:18:42Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status   Created                    Modified
+8edd6b6e-6701-0586-54c2-d9491b70ac9e  442777e9-1dd4-caff-10f4-1490c96d9457  8a66f8b9-5052-e6d5-ae5d-af51f4569e3b  clients000000  demo        0        run      running  2023-11-16T12:07:26-08:00  2023-11-16T12:08:42-08:00

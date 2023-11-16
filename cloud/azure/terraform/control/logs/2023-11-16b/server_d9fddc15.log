@@ -1,0 +1,61 @@
+
+Leader publicIP: 172.174.69.85 | 20231116T225306.880Z  === STOPPING LEADER ===
+
+● nomad.service - Nomad Agent
+   Loaded: loaded (/etc/systemd/system/nomad.service; disabled; vendor preset: enabled)
+   Active: failed (Result: exit-code) since Thu 2023-11-16 22:53:17 UTC; 1s ago
+  Process: 1744 ExecStart=/usr/local/bin/nomad agent -config=/etc/nomad.d/nomad.hcl (code=exited, status=1/FAILURE)
+ Main PID: 1744 (code=exited, status=1/FAILURE)
+
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.255Z [DEBUG] nomad.autopilot: state update routine is now stopped
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.257Z [DEBUG] nomad.autopilot: autopilot is now stopped
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.268Z [INFO]  nomad.raft: aborting pipeline replication: peer="{Voter 5482dce1-83a6-b687-2bfb-01d9ce7a4154 10.0.2.5:4647}"
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.269Z [INFO]  nomad.raft: aborting pipeline replication: peer="{Voter eadc5c1d-cf31-7fc8-3c4a-ab1ee7618eab 10.0.2.4:4647}"
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.285Z [DEBUG] nomad.keyring.replicator: exiting key replication
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.346Z [INFO]  agent: shutdown complete
+Nov 16 22:53:17 server-3 nomad[1744]:     2023-11-16T22:53:17.346Z [DEBUG] http: shutting down http server
+Nov 16 22:53:17 server-3 systemd[1]: nomad.service: Main process exited, code=exited, status=1/FAILURE
+Nov 16 22:53:17 server-3 systemd[1]: nomad.service: Failed with result 'exit-code'.
+Nov 16 22:53:17 server-3 systemd[1]: Stopped Nomad Agent.
+Sleep, wait 60 seconds...
+Done with sleep
+Node             ID                                    Address        State     Voter  RaftProtocol
+server-1.global  5482dce1-83a6-b687-2bfb-01d9ce7a4154  10.0.2.5:4647  follower  true   3
+server-2.global  eadc5c1d-cf31-7fc8-3c4a-ab1ee7618eab  10.0.2.4:4647  leader    true   3
+Name             Address   Port  Status  Leader  Raft Version  Build   Datacenter  Region
+server-1.global  10.0.2.5  4648  alive   false   3             1.4.13  dc1         global
+server-2.global  10.0.2.4  4648  alive   true    3             1.4.13  dc1         global
+server-3.global  10.0.2.6  4648  left    false   3             1.4.13  dc1         global
+
+20231116T230711.151Z  === STARTING SERVER ===
+
+Node             ID                                    Address        State     Voter  RaftProtocol
+server-1.global  5482dce1-83a6-b687-2bfb-01d9ce7a4154  10.0.2.5:4647  follower  true   3
+server-2.global  eadc5c1d-cf31-7fc8-3c4a-ab1ee7618eab  10.0.2.4:4647  leader    true   3
+Stopped Server publicIP: 172.174.69.85 nomad server members
+● nomad.service - Nomad Agent
+   Loaded: loaded (/etc/systemd/system/nomad.service; disabled; vendor preset: enabled)
+   Active: active (running) since Thu 2023-11-16 23:07:13 UTC; 1s ago
+ Main PID: 2659 (nomad)
+    Tasks: 7 (limit: 4069)
+   CGroup: /system.slice/nomad.service
+           └─2659 /usr/local/bin/nomad agent -config=/etc/nomad.d/nomad.hcl
+
+Nov 16 23:07:13 server-3 nomad[2659]:     2023-11-16T23:07:13.517Z [DEBUG] nomad: serf: Refuting an older leave intent
+Nov 16 23:07:13 server-3 nomad[2659]:     2023-11-16T23:07:13.517Z [INFO]  nomad: serf: Re-joined to previously known node: server-2.global: 10.0.2.4:4648
+Nov 16 23:07:13 server-3 nomad[2659]:     2023-11-16T23:07:13.517Z [INFO]  nomad: adding server: server="server-1.global (Addr: 10.0.2.5:4647) (DC: dc1)"
+Nov 16 23:07:13 server-3 nomad[2659]:     2023-11-16T23:07:13.518Z [INFO]  nomad: adding server: server="server-2.global (Addr: 10.0.2.4:4647) (DC: dc1)"
+Nov 16 23:07:13 server-3 nomad[2659]:     2023-11-16T23:07:13.671Z [WARN]  nomad.raft: failed to get previous log: previous-index=312 last-index=240 error="log not found"
+Nov 16 23:07:14 server-3 nomad[2659]:     2023-11-16T23:07:14.051Z [DEBUG] nomad: serf: messageJoinType: server-3.global
+Nov 16 23:07:14 server-3 nomad[2659]:     2023-11-16T23:07:14.052Z [DEBUG] nomad: serf: messageJoinType: server-3.global
+Nov 16 23:07:14 server-3 nomad[2659]:     2023-11-16T23:07:14.074Z [DEBUG] nomad: serf: messageJoinType: server-3.global
+Nov 16 23:07:14 server-3 nomad[2659]:     2023-11-16T23:07:14.396Z [DEBUG] consul.sync: sync complete: registered_services=3 deregistered_services=0 registered_checks=3 deregistered_checks=0
+Nov 16 23:07:14 server-3 nomad[2659]:     2023-11-16T23:07:14.574Z [DEBUG] nomad: serf: messageJoinType: server-3.global
+Node             ID                                    Address        State     Voter  RaftProtocol
+server-1.global  5482dce1-83a6-b687-2bfb-01d9ce7a4154  10.0.2.5:4647  follower  true   3
+server-2.global  eadc5c1d-cf31-7fc8-3c4a-ab1ee7618eab  10.0.2.4:4647  leader    true   3
+server-3.global  a8bc7d08-638b-984e-3a9d-4aed67ecddd4  10.0.2.6:4647  follower  false  3
+Name             Address   Port  Status  Leader  Raft Version  Build   Datacenter  Region
+server-1.global  10.0.2.5  4648  alive   false   3             1.4.13  dc1         global
+server-2.global  10.0.2.4  4648  alive   true    3             1.4.13  dc1         global
+server-3.global  10.0.2.6  4648  alive   false   3             1.4.13  dc1         global

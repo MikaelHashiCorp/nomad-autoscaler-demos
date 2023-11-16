@@ -89,7 +89,7 @@ scaling "cluster_policy" {
     }
 
     target "azure-vmss" {
-      resource_group      = "hcs-autosc-main-mws-concise-pheasant"
+      resource_group      = "hcs-autosc-main-mws-joint-poodle"
       vm_scale_set        = "clients"
       node_class          = "hashistack"
       node_drain_deadline = "5m"
