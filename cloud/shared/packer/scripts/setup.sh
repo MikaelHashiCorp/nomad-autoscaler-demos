@@ -22,15 +22,15 @@ sudo apt-get install -y software-properties-common unzip tree redis-tools jq cur
 
 CONFIGDIR=/ops/config
 
-CONSULVERSION=1.14.10
-# CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+# CONSULVERSION=1.14.10
+CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
 echo "Consul download path ${CONSULDOWNLOAD}"
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
-NOMADVERSION=1.4.13
-# NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
+# NOMADVERSION=1.4.13
+NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
 echo "Nomad download path ${NOMADDOWNLOAD}"
 NOMADCONFIGDIR=/etc/nomad.d
