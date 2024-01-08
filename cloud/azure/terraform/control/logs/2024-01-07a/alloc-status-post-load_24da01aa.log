@@ -1,0 +1,94 @@
+ID                  = 24da01aa-bf36-3633-8a66-49f67808a7c2
+Eval ID             = e97db378-6a56-2fe3-efae-d879ac63abf3
+Name                = autoscaler.autoscaler[0]
+Node ID             = 960e17c3-18b5-6af0-93bf-c6ebd1610011
+Node Name           = clients000001
+Job ID              = autoscaler
+Job Version         = 0
+Client Status       = running
+Client Description  = Tasks are running
+Desired Status      = run
+Desired Description = <none>
+Created             = 2024-01-08T13:29:54-08:00
+Modified            = 2024-01-08T13:30:10-08:00
+Deployment ID       = 617203e4-7553-c4fd-d007-b63c33e463de
+Deployment Health   = healthy
+Evaluated Nodes     = 1
+Filtered Nodes      = 0
+Exhausted Nodes     = 0
+Allocation Time     = 979.204µs
+Failures            = 0
+
+Allocation Addresses:
+Label  Dynamic  Address
+*http  yes      10.0.2.8:26241
+
+Task "autoscaler" is "running"
+Task Resources:
+CPU       Memory          Disk     Addresses
+0/50 MHz  11 MiB/128 MiB  300 MiB  
+
+Task Events:
+Started At     = 2024-01-08T21:29:59Z
+Finished At    = N/A
+Total Restarts = 0
+Last Restart   = N/A
+
+Recent Events:
+Time                       Type        Description
+2024-01-08T13:29:59-08:00  Started     Task started by client
+2024-01-08T13:29:54-08:00  Driver      Downloading image
+2024-01-08T13:29:54-08:00  Task Setup  Building Task Directory
+2024-01-08T13:29:54-08:00  Received    Task received by client
+
+Placement Metrics
+Node                                  binpack  job-anti-affinity  node-affinity  node-reschedule-penalty  final score
+960e17c3-18b5-6af0-93bf-c6ebd1610011  0.632    0                  0              0                        0.632
+
+20240108T220121.614Z  === POST-LOAD ===
+ID                  = 24da01aa-bf36-3633-8a66-49f67808a7c2
+Eval ID             = e97db378-6a56-2fe3-efae-d879ac63abf3
+Name                = autoscaler.autoscaler[0]
+Node ID             = 960e17c3-18b5-6af0-93bf-c6ebd1610011
+Node Name           = clients000001
+Job ID              = autoscaler
+Job Version         = 0
+Client Status       = running
+Client Description  = Tasks are running
+Desired Status      = run
+Desired Description = <none>
+Created             = 2024-01-08T13:29:54-08:00
+Modified            = 2024-01-08T13:30:10-08:00
+Deployment ID       = 617203e4-7553-c4fd-d007-b63c33e463de
+Deployment Health   = healthy
+Evaluated Nodes     = 1
+Filtered Nodes      = 0
+Exhausted Nodes     = 0
+Allocation Time     = 979.204µs
+Failures            = 0
+
+Allocation Addresses:
+Label  Dynamic  Address
+*http  yes      10.0.2.8:26241
+
+Task "autoscaler" is "running"
+Task Resources:
+CPU       Memory          Disk     Addresses
+1/50 MHz  11 MiB/128 MiB  300 MiB  
+
+Task Events:
+Started At     = 2024-01-08T21:29:59Z
+Finished At    = N/A
+Total Restarts = 0
+Last Restart   = N/A
+
+Recent Events:
+Time                       Type        Description
+2024-01-08T13:29:59-08:00  Started     Task started by client
+2024-01-08T13:29:54-08:00  Driver      Downloading image
+2024-01-08T13:29:54-08:00  Task Setup  Building Task Directory
+2024-01-08T13:29:54-08:00  Received    Task received by client
+
+Placement Metrics
+Node                                  binpack  job-anti-affinity  node-affinity  node-reschedule-penalty  final score
+960e17c3-18b5-6af0-93bf-c6ebd1610011  0.632    0                  0              0                        0.632

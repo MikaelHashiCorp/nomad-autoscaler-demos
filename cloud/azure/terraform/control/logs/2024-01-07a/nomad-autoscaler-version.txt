@@ -1,0 +1,1 @@
+Nomad Autoscaler v0.4.0 (d494abb)

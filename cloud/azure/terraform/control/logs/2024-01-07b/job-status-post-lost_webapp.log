@@ -1,0 +1,63 @@
+
+20240108T225234.000Z  === POST-LOST ===
+
+ID            = webapp
+Name          = webapp
+Submit Date   = 2024-01-08T12:26:57-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = <none>
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         4        0       3         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+9a133162-39dd-411c-ae7e-661f8b10cbce  50        deployment-watcher  complete  false
+da1e8e3d-425c-c6c5-ab25-a089301d2592  50        queued-allocs       complete  false
+fd4ca06d-6059-a2a4-011f-c5acd3754a9e  50        deployment-watcher  complete  true
+93f520bd-e437-1f64-b401-5ffbac0ea5f4  50        queued-allocs       canceled  true
+95563614-1b4b-89ca-db86-aa756dcb076f  50        deployment-watcher  complete  true
+5be73488-b8e7-9ecf-70b1-f0e41fea9f97  50        queued-allocs       canceled  true
+4a973250-ed10-79f9-079f-898593d26037  50        job-scaling         complete  true
+4a4fec8b-916b-5230-0dc3-07cab3a5ab9d  50        deployment-watcher  complete  false
+8e85655a-f994-41e8-c0d5-be479a62b19c  50        deployment-watcher  complete  false
+5300e018-a8c9-9508-7893-4db769ee712b  50        job-scaling         complete  false
+0ecd2ab8-6342-7ee9-2412-83598c624b1b  50        node-update         complete  false
+d4c55396-577e-670f-60d1-b29cbf85a01a  50        deployment-watcher  complete  false
+2c414e82-ba6a-e6bc-faa9-b35fc939c5c1  50        job-scaling         complete  false
+30f7b880-8ee6-a895-5153-330f0216e24f  50        deployment-watcher  complete  false
+04e1a857-7f98-7d0a-976d-c62ecd4d6c44  50        queued-allocs       complete  false
+43701a0c-6030-840f-7d7d-51d9e70dd639  50        deployment-watcher  complete  true
+98054a28-d45e-c269-c91e-f30c69621ea7  50        queued-allocs       canceled  true
+6edf5173-b6fb-5983-bd66-9b1d1f4c93b7  50        deployment-watcher  complete  true
+fb4a1930-6c83-8437-1b79-44fc240a923e  50        queued-allocs       canceled  true
+ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  50        job-scaling         complete  true
+3f851963-7ec1-f9c1-bd7a-23013de1337f  50        deployment-watcher  complete  false
+c55a7e43-b624-4a5a-d8b9-7fad3ce656bf  50        deployment-watcher  complete  false
+614723e5-c940-f936-66e3-f2f9dd6790ef  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = aab557d5-1087-6d5c-2ee2-2b1e7c785b27
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        4        4       4        0          2024-01-08T23:02:07Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+3b316eb2-2432-0638-b1c3-9591c46ff794  da1e8e3d-425c-c6c5-ab25-a089301d2592  a2e8a46a-e756-35e0-4835-f2b5ac6dd4b2  clients000005  demo        5        run      running   2024-01-08T14:51:04-08:00  2024-01-08T14:52:07-08:00
+70b399b4-b96c-fab2-b702-4a5736ecd2a3  4a973250-ed10-79f9-079f-898593d26037  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        5        run      running   2024-01-08T14:49:10-08:00  2024-01-08T14:49:25-08:00
+8eb2387d-26b3-0ce7-9ee6-d1dd98ac101c  4a973250-ed10-79f9-079f-898593d26037  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        5        run      running   2024-01-08T14:48:10-08:00  2024-01-08T14:49:20-08:00
+3cee6cbf-d47a-efb6-b817-facae18f5268  04e1a857-7f98-7d0a-976d-c62ecd4d6c44  48d6f329-bfa8-1c40-218c-783fa6cbcb02  clients000003  demo        2        stop     complete  2024-01-08T13:56:59-08:00  2024-01-08T13:59:38-08:00
+4ff9b4c8-21de-05c6-3141-01ce56912e05  ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        2        stop     complete  2024-01-08T13:55:01-08:00  2024-01-08T13:59:39-08:00
+7185c724-556a-389f-95bb-bc8abbffcac9  ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        2        stop     complete  2024-01-08T13:54:01-08:00  2024-01-08T13:59:39-08:00
+b6dd310d-8e08-388d-4b80-0223e726f398  4a973250-ed10-79f9-079f-898593d26037  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        5        run      running   2024-01-08T12:26:58-08:00  2024-01-08T14:49:20-08:00

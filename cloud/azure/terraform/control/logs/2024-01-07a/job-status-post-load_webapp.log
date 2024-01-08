@@ -1,0 +1,49 @@
+
+20240108T220113.222Z  === POST-LOAD ===
+ID            = webapp
+Name          = webapp
+Submit Date   = 2024-01-08T12:26:57-08:00
+Type          = service
+Priority      = 50
+Datacenters   = dc1
+Namespace     = default
+Node Pool     = <none>
+Status        = running
+Periodic      = false
+Parameterized = false
+
+Summary
+Task Group  Queued  Starting  Running  Failed  Complete  Lost  Unknown
+demo        0       0         1        0       3         0     0
+
+Evaluations
+ID                                    Priority  Triggered By        Status    Placement Failures
+0ecd2ab8-6342-7ee9-2412-83598c624b1b  50        node-update         complete  false
+d4c55396-577e-670f-60d1-b29cbf85a01a  50        deployment-watcher  complete  false
+2c414e82-ba6a-e6bc-faa9-b35fc939c5c1  50        job-scaling         complete  false
+30f7b880-8ee6-a895-5153-330f0216e24f  50        deployment-watcher  complete  false
+04e1a857-7f98-7d0a-976d-c62ecd4d6c44  50        queued-allocs       complete  false
+43701a0c-6030-840f-7d7d-51d9e70dd639  50        deployment-watcher  complete  true
+98054a28-d45e-c269-c91e-f30c69621ea7  50        queued-allocs       canceled  true
+6edf5173-b6fb-5983-bd66-9b1d1f4c93b7  50        deployment-watcher  complete  true
+fb4a1930-6c83-8437-1b79-44fc240a923e  50        queued-allocs       canceled  true
+ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  50        job-scaling         complete  true
+3f851963-7ec1-f9c1-bd7a-23013de1337f  50        deployment-watcher  complete  false
+c55a7e43-b624-4a5a-d8b9-7fad3ce656bf  50        deployment-watcher  complete  false
+614723e5-c940-f936-66e3-f2f9dd6790ef  50        job-scaling         complete  false
+
+Latest Deployment
+ID          = 4b93f4a1-0308-c9c5-7210-c44897440fc0
+Status      = successful
+Description = Deployment completed successfully
+
+Deployed
+Task Group  Desired  Placed  Healthy  Unhealthy  Progress Deadline
+demo        1        1       1        0          2024-01-08T22:09:42Z
+
+Allocations
+ID                                    Eval ID                               Node ID                               Node Name      Task Group  Version  Desired  Status    Created                    Modified
+3cee6cbf-d47a-efb6-b817-facae18f5268  04e1a857-7f98-7d0a-976d-c62ecd4d6c44  48d6f329-bfa8-1c40-218c-783fa6cbcb02  clients000003  demo        2        stop     complete  2024-01-08T13:56:59-08:00  2024-01-08T13:59:38-08:00
+4ff9b4c8-21de-05c6-3141-01ce56912e05  ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        2        stop     complete  2024-01-08T13:55:01-08:00  2024-01-08T13:59:39-08:00
+7185c724-556a-389f-95bb-bc8abbffcac9  ce3ba20f-f49c-d52e-6cfd-9eb7313ca512  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        2        stop     complete  2024-01-08T13:54:01-08:00  2024-01-08T13:59:39-08:00
+b6dd310d-8e08-388d-4b80-0223e726f398  2c414e82-ba6a-e6bc-faa9-b35fc939c5c1  960e17c3-18b5-6af0-93bf-c6ebd1610011  clients000001  demo        3        run      running   2024-01-08T12:26:58-08:00  2024-01-08T13:59:42-08:00

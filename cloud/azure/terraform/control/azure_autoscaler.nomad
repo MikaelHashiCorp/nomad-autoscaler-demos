@@ -25,6 +25,9 @@ job "autoscaler" {
           "${NOMAD_PORT_http}",
           "-policy-dir",
           "${NOMAD_TASK_DIR}/policies/",
+          "-log-level",
+          "TRACE",
+          "-enable-debug",
         ]
 
         ports = ["http"]
@@ -120,4 +123,3 @@ EOF
     }
   }
 }
-
