@@ -25,6 +25,15 @@ source "azure-arm" "hashistack" {
   subscription_id                   = "${var.subscription_id}"
 }
 
+packer {
+  required_plugins {
+    azure = {
+      source  = "github.com/hashicorp/azure"
+      version = "~> 2"
+    }
+  }
+}
+
 build {
   sources = [
     "source.azure-arm.hashistack"
