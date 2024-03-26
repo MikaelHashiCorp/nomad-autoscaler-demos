@@ -23,7 +23,7 @@ resource "aws_instance" "nomad_server" {
   root_block_device {
     volume_type           = "gp2"
     volume_size           = var.root_block_device_size
-    delete_on_termination = "true"
+    delete_on_termination = true
   }
 
   user_data            = data.template_file.user_data_server.rendered
@@ -33,13 +33,13 @@ resource "aws_instance" "nomad_server" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = file("~/.ssh/${var.key_name}.pem")
-    host        = "${aws_instance.nomad_server.0.public_ip}"
+    host        = self.public_ip
   }
 }
 
 # The locals below are used in the instance_provisioner_rerun
 locals {
-  # priips-svr    = [for instance in aws_instance.nomad_server : instance.private_ip]
+# priips-svr    = [for instance in aws_instance.nomad_server : instance.private_ip]
   promptids     = [for index in range(var.server_count) : "server-${index + 1}"]
   remote_exec_commands_instance = [
     "set -e",
@@ -50,7 +50,7 @@ locals {
     "sudo chown -R root:ubuntu /opt",
     "sudo chmod -R g+rX /opt",
     "cat <<EOL >> ~/.bashrc",
-      "alias env=\"env -0 | sort -z | tr '\\0' '\\n'\"",
+    "alias env=\"env -0 | sort -z | tr '\\0' '\\n'\"",
     "EOL",
     "if ! grep -Fxq 'PS1=\"$PROMPTID)[Int:\"' ~/.bashrc ; then",
     "  echo 'export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed \"s/.$//\")' >> ~/.bashrc",
@@ -59,9 +59,8 @@ locals {
     "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
     "  echo 'if [[ \\$TERM_PROGRAM == \"WarpTerminal\" ]]; then\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP] \\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nelse\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\\\033[0m\\]\\n\\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nfi' >> ~/.bashrc",
-    "fi" 
+    "fi"
   ]
-
   remote_exec_hash_instance = md5(join(",", local.remote_exec_commands_instance))
 }
 
@@ -69,7 +68,8 @@ locals {
 # destroying and recreating the instances.
 resource "null_resource" "instance_provisioner_rerun" {
   triggers = {
-    remote_exec_hash = local.remote_exec_hash_instance
+    remote_exec_hash = local.remote_exec_hash_instance,
+    licenses_hash = filebase64sha256("${path.module}/templates/licenses/")
   }
 
   depends_on = [aws_instance.nomad_server]
@@ -79,12 +79,30 @@ resource "null_resource" "instance_provisioner_rerun" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = file("~/.ssh/${var.key_name}.pem")
-    host        = aws_instance.nomad_server[count.index].public_ip
+    host        = element(aws_instance.nomad_server.*.public_ip, count.index)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /opt/licenses",
+      "sudo chmod 777 /opt/licenses"
+    ]
   }
 
   provisioner "file" {
     source      = "${path.module}/templates/autosc-stage-IP.code-workspace"
     destination = "/home/ubuntu/autosc-stage-IP.code-workspace"
+
+  provisioner "file" {
+    source      = "${path.module}/templates/licenses/"
+    destination = "/opt/licenses"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown -R root:ubuntu /opt/licenses",
+      "sudo chmod -R 775 /opt/licenses"
+    ]
   }
 
   provisioner "remote-exec" {
