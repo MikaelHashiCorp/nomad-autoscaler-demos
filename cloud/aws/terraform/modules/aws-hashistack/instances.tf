@@ -69,7 +69,7 @@ locals {
 resource "null_resource" "instance_provisioner_rerun" {
   triggers = {
     remote_exec_hash = local.remote_exec_hash_instance,
-    licenses_hash = filebase64sha256("${path.module}/templates/licenses/")
+    # licenses_hash = filebase64sha256("${path.module}/templates/licenses/")
   }
 
   depends_on = [aws_instance.nomad_server]
@@ -92,6 +92,7 @@ resource "null_resource" "instance_provisioner_rerun" {
   provisioner "file" {
     source      = "${path.module}/templates/autosc-stage-IP.code-workspace"
     destination = "/home/ubuntu/autosc-stage-IP.code-workspace"
+  }
 
   provisioner "file" {
     source      = "${path.module}/templates/licenses/"
