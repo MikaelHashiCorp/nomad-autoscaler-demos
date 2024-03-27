@@ -59,7 +59,8 @@ locals {
     "  echo 'export PUBIP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc",
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
     "  echo 'if [[ \\$TERM_PROGRAM == \"WarpTerminal\" ]]; then\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP] \\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nelse\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\\\033[0m\\]\\n\\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nfi' >> ~/.bashrc",
-    "fi"
+    "fi",
+    "# echo updated $(date)"
   ]
   remote_exec_hash_instance = md5(join(",", local.remote_exec_commands_instance))
 }
@@ -102,8 +103,10 @@ resource "null_resource" "instance_provisioner_rerun" {
   provisioner "remote-exec" {
     inline = [
       "sudo chown -R root:ubuntu /opt/licenses",
-      "sudo chmod -R 775 /opt/licenses"
-    ]
+      "sudo chmod -R 775 /opt/licenses",
+      "[ -f /opt/licenses/consul-hclic.hcl ] && sudo mv -f /opt/licenses/consul-hclic.hcl /etc/consul.d/consul-hclic.hcl || echo 'Consul file does not exist, skipping move'",
+      "[ -f /opt/licenses/nomad-hclic.hcl ] && sudo mv -f /opt/licenses/nomad-hclic.hcl /etc/nomad.d/nomad-hclic.hcl || echo 'Nomad file does not exist, skipping move'"    ]
+
   }
 
   provisioner "remote-exec" {
