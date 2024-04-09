@@ -85,7 +85,7 @@ locals {
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
     "  echo 'if [[ \\$TERM_PROGRAM == \"WarpTerminal\" ]]; then\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP] \\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nelse\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\\\033[0m\\]\\n\\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nfi' >> ~/.bashrc",
     "fi",
-    "echo update triggered $(date)"  # Trigger an update.
+    "# echo update triggered $(date)"  # Trigger an update.
   ]
 
   remote_exec_hash = md5(join(",", local.remote_exec_commands))
@@ -124,10 +124,12 @@ resource "null_resource" "asg_provisioner_rerun" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mkdir -p /opt/licenses",
-      "sudo mkdir -p /opt/acl",
-      "sudo chmod 777 /opt/licenses",
-      "sudo chmod 777 /opt/acl"
+      "sudo mkdir -p /opt/licenses && echo 'Created licenses directory'",
+      "sudo mkdir -p /opt/acl && echo 'Created acl directory'",
+      "sudo chmod 777 /opt/licenses && echo 'Set 777 permissions on licenses directory'",
+      "ls -al /opt/licenses",
+      "sudo chmod 777 /opt/acl && echo 'Set 777 permissions on acl directory'",
+      "ls -al /opt/acl"
     ]
   }
 
@@ -145,10 +147,21 @@ resource "null_resource" "asg_provisioner_rerun" {
     inline = [
       "sudo chown -R root:ubuntu /opt/licenses",
       "sudo chmod -R 775 /opt/licenses",
+      "echo 'Set 775 permissions on licenses directory'",
+      "ls -al /opt/licenses",
+      "sudo chown -R root:ubuntu /opt/acl",
+      "sudo chmod -R 775 /opt/acl",
+      "echo 'Set 775 permissions on acl directory'",
+      "ls -al /opt/acl"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
       "[ -f /opt/licenses/consul-hclic.hcl ] && sudo mv -f /opt/licenses/consul-hclic.hcl /etc/consul.d/consul-hclic.hcl || echo 'Consul file does not exist, skipping move'",
       "[ -f /opt/licenses/nomad-hclic.hcl ] && sudo mv -f /opt/licenses/nomad-hclic.hcl /etc/nomad.d/nomad-hclic.hcl || echo 'Nomad file does not exist, skipping move'",
-      "[ -f /opt/acl/consul-acl.hcl ] && sudo mv -f /opt/acl/consul-acl.hcl /etc/consul.d/consul-acl.hcl || echo 'Consul ACL file does not exist, skipping move'",
-      "# [ -f /opt/acl/nomad-acl.hcl ] && sudo mv -f /opt/acl/nomad-acl.hcl /etc/nomad.d/nomad-acl.hcl || echo 'Nomad ACL file does not exist, skipping move'",    
+      "# [ -f /opt/acl/consul-acl.hcl ] && sudo mv -f /opt/acl/consul-acl.hcl /home/ubuntu/consul-acl.hcl || echo 'Consul ACL file does not exist, skipping move'",
+      "# [ -f /opt/acl/nomad-acl.hcl ] && sudo mv -f /opt/acl/nomad-acl.hcl /home/ubuntu/nomad-acl.hcl || echo 'Nomad ACL file does not exist, skipping move'",    
     ]
   }
 }

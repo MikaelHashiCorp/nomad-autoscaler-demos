@@ -13,3 +13,5 @@ client_instance_type    = "t3a.medium"
 client_count            = "1"
 allowlist_ip            = []  # ["73.001.01.170/32", "97.001.01.2/32"]
 nomad_autoscaler_image  = "hashicorp/nomad-autoscaler:latest"
+consul_binary           = ""  # "https://releases.hashicorp.com/consul/1.11.0/consul_1.13.9_linux_amd64.zip"  # Doesn't Work
+nomad_binary            = ""  # "https://releases.hashicorp.com/nomad/1.1.6/nomad_1.3.16_linux_amd64.zip"     # Doesn't Work
