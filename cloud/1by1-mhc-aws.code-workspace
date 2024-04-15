@@ -17,5 +17,7 @@
       "path": "../../../../../1-support/shared/autosc"
     }
   ],
-  "settings": {}
+  "settings": {
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+  }
 }
