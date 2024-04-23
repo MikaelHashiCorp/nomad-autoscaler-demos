@@ -7,6 +7,6 @@ ui             = true
 enable_syslog  = true
 log_level      = "TRACE"
 log_file       = "/opt/consul/logs/"
-log_rotate_duration  = "24h"
+log_rotate_duration  = "1h"
 log_rotate_max_files = 3
 retry_join = ["RETRY_JOIN"]
