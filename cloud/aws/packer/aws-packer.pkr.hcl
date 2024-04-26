@@ -38,6 +38,8 @@ source "amazon-ebs" "hashistack" {
     CNI_Version    = var.cni_version
     Consul_Version = var.consul_version
     Nomad_Version  = var.nomad_version
+    Vault_Version  = var.vault_version
+    Consul_Template_Version = var.consul_template_version
     Created_Email  = var.created_email
     Created_Name   = var.created_name
   }

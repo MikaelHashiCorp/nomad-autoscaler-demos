@@ -16,3 +16,4 @@ variable "os_version"    { default = "22.04" }
 variable "cni_version"    { default = env("CNIVERSION") }
 variable "consul_version" { default = env("CONSULVERSION") }
 variable "nomad_version"  { default = env("NOMADVERSION") }
+variable "vault_version"  { default = env("VAULTVERSION") }
