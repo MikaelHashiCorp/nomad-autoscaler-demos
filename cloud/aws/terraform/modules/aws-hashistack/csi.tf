@@ -1,16 +1,16 @@
-variable "create_cni_resources" {
+variable "create_csi_resources" {
   description = "Flag to control whether CNI resources in this module should be created"
 }
 
 resource "aws_iam_role_policy" "mount_ebs_volumes" {
-  count  = var.create_cni_resources ? 1 : 0
+  count  = var.create_csi_resources ? 1 : 0
   name   = "mount-ebs-volumes"
   role   = aws_iam_role.nomad_client.id
   policy = data.aws_iam_policy_document.mount_ebs_volumes[count.index].json
 }
 
 data "aws_iam_policy_document" "mount_ebs_volumes" {
-  count  = var.create_cni_resources ? 1 : 0
+  count  = var.create_csi_resources ? 1 : 0
   statement {
     effect = "Allow"
 
@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "mount_ebs_volumes" {
 }
 
 resource "aws_ebs_volume" "mysql" {
-  count              = var.create_cni_resources ? 1 : 0
+  count              = var.create_csi_resources ? 1 : 0
   availability_zone  = var.availability_zones[0]
   size               = 40
 

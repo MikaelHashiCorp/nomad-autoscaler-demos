@@ -31,7 +31,7 @@ module "hashistack_cluster" {
   region                  = var.region
   availability_zones      = var.availability_zones
   ami                     = var.ami
-  create_cni_resources    = var.create_cni_resources
+  create_csi_resources    = var.create_csi_resources
   create_ebs_resources    = var.create_ebs_resources
   key_name                = var.key_name
   stack_name              = var.stack_name
