@@ -5,7 +5,7 @@
       "path": "aws"
     },
     {
-      "name": "shared",
+      "name": "shared-autosc",
       "path": "shared"
     },
     {
@@ -13,8 +13,8 @@
       "path": "../../../../../.ssh"
     },
     {
-      "name": "autosc",
-      "path": "../../../../../1-support/shared/autosc"
+      "name": "support-shared",
+      "path": "../../../../../1-support/shared"
     }
   ],
   "settings": {

@@ -102,7 +102,7 @@ variable "nomad_autoscaler_image" {
 }
 
 variable "create_csi_resources" {
-  description = "Create CNI EBS volumes and mounts."
+  description = "Create CSI EBS volumes and mounts."
   type        = bool
   default     = false  # can be true 
 }

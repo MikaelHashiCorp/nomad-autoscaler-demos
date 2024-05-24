@@ -1,5 +1,5 @@
 variable "create_csi_resources" {
-  description = "Flag to control whether CNI resources in this module should be created"
+  description = "Flag to control whether CSI resources in this module should be created"
 }
 
 resource "aws_iam_role_policy" "mount_ebs_volumes" {
