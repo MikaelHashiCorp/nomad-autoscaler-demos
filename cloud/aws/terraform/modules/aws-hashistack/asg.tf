@@ -4,7 +4,7 @@ resource "aws_launch_template" "nomad_client" {
   instance_type          = var.client_instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
-  user_data              = base64encode(data.template_file.user_data_client.rendered)
+  user_data              = base64encode(local.user_data_client)
 
   iam_instance_profile {
     name = aws_iam_instance_profile.nomad_client.name
