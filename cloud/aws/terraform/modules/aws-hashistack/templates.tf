@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 locals {
   user_data_server = templatefile("${path.module}/templates/user-data-server.sh", {
     server_count  = var.server_count
@@ -26,6 +23,6 @@ locals {
 
 resource "null_resource" "nomad_autoscaler_jobspec" {
   provisioner "local-exec" {
-    command = "echo '${local.nomad_autoscaler_jobspec}' > aws_autoscaler.nomad"
+    command = "echo '${data.template_file.nomad_autoscaler_jobspec.rendered}' > aws_autoscaler.nomad"
   }
 }
