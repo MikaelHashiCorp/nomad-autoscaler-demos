@@ -1,4 +1,6 @@
 #!/bin/bash
+echo -e "\nInstalling SERVER...\n"
+
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
@@ -37,6 +39,7 @@ sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.hcl
 sudo cp $CONFIGDIR/consul.hcl $CONSULCONFIGDIR
 sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
 
+sudo systemctl enable consul
 sudo systemctl start consul.service
 sleep 10
 export CONSUL_HTTP_ADDR=$IP_ADDRESS:8500
@@ -56,6 +59,7 @@ sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.hcl $NOMADCONFIGDIR
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
+sudo systemctl enable nomad
 sudo systemctl start nomad.service
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
@@ -64,6 +68,7 @@ export NOMAD_ADDR=http://$IP_ADDRESS:4646
 echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
 
 # dnsmasq config
+echo -e "\nConfiguring DNSMASQ...\n"
 echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
 sudo cp /ops/config/10-consul.dnsmasq /etc/dnsmasq.d/10-consul
 sudo cp /ops/config/99-default.dnsmasq.$CLOUD /etc/dnsmasq.d/99-default

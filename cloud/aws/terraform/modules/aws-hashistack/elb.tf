@@ -20,6 +20,13 @@ resource "aws_elb" "nomad_server" {
     lb_port           = 8500
     lb_protocol       = "http"
   }
+
+  listener {
+    instance_port     = 8200
+    instance_protocol = "http"
+    lb_port           = 8200
+    lb_protocol       = "http"
+  }
   security_groups = [aws_security_group.server_lb.id]
 }
 
@@ -31,6 +38,12 @@ resource "aws_elb" "nomad_client" {
     instance_port     = 80
     instance_protocol = "http"
     lb_port           = 80
+    lb_protocol       = "http"
+  }
+    listener {
+    instance_port     = 8080
+    instance_protocol = "http"
+    lb_port           = 8080
     lb_protocol       = "http"
   }
   listener {

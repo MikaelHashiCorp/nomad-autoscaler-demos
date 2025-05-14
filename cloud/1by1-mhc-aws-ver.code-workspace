@@ -1,0 +1,23 @@
+{
+	"folders": [
+    {
+      "name": "aws",
+      "path": "aws"
+    },
+    {
+      "name": "shared-autosc",
+      "path": "shared"
+    },
+    {
+      "name": ".ssh",
+      "path": "../../../../../.ssh"
+    },
+    {
+      "name": "support-shared",
+      "path": "../../../../../1-support/shared"
+    }
+  ],
+  "settings": {
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+  }
+}

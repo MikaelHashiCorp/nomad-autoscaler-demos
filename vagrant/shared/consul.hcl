@@ -9,6 +9,14 @@ server           = true
 bootstrap_expect = 1
 ui               = true
 
+ports {
+  grpc = 8502
+}
+
+connect {
+  enabled = true
+}
+
 telemetry {
   prometheus_retention_time = "30s"
 }

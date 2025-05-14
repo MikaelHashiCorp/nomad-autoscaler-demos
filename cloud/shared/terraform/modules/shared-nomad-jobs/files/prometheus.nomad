@@ -15,7 +15,7 @@ job "prometheus" {
       driver = "docker"
 
       config {
-        image = "prom/prometheus:v2.25.0"
+        image = "prom/prometheus:latest"
         ports = ["prometheus_ui"]
 
         args = [
