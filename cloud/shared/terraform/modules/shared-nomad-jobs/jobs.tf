@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 resource "null_resource" "wait_for_nomad_api" {
   provisioner "local-exec" {
     command = <<EOT

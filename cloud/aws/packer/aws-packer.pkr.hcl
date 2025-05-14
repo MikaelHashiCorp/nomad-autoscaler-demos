@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # https://developer.hashicorp.com/nomad/tutorials/autoscaler/horizontal-cluster-scaling?in=nomad%2Fautoscaler#build-demo-environment-ami
 # The "packer build ."" command loads all the contents in the current directory.
 # USAGE:  source env-pkr-var.sh && packer init . && packer validate . && packer build .

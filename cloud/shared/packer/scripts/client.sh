@@ -1,6 +1,9 @@
 #!/bin/bash
 echo -e "\nInstalling CLIENT...\n"
 
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 SHAREDDIR=/ops/
 CONFIGDIR=$SHAREDDIR/config
 SCRIPTDIR=$SHAREDDIR/scripts
