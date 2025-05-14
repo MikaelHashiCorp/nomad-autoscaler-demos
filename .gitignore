@@ -19,3 +19,6 @@ terraform.tfvars
 
 # Cleanup files
 .cleanup*
+
+# Ignore macos system files
+.DS_Store
