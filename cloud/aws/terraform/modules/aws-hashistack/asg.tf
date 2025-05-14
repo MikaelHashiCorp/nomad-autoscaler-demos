@@ -1,10 +1,20 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 resource "aws_launch_template" "nomad_client" {
   name_prefix            = "nomad-client"
   image_id               = var.ami
   instance_type          = var.client_instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
-  user_data              = base64encode(local.user_data_client)
+  user_data              = base64encode(templatefile(
+    "${path.module}/templates/user-data-client.sh", {
+      region        = var.region
+      retry_join    = var.retry_join
+      consul_binary = var.consul_binary
+      nomad_binary  = var.nomad_binary
+      node_class    = "hashistack"
+    }))
 
   iam_instance_profile {
     name = aws_iam_instance_profile.nomad_client.name

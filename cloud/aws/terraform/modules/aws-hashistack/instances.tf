@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 resource "aws_instance" "nomad_server" {
   ami                    = var.ami
   instance_type          = var.server_instance_type
@@ -26,7 +29,15 @@ resource "aws_instance" "nomad_server" {
     delete_on_termination = true
   }
 
-  user_data            = local.user_data_server
+  user_data = templatefile(
+    "${path.module}/templates/user-data-server.sh", {
+      server_count  = var.server_count
+      region        = var.region
+      retry_join    = var.retry_join
+      consul_binary = var.consul_binary
+      nomad_binary  = var.nomad_binary
+    })
+
   iam_instance_profile = aws_iam_instance_profile.nomad_server.name
 
   connection {
