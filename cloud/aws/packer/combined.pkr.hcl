@@ -5,6 +5,21 @@
 # The "packer build ."" command loads all the contents in the current directory.
 # USAGE:  source env-pkr-var.sh && packer init . && packer validate . && packer build .
 
+# Variable declarations
+variable "created_email" { default = "mikael.sikora@hashicorp.com" }
+variable "created_name"  { default = "mikael_sikora" }
+variable "region"        { default = "us-east-1" }
+variable "name_prefix"   { default = "autosc-mws" }
+variable "architecture"  { default = "amd64" }
+variable "os"            { default = "Ubuntu" }
+variable "os_version"    { default = "22.04" }
+
+variable "cni_version"    { default = env("CNIVERSION") }
+variable "consul_version" { default = env("CONSULVERSION") }
+variable "nomad_version"  { default = env("NOMADVERSION") }
+variable "vault_version"  { default = env("VAULTVERSION") }
+variable "consul_template_version" { default = env("CONSULTEMPLATEVERSION") }
+
 packer {
   required_plugins {
     amazon = {
@@ -14,6 +29,7 @@ packer {
   }
 }
 
+# Source block
 source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = "ed25519"
   ami_name      = format("%s%s", var.name_prefix, "-{{timestamp}}")
@@ -48,32 +64,11 @@ source "amazon-ebs" "hashistack" {
   }
 }
 
+# Build block
 build {
   sources = [
     "source.amazon-ebs.hashistack"
   ]
-
-  provisioner "shell" {
-    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
-      "0",
-      "1",
-      "2"
-    ]
-    inline = [
-      "echo set debconf to Noninteractive", 
-      "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections" ]
-  }
-
-  provisioner "shell" {
-    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
-      "0",
-      "1",
-      "2"
-    ]
-    inline = [
-      "sudo fuser -v -k /var/cache/debconf/config.dat"
-    ]
-  }
 
   provisioner "shell" {
     inline = [

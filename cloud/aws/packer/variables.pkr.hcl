@@ -10,10 +10,18 @@ variable "region"        { default = "us-east-1" }
 variable "name_prefix"   { default = "autosc-mws" }
 variable "architecture"  { default = "amd64" }
 variable "os"            { default = "Ubuntu" }
-variable "os_version"    { default = "22.04" }
+variable "os_version"    { default = "24.04" }
 
 # assign variables from environment variables
-variable "cni_version"    { default = env("CNIVERSION") }
+variable "cni_version"    { 
+  default = env("CNIVERSION") 
+  
+  validation {
+    condition     = length(var.cni_version) > 0
+    error_message = "The cni_version variable is not set. Please set the CNIVERSION environment variable."
+  }
+}
 variable "consul_version" { default = env("CONSULVERSION") }
 variable "nomad_version"  { default = env("NOMADVERSION") }
 variable "vault_version"  { default = env("VAULTVERSION") }
+variable "consul_template_version" { default = env("CONSULTEMPLATEVERSION") }
