@@ -22,3 +22,4 @@ terraform.tfvars
 
 # Ignore macos system files
 .DS_Store
+/cloud/aws/terraform/modules/aws-hashistack/templates/licenses
