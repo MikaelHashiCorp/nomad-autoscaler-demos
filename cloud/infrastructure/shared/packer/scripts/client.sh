@@ -37,6 +37,7 @@ if [[ `wget -S --spider $CONSUL_BINARY  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
   sudo chown root:root /usr/local/bin/consul
 fi
 
+sudo systemctl enable consul
 sudo systemctl start consul.service
 sleep 10
 
@@ -68,6 +69,7 @@ fi
 sudo cp $CONFIGDIR/nomad_client.hcl $NOMADCONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
+sudo systemctl enable nomad
 sudo systemctl start nomad.service
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646

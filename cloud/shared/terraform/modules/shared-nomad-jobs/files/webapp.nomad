@@ -72,7 +72,7 @@ job "webapp" {
       }
 
       config {
-        image      = "shopify/toxiproxy:2.1.4"
+        image      = "shopify/toxiproxy:latest"
         entrypoint = ["/entrypoint.sh"]
         ports      = ["toxiproxy_webapp"]
 

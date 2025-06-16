@@ -1,3 +1,6 @@
+# Ignore MacOS files
+*.DS_Store
+
 # ignore Vagrant related files
 *.log
 .vagrant
@@ -17,9 +20,22 @@
 # Terraform vars file
 terraform.tfvars
 
+# Ignore tmp folder
+*tmp/*
+
+# Ignore Tests folder
+cloud/shared/tests
+
 # Cleanup files
 .cleanup*
 
 # Ignore macos system files
 .DS_Store
 /cloud/aws/terraform/modules/aws-hashistack/templates/licenses
+cloud/aws/learn-terraform-aws-instance/.terraform.lock.hcl
+*.DS_Store
+
+cloud/aws/terraform/control/.terraform.lock.hcl
+*.txt
+*.hclic
+*.pem
