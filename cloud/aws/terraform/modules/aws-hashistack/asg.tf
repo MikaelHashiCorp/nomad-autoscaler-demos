@@ -7,14 +7,7 @@ resource "aws_launch_template" "nomad_client" {
   instance_type          = var.client_instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
-  user_data              = base64encode(templatefile(
-    "${path.module}/templates/user-data-client.sh", {
-      region        = var.region
-      retry_join    = var.retry_join
-      consul_binary = var.consul_binary
-      nomad_binary  = var.nomad_binary
-      node_class    = "hashistack"
-    }))
+  user_data              = base64encode(local.user_data_client)
 
   iam_instance_profile {
     name = aws_iam_instance_profile.nomad_client.name
@@ -95,7 +88,7 @@ locals {
     "  echo 'export PRIIP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)' >> ~/.bashrc",
     "  echo 'if [[ \\$TERM_PROGRAM == \"WarpTerminal\" ]]; then\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP] \\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nelse\n    PS1=\"\\[\\\\033[0;33m\\](\\$PROMPTID)[Int: \\$PRIIP / Ext: \\$PUBIP]\\[\\\\033[0m\\]\\n\\[\\\\033[01;32m\\]\\u\\[\\\\033[00m\\]:\\[\\\\033[01;34m\\]\\w\\[\\\\033[00m\\]\\$ \"\nfi' >> ~/.bashrc",
     "fi",
-    "# echo update triggered $(date)"  # Trigger an update.
+    # "echo update triggered $(date)"  # Trigger an update.
   ]
 
   remote_exec_hash = md5(join(",", local.remote_exec_commands))

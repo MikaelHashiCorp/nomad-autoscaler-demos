@@ -40,9 +40,14 @@ data "aws_iam_policy_document" "nomad_server" {
     effect = "Allow"
 
     actions = [
+      "autoscaling:DescribeAutoScalingGroups",
       "ec2:DescribeInstances",
       "ec2:DescribeTags",
-      "autoscaling:DescribeAutoScalingGroups",
+		  "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents"
     ]
 
     resources = ["*"]
@@ -90,6 +95,11 @@ data "aws_iam_policy_document" "nomad_client" {
       "ec2:DescribeInstances",
       "ec2:DescribeTags",
       "ec2-instance-connect:SendSSHPublicKey",
+		  "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents"
     ]
 
     resources = ["*"]
