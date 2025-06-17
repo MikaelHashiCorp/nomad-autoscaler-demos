@@ -123,7 +123,7 @@ resource "null_resource" "instance_provisioner_rerun" {
     destination = "/opt/licenses"
   }
 
-    provisioner "file" {
+  provisioner "file" {
     source      = "${path.module}/templates/acl/"
     destination = "/opt/acl"
   }

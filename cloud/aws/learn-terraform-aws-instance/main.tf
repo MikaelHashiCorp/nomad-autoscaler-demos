@@ -21,7 +21,7 @@ resource "aws_instance" "app_server" {
   vpc_security_group_ids    = [aws_security_group.primary.id]
 
   tags = {
-    Name = "ami-diagnosis-mikael-nomad"
+    Name = "ami-diagnosis-mikael-consul"
   }
 
   root_block_device {
@@ -32,7 +32,7 @@ resource "aws_instance" "app_server" {
 }
 
 resource "aws_security_group" "primary" {
-  name   = "ami-diagnosis-mikael-nomad"
+  name   = "ami-diagnosis-mikael-consul"
   vpc_id = ""
 
   ingress {

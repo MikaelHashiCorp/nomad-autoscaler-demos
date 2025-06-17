@@ -8,6 +8,9 @@ terraform {
       source  = "hashicorp/aws"
       # version = "~> 5.0"  # Updated to latest major version
     }
+    consul = {
+      source  = "hashicorp/consul"    
+    }
     nomad = {
       source  = "hashicorp/nomad"
       # version = "~> 2.0"
