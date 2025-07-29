@@ -18,7 +18,18 @@ cd /ops
 # Dependencies
 sudo apt-get update
 
-sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux awscli ec2-instance-connect
+sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux ec2-instance-connect
+if [ $? -ne 0 ]; then
+    echo "Failed to install packages"
+    exit 1
+fi
+
+# Install AWS CLI v2 manually
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm -rf awscliv2.zip aws/
+
 echo -e "\nInstalling DNSMASQ.  Ignore por 53 errors\n"
 sudo apt-get install -y dnsmasq
 
@@ -93,7 +104,17 @@ sudo apt-get install -y openjdk-8-jdk
 JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 
 # CNI plugins
+if [ -z "$CNIVERSION" ] || [ "$CNIVERSION" = "null" ]; then
+    echo "Error: CNIVERSION is not set or is null"
+    exit 1
+fi
+
 curl -sL -o cni-plugins.tgz ${CNIDOWNLOAD}
+if [ ! -f cni-plugins.tgz ] || [ ! -s cni-plugins.tgz ]; then
+    echo "Error: Failed to download CNI plugins"
+    exit 1
+fi
+
 sudo mkdir -p ${CNIDIR}/bin
 sudo tar -C ${CNIDIR}/bin -xzf cni-plugins.tgz
 

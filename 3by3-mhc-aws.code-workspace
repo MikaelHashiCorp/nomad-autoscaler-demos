@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "~/1-support/shared"
+		},
+		{
+			"path": "../../../../.ssh"
+		}
+	],
+  "settings": {}
+}

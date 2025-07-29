@@ -6,14 +6,16 @@
 
 variable "created_email" { default = "mikael.sikora@hashicorp.com" }
 variable "created_name"  { default = "mikael_sikora"}
-variable "region"        { default = "us-east-1" }
+variable "region"        { default = "us-west-2" }
 variable "name_prefix"   { default = "autosc-mws" }
 variable "architecture"  { default = "amd64" }
 variable "os"            { default = "Ubuntu" }
-variable "os_version"    { default = "22.04" }
+variable "os_version"    { default = "24.04" }
+variable "os_name"       { default = "noble" }
 
 # assign variables from environment variables
 variable "cni_version"    { default = env("CNIVERSION") }
+variable "consul_template_version" { default = env("CONSULTEMPLATEVERSION") }
 variable "consul_version" { default = env("CONSULVERSION") }
 variable "nomad_version"  { default = env("NOMADVERSION") }
 variable "vault_version"  { default = env("VAULTVERSION") }
