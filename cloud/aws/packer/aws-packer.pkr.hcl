@@ -18,12 +18,12 @@ source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = "ed25519"
   ami_name      = format("%s%s", var.name_prefix, "-{{timestamp}}")
   region        = var.region
-  instance_type = "t3a.medium"
+  instance_type = "t3a.2xlarge"
 
   source_ami_filter {
     filters = {
       virtualization-type = "hvm"
-      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-${var.os_name}-${var.os_version}-amd64-server-*"
       root-device-type    = "ebs"
     }
     owners      = ["099720109477"] # Canonical's owner ID
@@ -52,6 +52,12 @@ build {
   sources = [
     "source.amazon-ebs.hashistack"
   ]
+
+  provisioner "shell" {
+    inline = [
+      "cloud-init status --wait"
+    ]
+  }
 
   provisioner "shell" {
     valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
