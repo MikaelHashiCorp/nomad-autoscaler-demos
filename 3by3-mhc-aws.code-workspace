@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../../../../Library/CloudStorage/OneDrive-IBM/1-support/shared"
+			"path": "${env:SHARED_SUPPORT_PATH}"
 		},
 		{
 			"path": "../../../../.ssh"
