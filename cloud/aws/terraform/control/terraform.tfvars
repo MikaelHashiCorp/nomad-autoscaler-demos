@@ -1,0 +1,12 @@
+region                  = "us-east-1"
+availability_zones      = ["us-east-1a"]
+ami                     = "ami-07d042f5263f76e76"  # autosc-mws_2025-09-15, Ubuntu 24.04
+key_name                = "support_nomad_dev-access-key-mikael"
+owner_name              = "Mikael Sikora"
+owner_email             = "mikael.sikora@hashicorp.com"
+stack_name              = "mws-auto-new1main"   # (20 char max) Mikael, autoscaler, 1-new-main branch
+server_instance_type    = "t3a.medium" 
+server_count            = 1
+client_instance_type    = "t3a.medium"
+client_count            = 1
+# allowlist_ip            = # ["73.001.01.170/32", "97.001.01.2/32"]

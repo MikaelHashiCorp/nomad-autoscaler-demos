@@ -1,9 +1,17 @@
 #!/bin/bash
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
+set -Eeuo pipefail
 
-
-set -e
+# --- unified logging (console + packer.log + local file) ---
+LOG_FILE=/var/log/provision.log
+if [[ -z "${_PROVISION_LOG_INITIALIZED:-}" ]]; then
+  sudo install -o "$(id -u)" -g "$(id -g)" -m 0644 /dev/null "$LOG_FILE" || true
+  exec > >(tee -a "$LOG_FILE")
+  exec 2>&1
+  export _PROVISION_LOG_INITIALIZED=1
+fi
+log() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+log "Starting setup.sh"
+trap 'log "setup.sh failed (exit code $?)"' ERR
 
 echo "Waiting for cloud-init to update /etc/apt/sources.list"
 timeout 180 /bin/bash -c \
@@ -14,26 +22,47 @@ export DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 cd /ops
+# Define shared/script directories (missing before)
+SHAREDDIR=/ops
+SCRIPTDIR=$SHAREDDIR/scripts
 
 # Dependencies
 sudo apt-get update
 
-sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux dnsmasq
+sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux ec2-instance-connect
+if [ $? -ne 0 ]; then
+    echo "Failed to install packages"
+    exit 1
+fi
+
+# Install AWS CLI v2 manually
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm -rf awscliv2.zip aws/
+
+echo -e "\nInstalling DNSMASQ.  Ignore por 53 errors\n"
+sudo apt-get install -y dnsmasq
 
 CONFIGDIR=/ops/config
 
-CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+# CONSULVERSION=1.12.2
+# CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
+echo "CONSULDOWNLOAD=${CONSULDOWNLOAD}"
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
-NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
+# NOMADVERSION=1.1.1
+# NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
+echo "NOMADDOWNLOAD=${NOMADDOWNLOAD}"
 NOMADCONFIGDIR=/etc/nomad.d
 NOMADDIR=/opt/nomad
 
-CNIVERSION=0.8.5
-CNIDOWNLOAD=https://github.com/containernetworking/plugins/releases/download/v${CNIVERSION}/cni-plugins-linux-amd64-v${CNIVERSION}.tgz
+# CNIVERSION=v1.3.0
+CNIDOWNLOAD=https://github.com/containernetworking/plugins/releases/download/${CNIVERSION}/cni-plugins-linux-amd64-${CNIVERSION}.tgz
+echo "CNIDOWNLOAD=${CNIDOWNLOAD}"
 CNIDIR=/opt/cni
 
 # Disable the firewall
@@ -52,6 +81,8 @@ sudo mkdir -p ${CONSULCONFIGDIR}
 sudo chmod 755 ${CONSULCONFIGDIR}
 sudo mkdir -p ${CONSULDIR}
 sudo chmod 755 ${CONSULDIR}
+sudo mkdir -p ${CONSULDIR}/logs
+sudo chmod 755 ${CONSULDIR}/logs
 
 # Nomad
 curl -sL -o nomad.zip ${NOMADDOWNLOAD}
@@ -66,6 +97,8 @@ sudo mkdir -p ${NOMADCONFIGDIR}
 sudo chmod 755 ${NOMADCONFIGDIR}
 sudo mkdir -p ${NOMADDIR}
 sudo chmod 755 ${NOMADDIR}
+sudo mkdir -p ${NOMADDIR}/logs
+sudo chmod 755 ${NOMADDIR}/logs
 
 # Docker
 distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
@@ -82,8 +115,40 @@ sudo apt-get install -y openjdk-8-jdk
 JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 
 # CNI plugins
+if [ -z "$CNIVERSION" ] || [ "$CNIVERSION" = "null" ]; then
+    echo "Error: CNIVERSION is not set or is null"
+    exit 1
+fi
+
 curl -sL -o cni-plugins.tgz ${CNIDOWNLOAD}
+if [ ! -f cni-plugins.tgz ] || [ ! -s cni-plugins.tgz ]; then
+    echo "Error: Failed to download CNI plugins"
+    exit 1
+fi
+
 sudo mkdir -p ${CNIDIR}/bin
 sudo tar -C ${CNIDIR}/bin -xzf cni-plugins.tgz
 
+# (single) restore debconf frontend to Dialog (duplicate removed)
 echo 'debconf debconf/frontend select Dialog' | sudo debconf-set-selections
+
+# Ensure prompt script runs only from setup.sh and only once
+PROMPT_MARKER=/etc/.custom_prompt_set
+if [[ -f "$SCRIPTDIR/set-prompt.sh" ]]; then
+  if [[ ! -f "$PROMPT_MARKER" ]]; then
+    sudo chmod +x "$SCRIPTDIR/set-prompt.sh"
+    # Run with sudo (visible as: sudo $SCRIPTDIR/set-prompt.sh)
+    sudo "$SCRIPTDIR/set-prompt.sh" || true
+    # Also source so prompt/env changes apply to this shell
+    # shellcheck source=/dev/null
+    source "$SCRIPTDIR/set-prompt.sh"
+    sudo touch "$PROMPT_MARKER"
+    log "Applied set-prompt.sh (executed + sourced)"
+  else
+    log "Skipping set-prompt.sh (already applied)"
+  fi
+else
+  log "Skipping set-prompt.sh (not found at $SCRIPTDIR/set-prompt.sh)"
+fi
+
+log "Finished setup.sh"

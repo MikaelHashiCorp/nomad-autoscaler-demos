@@ -1,4 +1,21 @@
 #!/bin/bash
+set -Eeuo pipefail
+
+LOG_FILE=/var/log/provision.log
+if [[ -z "${_PROVISION_LOG_INITIALIZED:-}" ]]; then
+  sudo install -o "$(id -u)" -g "$(id -g)" -m 0644 /dev/null "$LOG_FILE" || true
+  exec > >(tee -a "$LOG_FILE")
+  exec 2>&1
+  export _PROVISION_LOG_INITIALIZED=1
+fi
+log() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+
+log "Starting client.sh"
+trap 'log "client.sh failed (exit code $?)"' ERR
+trap 'log "Finished client.sh (exit code $?)"' EXIT
+
+echo -e "\nInstalling CLIENT...\n"
+
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
@@ -36,6 +53,7 @@ if [[ `wget -S --spider $CONSUL_BINARY  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
   sudo chown root:root /usr/local/bin/consul
 fi
 
+sudo systemctl enable consul
 sudo systemctl start consul.service
 sleep 10
 
@@ -53,6 +71,7 @@ sed -i "s/NODE_CLASS/\"$NODE_CLASS\"/g" $CONFIGDIR/nomad_client.hcl
 sudo cp $CONFIGDIR/nomad_client.hcl $NOMADCONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
+sudo systemctl enable nomad
 sudo systemctl start nomad.service
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
@@ -61,6 +80,7 @@ export NOMAD_ADDR=http://$IP_ADDRESS:4646
 echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
 
 # dnsmasq config
+echo -e "\nConfiguring DNSMASQ...\n"
 echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
 sudo cp /ops/config/10-consul.dnsmasq /etc/dnsmasq.d/10-consul
 sudo cp /ops/config/99-default.dnsmasq.$CLOUD /etc/dnsmasq.d/99-default
@@ -79,3 +99,11 @@ sudo mv /etc/resolv.conf.new /etc/resolv.conf
 echo "export VAULT_ADDR=http://$IP_ADDRESS:8200" | sudo tee --append /home/$HOME_DIR/.bashrc
 echo "export NOMAD_ADDR=http://$IP_ADDRESS:4646" | sudo tee --append /home/$HOME_DIR/.bashrc
 echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre"  | sudo tee --append /home/$HOME_DIR/.bashrc
+
+# set alias
+alias env="env -0 | sort -z | tr '\0' '\n'"
+
+# set terminal color
+echo "export TERM=xterm-256color" | sudo tee --append /home/$HOME_DIR/.bashrc
+
+log "Finished client.sh"
