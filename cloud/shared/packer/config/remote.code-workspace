@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "name": "ubuntu",
+      "path": "."
+    },
+    {
+      "name": "nomad.d",
+      "path": "../../etc/nomad.d"
+    },
+    {
+      "name": "consul.d",
+      "path": "../../etc/consul.d"
+    },
+    {
+      "name": "opt",
+      "path": "../../opt"
+    },
+    {
+      "name": "shared (local)",
+      "uri": "file:///Users/mikael/1-support/shared"
+    }
+  ]
+}
