@@ -1,8 +1,10 @@
 region                  = "us-west-2"
 availability_zones      = ["us-west-2a", "us-west-2b", "us-west-2c"]
-ami                     = "ami-0eafb2a149534a110"  # autosc-mws_2025-09-20, Ubuntu 24.04
+# ami                     = "ami-0eafb2a149534a110"  # autosc-mws_2025-09-20, Ubuntu 24.04
+ami                     = "ami-090533044bd0f4b28"    # scale-mws_2025-10-30, us-west-2, Ubuntu 24.04 
 # key_name                = "support_nomad_dev-access-key-mikael"  # US-EAST-1
-key_name                = "support-nomad-dev-oregon-mws"  # US-WEST-2
+# key_name                = "support-nomad-dev-oregon-mws"  # US-WEST-2
+key_name                = "mhc-aws-mws-west-2"
 owner_name              = "Mikael Sikora"
 owner_email             = "mikael.sikora@hashicorp.com"
 stack_name              = "mws-scale-new1main"   # (20 char max) Mikael, autoscaler, 1-new-main branch
