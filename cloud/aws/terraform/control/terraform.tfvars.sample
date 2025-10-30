@@ -1,6 +1,12 @@
 region             = "us-west-2"
 availability_zones = ["us-west-2a"]
-ami                = "ami-0bd21458ecf89f85e"
+# ami              = "ami-0bd21458ecf89f85e"  # Optional: specify existing AMI or leave empty to build automatically
 key_name           = "my-dev-ec2-keypair"
 owner_name         = "alovelace"
 owner_email        = "alovelace@example.com"
+stack_name              = "mws-scale-new1main"   # (20 char max) Your initials, Stack Title, Git Branch
+server_instance_type    = "t3a.medium" 
+server_count            = 1
+client_instance_type    = "t3a.medium"
+client_count            = 1
+allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]

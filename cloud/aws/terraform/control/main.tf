@@ -25,17 +25,27 @@ module "my_ip_address" {
   command = "curl https://ipinfo.io/ip"
 }
 
+module "hashistack_image" {
+  source = "../modules/aws-nomad-image"
+
+  ami_id      = var.ami
+  region      = var.region
+  stack_name  = var.stack_name
+  owner_name  = var.owner_name
+  owner_email = var.owner_email
+}
+
 module "hashistack_cluster" {
   source = "../modules/aws-hashistack"
 
   region                = var.region
   availability_zones    = var.availability_zones
-  ami                   = var.ami
+  ami                   = module.hashistack_image.id
   key_name              = var.key_name
   owner_name            = var.owner_name
   owner_email           = var.owner_email
   stack_name            = var.stack_name
-  allowlist_ip          = ["${module.my_ip_address.stdout}/32"]
+  allowlist_ip          = length(var.allowlist_ip) > 0 ? var.allowlist_ip : ["${module.my_ip_address.stdout}/32"]
   server_instance_type  = var.server_instance_type
   client_instance_type  = var.client_instance_type
   server_count          = var.server_count
