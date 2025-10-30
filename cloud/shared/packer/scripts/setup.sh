@@ -22,9 +22,15 @@ export DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 cd /ops
+
 # Define shared/script directories (missing before)
+HOME_DIR=ubuntu
 SHAREDDIR=/ops
 SCRIPTDIR=$SHAREDDIR/scripts
+CONFIGDIR=$SHAREDDIR/config
+
+# Copy VSCode workspace.
+cp $CONFIGDIR/remote.code-workspace /home/$HOME_DIR/
 
 # Dependencies
 sudo apt-get update
