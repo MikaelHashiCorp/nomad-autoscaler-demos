@@ -23,6 +23,11 @@ This is a **HashiCorp Nomad Autoscaler demonstration environment** that provisio
 
 ## Critical Developer Workflows
 
+### Connect to AWS using HashiCorp Doormat
+```bash
+doormat login -f ; eval $(doormat aws export --account aws_mikael.sikora_test) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
+```
+
 ### Building AMIs with Packer
 ```bash
 cd aws/packer/
