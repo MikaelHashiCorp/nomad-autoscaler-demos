@@ -1,0 +1,18 @@
+{
+	"folders": [
+    {
+      "name": "aws",
+      "path": "."
+    },
+    {
+      "name": "shared-autosc",
+      "path": "../shared"
+    },
+  ],
+  "settings": {
+    "security.workspace.trust.enabled": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "security.workspace.trust.startupPrompt": false,
+    "security.workspace.trust.autoTrustFiles": true
+  }
+}
