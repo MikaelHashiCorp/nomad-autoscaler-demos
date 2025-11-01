@@ -24,13 +24,36 @@ This is a **HashiCorp Nomad Autoscaler demonstration environment** that provisio
 ## Critical Developer Workflows
 
 ### Connect to AWS using HashiCorp Doormat
+
+**IMPORTANT**: Always authenticate to AWS via Doormat before running any Terraform or Packer commands.
+
+When opening a new Terminal session, navigate to your repository's Terraform control directory:
 ```bash
-doormat login -f ; eval $(doormat aws export --account aws_mikael.sikora_test) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
+# Navigate to wherever you cloned this repository, then:
+cd cloud/aws/terraform/control
 ```
 
-### Building AMIs with Packer
+**Example paths** (yours will vary based on where you cloned the repo):
+- `cd ~/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control`
+- `cd ~/projects/nomad-autoscaler-demos/cloud/aws/terraform/control`
+- `cd ~/workspace/nomad-autoscaler-demos/cloud/aws/terraform/control`
+
+Then authenticate:
 ```bash
-cd aws/packer/
+doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
+```
+
+**Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
+
+**Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
+
+### Building AMIs with Packer
+
+**Prerequisites**: Ensure you've authenticated via Doormat (see above).
+
+```bash
+# From your repository root, navigate to:
+cd cloud/aws/packer/
 source env-pkr-var.sh  # Fetches latest HashiCorp versions from checkpoint API
 packer build .
 ```
@@ -40,8 +63,12 @@ packer build .
 **Important**: The `env-pkr-var.sh` script sets `PACKER_LOG=1` and queries GitHub/HashiCorp APIs for latest versions. Built AMIs include tags for all component versions.
 
 ### Deploying Infrastructure
+
+**Prerequisites**: Ensure you've authenticated via Doormat (see above).
+
 ```bash
-cd aws/terraform/control/
+# From your repository root, navigate to:
+cd cloud/aws/terraform/control/
 # Edit terraform.tfvars (required: region, key_name, owner_name, owner_email)
 terraform init
 terraform apply
@@ -98,11 +125,13 @@ After `terraform apply`, outputs provide:
 
 ## Common Pitfalls
 
-1. **Stale AMI references**: If Packer builds succeed but Terraform uses old AMI, check `ami_id` in `terraform.tfvars` and ensure `data.aws_ami.built` filter matches `name_prefix`
-2. **Client nodes not joining**: Verify `ConsulAutoJoin` tag exists on instances and IAM role has `ec2:DescribeInstances` permission
-3. **Autoscaler not scaling**: Check Prometheus is scraping Nomad metrics (`http://<prometheus>:9090/targets`) and autoscaler logs (`nomad logs -job autoscaler`)
-4. **Port conflicts**: Dynamic ports require security group ingress rules for 20000-32000 (configured in `sg.tf`)
-5. **DNS resolution failures**: Ensure dnsmasq is running (`systemctl status dnsmasq`) and `/etc/resolv.conf` has `nameserver 127.0.0.1`
+1. **Missing AWS authentication**: Always run Doormat authentication before any AWS/Terraform/Packer commands. Verify with `aws sts get-caller-identity`.
+2. **Wrong working directory**: Terraform commands must be run from `aws/terraform/control/`. Packer commands from `aws/packer/`.
+3. **Stale AMI references**: If Packer builds succeed but Terraform uses old AMI, check `ami_id` in `terraform.tfvars` and ensure `data.aws_ami.built` filter matches `name_prefix`
+4. **Client nodes not joining**: Verify `ConsulAutoJoin` tag exists on instances and IAM role has `ec2:DescribeInstances` permission
+5. **Autoscaler not scaling**: Check Prometheus is scraping Nomad metrics (`http://<prometheus>:9090/targets`) and autoscaler logs (`nomad logs -job autoscaler`)
+6. **Port conflicts**: Dynamic ports require security group ingress rules for 20000-32000 (configured in `sg.tf`)
+7. **DNS resolution failures**: Ensure dnsmasq is running (`systemctl status dnsmasq`) and `/etc/resolv.conf` has `nameserver 127.0.0.1`
 
 ## File Organization Patterns
 
