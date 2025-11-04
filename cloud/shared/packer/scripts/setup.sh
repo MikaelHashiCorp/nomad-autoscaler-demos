@@ -13,42 +13,63 @@ log() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 log "Starting setup.sh"
 trap 'log "setup.sh failed (exit code $?)"' ERR
 
-echo "Waiting for cloud-init to update /etc/apt/sources.list"
+echo "Waiting for cloud-init to complete"
 timeout 180 /bin/bash -c \
   'until stat /var/lib/cloud/instance/boot-finished 2>/dev/null; do echo waiting ...; sleep 1; done'
 
-# Disable interactive apt prompts
-export DEBIAN_FRONTEND=noninteractive
-echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
-
 cd /ops
 
-# Define shared/script directories (missing before)
-HOME_DIR=ubuntu
+# Define shared/script directories
 SHAREDDIR=/ops
 SCRIPTDIR=$SHAREDDIR/scripts
 CONFIGDIR=$SHAREDDIR/config
 
-# Copy VSCode workspace.
+# Source OS detection script
+source $SCRIPTDIR/os-detect.sh
+
+# OS-specific initial setup
+if [[ "${DETECTED_OS}" == "Ubuntu" ]]; then
+  # Disable interactive apt prompts
+  export DEBIAN_FRONTEND=noninteractive
+  echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+  # Kill any debconf locks
+  sudo fuser -v -k /var/cache/debconf/config.dat || true
+fi
+
+# Copy VSCode workspace
 cp $CONFIGDIR/remote.code-workspace /home/$HOME_DIR/
 
-# Dependencies
-sudo apt-get update
+# Update package manager and install dependencies
+log "Updating package manager and installing dependencies..."
+if [ "$PKG_MANAGER" = "apt-get" ]; then
+  pkg_update
+  pkg_install unzip tree jq curl tmux wget tar software-properties-common dnsmasq
+else
+  pkg_update
+  # Install EPEL for RHEL/CentOS - RHEL 9 requires direct RPM install
+  if [ "$DETECTED_OS" = "rhel" ] || [ "$DETECTED_OS" = "RedHat" ]; then
+    log "Installing EPEL for RHEL 9..."
+    sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm || log "EPEL install completed with warnings"
+  else
+    pkg_install epel-release
+  fi
+  pkg_install unzip tree jq curl tmux wget tar
+fi
 
-sudo apt-get install -y software-properties-common unzip tree redis-tools jq curl tmux ec2-instance-connect
 if [ $? -ne 0 ]; then
-    echo "Failed to install packages"
+    log "Failed to install packages"
     exit 1
 fi
 
 # Install AWS CLI v2 manually
+log "Installing AWS CLI v2..."
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 rm -rf awscliv2.zip aws/
 
-echo -e "\nInstalling DNSMASQ.  Ignore por 53 errors\n"
-sudo apt-get install -y dnsmasq
+log "Installing dnsmasq..."
+pkg_install dnsmasq || log "dnsmasq install completed with warnings (systemctl not available in Packer environment)"
 
 CONFIGDIR=/ops/config
 
@@ -107,18 +128,35 @@ sudo mkdir -p ${NOMADDIR}/logs
 sudo chmod 755 ${NOMADDIR}/logs
 
 # Docker
-distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
-sudo apt-get install -y apt-transport-https ca-certificates gnupg2
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${distro} $(lsb_release -cs) stable"
-sudo apt-get update
-sudo apt-get install -y docker-ce
+log "Installing Docker..."
+if [[ "${DETECTED_OS}" == "Ubuntu" ]]; then
+  distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
+  pkg_install apt-transport-https ca-certificates gnupg2
+  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add -
+  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${distro} $(lsb_release -cs) stable"
+  pkg_update
+  pkg_install docker-ce
+elif [[ "${DETECTED_OS}" == "RedHat" ]]; then
+  # Install Docker on RedHat/RHEL
+  pkg_install dnf-plugins-core
+  sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  pkg_install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  sudo systemctl enable docker
+  sudo systemctl start docker
+  # Add ec2-user to docker group
+  sudo usermod -aG docker ${HOME_DIR}
+fi
 
 # Java
-sudo add-apt-repository -y ppa:openjdk-r/ppa
-sudo apt-get update
-sudo apt-get install -y openjdk-8-jdk
-JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+log "Installing Java..."
+if [[ "${DETECTED_OS}" == "Ubuntu" ]]; then
+  sudo add-apt-repository -y ppa:openjdk-r/ppa
+  pkg_update
+  pkg_install openjdk-8-jdk
+elif [[ "${DETECTED_OS}" == "RedHat" ]]; then
+  pkg_install java-1.8.0-openjdk java-1.8.0-openjdk-devel
+fi
+# JAVA_HOME is already set by os-detect.sh
 
 # CNI plugins
 if [ -z "$CNIVERSION" ] || [ "$CNIVERSION" = "null" ]; then
@@ -135,8 +173,10 @@ fi
 sudo mkdir -p ${CNIDIR}/bin
 sudo tar -C ${CNIDIR}/bin -xzf cni-plugins.tgz
 
-# (single) restore debconf frontend to Dialog (duplicate removed)
-echo 'debconf debconf/frontend select Dialog' | sudo debconf-set-selections
+# Restore debconf frontend to Dialog (Ubuntu only)
+if [[ "${DETECTED_OS}" == "Ubuntu" ]]; then
+  echo 'debconf debconf/frontend select Dialog' | sudo debconf-set-selections
+fi
 
 # Ensure prompt script runs only from setup.sh and only once
 PROMPT_MARKER=/etc/.custom_prompt_set

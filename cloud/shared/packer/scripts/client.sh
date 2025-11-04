@@ -23,12 +23,13 @@ SHAREDDIR=/ops/
 CONFIGDIR=$SHAREDDIR/config
 SCRIPTDIR=$SHAREDDIR/scripts
 
+# Source OS detection and network helper scripts
+source $SCRIPTDIR/os-detect.sh
 source $SCRIPTDIR/net.sh
 set -e
 
 CONSULCONFIGDIR=/etc/consul.d
 NOMADCONFIGDIR=/etc/nomad.d
-HOME_DIR=ubuntu
 
 # Wait for network
 sleep 15
@@ -88,6 +89,7 @@ sudo mv /etc/resolv.conf /etc/resolv.conf.orig
 grep -v "nameserver" /etc/resolv.conf.orig | grep -v -e"^#" | grep -v -e '^$' | sudo tee /etc/resolv.conf
 echo "nameserver 127.0.0.1" | sudo tee -a /etc/resolv.conf
 sudo systemctl restart systemd-resolved
+sudo systemctl enable dnsmasq
 sudo systemctl restart dnsmasq
 
 # Add Docker bridge network IP to /etc/resolv.conf (at the top)
@@ -97,8 +99,10 @@ sudo mv /etc/resolv.conf.new /etc/resolv.conf
 
 # Set env vars for tool CLIs
 echo "export VAULT_ADDR=http://$IP_ADDRESS:8200" | sudo tee --append /home/$HOME_DIR/.bashrc
+# Set env vars for tool CLIs
+echo "export VAULT_ADDR=http://$IP_ADDRESS:8200" | sudo tee --append /home/$HOME_DIR/.bashrc
 echo "export NOMAD_ADDR=http://$IP_ADDRESS:4646" | sudo tee --append /home/$HOME_DIR/.bashrc
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre"  | sudo tee --append /home/$HOME_DIR/.bashrc
+echo "export JAVA_HOME=${JAVA_HOME}"  | sudo tee --append /home/$HOME_DIR/.bashrc
 
 # set alias
 alias env="env -0 | sort -z | tr '\0' '\n'"

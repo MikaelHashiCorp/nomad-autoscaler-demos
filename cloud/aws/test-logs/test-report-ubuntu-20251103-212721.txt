@@ -1,0 +1,31 @@
+Multi-OS Test Report
+====================
+OS Type:      UBUNTU
+Test Mode:    terraform
+Date:         Mon Nov  3 21:39:24 PST 2025
+
+Infrastructure:
+--------------
+Server LB:    N/A
+Client LB:    N/A
+Server IP:    N/A
+SSH User:     ubuntu
+
+Service Status:
+--------------
+Consul UI:    http://N/A:8500/ui
+Nomad UI:     http://N/A:4646/ui
+Grafana:      http://N/A:3000
+Web App:      http://N/A
+
+Cluster Info:
+------------
+Consul Members: N/A
+Nomad Nodes:    N/A
+
+Logs:
+----
+Terraform Init:  /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-init-ubuntu-20251103-212721.log
+Terraform Plan:  /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-plan-ubuntu-20251103-212721.log
+Terraform Apply: /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-apply-ubuntu-20251103-212721.log
+Outputs:         /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/outputs-ubuntu-20251103-212721.json

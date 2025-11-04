@@ -28,15 +28,21 @@ module "my_ip_address" {
 module "hashistack_image" {
   source = "../modules/aws-nomad-image"
 
-  ami_id      = var.ami
-  region      = var.region
-  stack_name  = var.stack_name
-  owner_name  = var.owner_name
-  owner_email = var.owner_email
+  ami_id           = var.ami
+  region           = var.region
+  stack_name       = var.stack_name
+  owner_name       = var.owner_name
+  owner_email      = var.owner_email
+  packer_os        = var.packer_os
+  packer_os_version = var.packer_os_version
+  packer_os_name   = var.packer_os_name
 }
 
 module "hashistack_cluster" {
   source = "../modules/aws-hashistack"
+
+  # Explicit dependency ensures AMI is fully built before creating infrastructure
+  depends_on = [module.hashistack_image]
 
   region                = var.region
   availability_zones    = var.availability_zones

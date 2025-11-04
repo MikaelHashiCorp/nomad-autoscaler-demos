@@ -13,3 +13,4 @@ server_count            = 1
 client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []  # example:  ["73.001.01.170/32", "97.001.01.2/32"]; empty list means local ISP IP only.
+

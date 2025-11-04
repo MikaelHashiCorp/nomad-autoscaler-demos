@@ -1,0 +1,7 @@
+{
+  "ip_addresses": {
+    "sensitive": false,
+    "type": "string",
+    "value": "\nAMI Information:\n  ID:         ami-011fc67cc65cedf0b\n  OS:         Ubuntu 24.04\n  SSH User:   ubuntu\n\nServer IPs:\n * instance mws-scale-ami-dynam-server-1 - Public: 44.243.186.201, Private: 172.31.11.199\n\n\nTo connect, add your private key and SSH into any client or server with\n`ssh ubuntu@PUBLIC_IP`. You can test the integrity of the cluster by running:\n\n  $ consul members\n  $ nomad server members\n  $ nomad node status\n\nThe Nomad UI can be accessed at http://mws-scale-ami-dynam-nomad-server-1599873777.us-west-2.elb.amazonaws.com:4646/ui\nThe Consul UI can be accessed at http://mws-scale-ami-dynam-nomad-server-1599873777.us-west-2.elb.amazonaws.com:8500/ui\nGrafana dashboard can be accessed at http://mws-scale-ami-dynam-nomad-client-1723405290.us-west-2.elb.amazonaws.com:3000/d/AQphTqmMk/demo?orgId=1\u0026refresh=5s\nTraefik can be accessed at http://mws-scale-ami-dynam-nomad-client-1723405290.us-west-2.elb.amazonaws.com:8081\nPrometheus can be accessed at http://mws-scale-ami-dynam-nomad-client-1723405290.us-west-2.elb.amazonaws.com:9090\nWebapp can be accessed at http://mws-scale-ami-dynam-nomad-client-1723405290.us-west-2.elb.amazonaws.com:80\n\nCLI environment variables:\nexport NOMAD_CLIENT_DNS=http://mws-scale-ami-dynam-nomad-client-1723405290.us-west-2.elb.amazonaws.com\nexport NOMAD_ADDR=http://mws-scale-ami-dynam-nomad-server-1599873777.us-west-2.elb.amazonaws.com:4646\n\n"
+  }
+}

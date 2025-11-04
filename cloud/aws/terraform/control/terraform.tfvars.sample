@@ -10,3 +10,12 @@ server_count            = 1
 client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]
+
+# Operating System Configuration (for Packer builds only)
+# If 'ami' is empty, Packer will build a new AMI with these settings
+# If 'ami' is specified, these are ignored and OS info comes from AMI tags
+# Defaults: Ubuntu 24.04 (noble)
+#
+# To build with RedHat 9, add to terraform apply command:
+#   terraform apply -var="packer_os=RedHat" -var="packer_os_version=9.6.0" -var="packer_os_name="
+
