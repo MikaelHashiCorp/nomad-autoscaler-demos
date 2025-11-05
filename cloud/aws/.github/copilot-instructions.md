@@ -27,6 +27,8 @@ This is a **HashiCorp Nomad Autoscaler demonstration environment** that provisio
 
 **IMPORTANT**: Always authenticate to AWS via Doormat before running any Terraform or Packer commands.
 
+**CRITICAL**: AWS credentials are session-specific. Once authenticated, **STAY IN THE SAME TERMINAL** for all subsequent commands. Opening a new terminal will lose your credentials and require re-authentication.
+
 When opening a new Terminal session, navigate to your repository's Terraform control directory:
 ```bash
 # Navigate to wherever you cloned this repository, then:
@@ -46,6 +48,8 @@ doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ;
 **Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
 
 **Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
+
+**⚠️ REMEMBER**: After authentication, use the same terminal for all AWS/Terraform/Packer commands. Do not switch terminals or run commands that spawn new shells (like `./quick-test.sh`) unless you re-authenticate first.
 
 ### Building AMIs with Packer
 

@@ -1,0 +1,31 @@
+Multi-OS Test Report
+====================
+OS Type:      REDHAT
+Test Mode:    terraform
+Date:         Tue Nov  4 20:53:06 PST 2025
+
+Infrastructure:
+--------------
+Server LB:    mws-scale-ami-dynam-nomad-server-1154052376.us-west-2.elb.amazonaws.com
+Client LB:    mws-scale-ami-dynam-nomad-client-1079824297.us-west-2.elb.amazonaws.com
+Server IP:    44.242.165.89
+SSH User:     ec2-user
+
+Service Status:
+--------------
+Consul UI:    http://mws-scale-ami-dynam-nomad-server-1154052376.us-west-2.elb.amazonaws.com:8500/ui
+Nomad UI:     http://mws-scale-ami-dynam-nomad-server-1154052376.us-west-2.elb.amazonaws.com:4646/ui
+Grafana:      http://mws-scale-ami-dynam-nomad-client-1079824297.us-west-2.elb.amazonaws.com:3000
+Web App:      http://mws-scale-ami-dynam-nomad-client-1079824297.us-west-2.elb.amazonaws.com
+
+Cluster Info:
+------------
+Consul Members:        2
+Nomad Nodes:           1
+
+Logs:
+----
+Terraform Init:  /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-init-redhat-20251104-203824.log
+Terraform Plan:  /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-plan-redhat-20251104-203824.log
+Terraform Apply: /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/terraform-apply-redhat-20251104-203824.log
+Outputs:         /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/test-logs/outputs-redhat-20251104-203824.json

@@ -82,13 +82,17 @@ echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
 
 # dnsmasq config
 echo -e "\nConfiguring DNSMASQ...\n"
-echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
+# Configure systemd-resolved if it exists (Ubuntu)
+if systemctl list-unit-files | grep -q systemd-resolved; then
+  echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
+  sudo systemctl restart systemd-resolved
+fi
+
 sudo cp /ops/config/10-consul.dnsmasq /etc/dnsmasq.d/10-consul
 sudo cp /ops/config/99-default.dnsmasq.$CLOUD /etc/dnsmasq.d/99-default
 sudo mv /etc/resolv.conf /etc/resolv.conf.orig
 grep -v "nameserver" /etc/resolv.conf.orig | grep -v -e"^#" | grep -v -e '^$' | sudo tee /etc/resolv.conf
 echo "nameserver 127.0.0.1" | sudo tee -a /etc/resolv.conf
-sudo systemctl restart systemd-resolved
 sudo systemctl enable dnsmasq
 sudo systemctl restart dnsmasq
 
