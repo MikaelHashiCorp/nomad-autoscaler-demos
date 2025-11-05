@@ -26,6 +26,7 @@
 | Install Command | sudo apt-get install -y | sudo dnf install -y |
 | Java Path | /usr/lib/jvm/java-8-openjdk-amd64/jre | /usr/lib/jvm/jre-1.8.0-openjdk |
 | Docker Repo | download.docker.com/linux/ubuntu | download.docker.com/linux/rhel |
+| DNS Management | resolvconf | systemd-resolved (RHEL 9+) |
 
 ## Package Names
 
@@ -223,6 +224,24 @@ Common causes:
 - Network connectivity issues
 - Repository mirrors down
 - Insufficient disk space
+
+### Issue: DNS resolution fails on RedHat 9+
+
+**Symptom:** Docker containers can't pull images, `.consul` domain doesn't resolve
+**Cause:** systemd-resolved conflicts with dnsmasq
+**Solution:** Automatically fixed in provisioning scripts - creates symlink `/etc/resolv.conf` → `/run/systemd/resolve/resolv.conf`
+**Verification:** 
+```bash
+systemctl status systemd-resolved  # Should be active
+dig @127.0.0.1 consul.service.consul  # Should resolve
+```
+
+### Issue: AMI not deleted after terraform destroy
+
+**Solution:** Check `cleanup_ami_on_destroy` variable in `terraform.tfvars`
+- Default: `true` (AMI is deleted)
+- Set to `false` to preserve AMI for reuse
+- Preserved AMIs must be manually deregistered via AWS Console or CLI
 
 ## Migration Path
 

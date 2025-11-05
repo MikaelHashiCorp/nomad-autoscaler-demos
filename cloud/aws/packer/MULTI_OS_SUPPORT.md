@@ -47,6 +47,10 @@ Central OS detection and configuration script that:
 - Source `os-detect.sh` to get `HOME_DIR` and `JAVA_HOME`
 - Use dynamic `HOME_DIR` instead of hardcoded "ubuntu"
 - Use dynamic `JAVA_HOME` from OS detection
+- **systemd-resolved compatibility**: Conditional DNS configuration for RedHat 9+ which uses systemd-resolved
+  - Creates symbolic link from `/run/systemd/resolve/resolv.conf` to `/etc/resolv.conf` if systemd-resolved is active
+  - Restarts systemd-resolved to apply dnsmasq configuration
+  - Ensures Docker containers can resolve `.consul` domains
 
 ### 3. Terraform Compatibility
 
@@ -107,6 +111,19 @@ terraform apply
 
 The `aws-nomad-image` module will automatically build the correct AMI based on the Packer variables.
 
+#### AMI Cleanup Control
+
+You can control whether AMIs are preserved or deleted during `terraform destroy`:
+
+```hcl
+# In terraform.tfvars
+cleanup_ami_on_destroy = false  # Set to false to keep AMI when running terraform destroy
+```
+
+**Default behavior**: AMIs are deregistered and snapshots deleted during destroy (cleanup_ami_on_destroy = true)
+
+**Preserve AMIs**: Set to `false` to keep AMIs for later reuse, saving rebuild time for future deployments
+
 ## Key Design Decisions
 
 1. **OS Detection**: Centralized in `os-detect.sh` to avoid duplication
@@ -136,6 +153,7 @@ The `aws-nomad-image` module will automatically build the correct AMI based on t
 | Java Path | /usr/lib/jvm/java-8-openjdk-amd64/jre | /usr/lib/jvm/jre-1.8.0-openjdk |
 | AMI Owner | Canonical (099720109477) | Red Hat (309956199498) |
 | AMI Naming | ubuntu/images/*ubuntu-{name}-{version}-amd64-server-* | RHEL-{version}_HVM-*-x86_64-*-Hourly2-GP3 |
+| DNS Resolver | resolvconf | systemd-resolved (RHEL 9+) |
 
 ## Troubleshooting
 
@@ -150,6 +168,12 @@ The `aws-nomad-image` module will automatically build the correct AMI based on t
 ### Issue: Docker doesn't start
 - **RedHat**: Ensure docker service is enabled and started (handled in setup.sh)
 - Check user permissions: ec2-user must be in docker group
+
+### Issue: DNS resolution fails for .consul domains (RedHat 9+)
+- **Symptom**: Docker containers can't pull images, `dig @127.0.0.1 consul.service.consul` fails
+- **Cause**: systemd-resolved conflict with dnsmasq
+- **Solution**: Automatically handled in `client.sh` and `server.sh` - creates symlink and restarts systemd-resolved
+- **Verification**: Check `/etc/resolv.conf` points to `/run/systemd/resolve/resolv.conf`
 
 ## Testing
 

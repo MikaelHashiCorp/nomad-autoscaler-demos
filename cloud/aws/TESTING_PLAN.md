@@ -10,7 +10,9 @@ This document outlines the comprehensive testing strategy to validate that both 
 2. ✅ Verify Terraform can deploy infrastructure using both AMI types
 3. ✅ Verify HashiStack services (Consul, Nomad, Vault) function correctly on both OS types
 4. ✅ Verify autoscaling and demo workloads operate correctly
-5. ✅ Verify cleanup process removes both AMIs and instances
+5. ✅ Verify cleanup process removes both AMIs and instances (or preserves them based on configuration)
+6. ✅ Verify DNS resolution works on both OS types, especially RedHat 9+ with systemd-resolved
+7. ✅ Verify region configuration is read from terraform.tfvars in all scripts
 
 ## Prerequisites
 
@@ -233,6 +235,10 @@ systemctl status nomad
 # Check logs
 tail -50 /var/log/provision.log     # Should show OS Detection: Ubuntu
 
+# Check DNS resolution (important for Docker)
+dig @127.0.0.1 consul.service.consul  # Should resolve
+systemctl status dnsmasq             # Should be active
+
 # Exit
 exit
 ```
@@ -273,12 +279,14 @@ aws autoscaling describe-auto-scaling-groups \
 ```bash
 cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control
 
-# Destroy infrastructure
+# Destroy infrastructure (default: cleanup_ami_on_destroy = true)
 terraform destroy -auto-approve
 
 # Wait for completion
-# Expected: All instances terminated, AMI deregistered, snapshots deleted
+# Expected: All instances terminated, AMI deregistered, snapshots deleted (unless cleanup_ami_on_destroy = false)
 ```
+
+**Note**: To test AMI preservation, set `cleanup_ami_on_destroy = false` in terraform.tfvars before running terraform apply.
 
 **Verification**:
 ```bash
@@ -499,6 +507,15 @@ tail -50 /var/log/provision.log     # Should show OS Detection: RedHat
 # Check docker group membership
 groups | grep docker                # Should show docker in groups
 
+# CRITICAL: Check DNS resolution (RedHat 9+ with systemd-resolved)
+dig @127.0.0.1 consul.service.consul  # Should resolve
+systemctl status systemd-resolved    # Should be active
+systemctl status dnsmasq             # Should be active
+ls -la /etc/resolv.conf              # Should be symlink to /run/systemd/resolve/resolv.conf
+
+# Test Docker can pull images (validates DNS works)
+docker pull alpine:latest            # Should succeed
+
 # Exit
 exit
 ```
@@ -601,13 +618,120 @@ cat rhel-outputs.json | jq '.'
 | Grafana shows metrics | ☐ | ☐ | |
 | Webapp responds | ☐ | ☐ | |
 | Terraform destroy cleans up | ☐ | ☐ | |
-| AMI deleted on destroy | ☐ | ☐ | |
+| AMI deleted on destroy | ☐ | ☐ | Or preserved if cleanup_ami_on_destroy=false |
+| DNS resolution works | ☐ | ☐ | Critical for RedHat 9+ |
+| Docker can pull images | ☐ | ☐ | Validates DNS working |
 
 ---
 
-## Phase 4: Edge Cases & Error Scenarios
+## Phase 4: New Features Testing
 
-### 4.1 Test: Invalid OS Variable
+### 4.1 Test: AMI Preservation Feature
+
+**Test cleanup_ami_on_destroy = false:**
+
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control
+
+# Update terraform.tfvars
+echo 'cleanup_ami_on_destroy = false' >> terraform.tfvars
+
+# Deploy
+terraform apply -auto-approve
+
+# Capture AMI ID
+PRESERVED_AMI=$(terraform output -json | jq -r '.ami_id.value')
+echo "AMI to preserve: $PRESERVED_AMI"
+
+# Destroy
+terraform destroy -auto-approve
+
+# Verify AMI still exists
+aws ec2 describe-images --image-ids $PRESERVED_AMI --region us-west-2
+
+# Expected: AMI should still exist
+```
+
+**Test cleanup_ami_on_destroy = true (default):**
+
+```bash
+# Reset terraform.tfvars (remove or comment out cleanup_ami_on_destroy)
+sed -i.bak '/cleanup_ami_on_destroy/d' terraform.tfvars
+
+# Deploy
+terraform apply -auto-approve
+
+# Capture AMI ID
+CLEANUP_AMI=$(terraform output -json | jq -r '.ami_id.value')
+echo "AMI to cleanup: $CLEANUP_AMI"
+
+# Destroy
+terraform destroy -auto-approve
+
+# Verify AMI is deleted
+aws ec2 describe-images --image-ids $CLEANUP_AMI --region us-west-2 2>&1 | grep "InvalidAMIID.NotFound"
+
+# Expected: AMI should be deregistered
+```
+
+### 4.2 Test: Region Configuration
+
+**Verify all scripts read region from terraform.tfvars:**
+
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws
+
+# Check quick-test.sh
+bash -c 'REPO_ROOT="$(pwd)"; TERRAFORM_DIR="$REPO_ROOT/terraform/control"; REGION=$(grep "^region" "$TERRAFORM_DIR/terraform.tfvars" | sed '\''s/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/'\'' | tr -d " "); echo "quick-test.sh detected region: $REGION"'
+
+# Check pre-flight-check.sh
+bash pre-flight-check.sh | grep "Region:"
+
+# Check verify-deployment.sh
+cd terraform/control
+bash ../../verify-deployment.sh | grep "Region:"
+
+# Expected: All scripts should show the same region from terraform.tfvars
+```
+
+### 4.3 Test: RedHat DNS Resolution (systemd-resolved)
+
+**Verify DNS fix on RedHat 9+:**
+
+```bash
+# After deploying RedHat infrastructure
+SERVER_IP=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=*server*" \
+           "Name=instance-state-name,Values=running" \
+  --query 'Reservations[0].Instances[0].PublicIpAddress' \
+  --output text \
+  --region us-west-2)
+
+ssh -i ~/.ssh/your-key.pem ec2-user@$SERVER_IP << 'EOF'
+# Check systemd-resolved is active
+systemctl is-active systemd-resolved
+
+# Check resolv.conf is properly configured
+ls -la /etc/resolv.conf | grep "/run/systemd/resolve/resolv.conf"
+
+# Test .consul domain resolution
+dig @127.0.0.1 consul.service.consul
+
+# Test Docker can resolve and pull
+docker pull alpine:latest
+
+# Check provision log for DNS setup
+grep -i "systemd-resolved\|DNS\|resolv.conf" /var/log/provision.log
+
+echo "✅ DNS resolution test passed"
+EOF
+```
+
+---
+
+## Phase 5: Edge Cases & Error Scenarios
+
+### 5.1 Test: Invalid OS Variable
 ```bash
 cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/packer
 
@@ -617,7 +741,7 @@ packer build -var 'os=CentOS' .
 # Expected: Should fail with error message about unsupported OS
 ```
 
-### 4.2 Test: Mixed OS Deployment (Not Supported)
+### 5.2 Test: Mixed OS Deployment (Not Supported)
 ```bash
 # Build Ubuntu AMI
 packer build -var 'os=Ubuntu' .

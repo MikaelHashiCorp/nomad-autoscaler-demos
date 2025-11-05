@@ -78,7 +78,20 @@ terraform init
 terraform apply
 ```
 
+**Region Configuration**: All scripts read the region from `terraform.tfvars` as the single source of truth. This includes:
+- `quick-test.sh` - Automated testing script
+- `pre-flight-check.sh` - Pre-deployment validation
+- `verify-deployment.sh` - Post-deployment verification
+- No hardcoded regions in any script
+
 **AMI Resolution**: The `aws-nomad-image` module checks if `var.ami_id` exists; if not (or AMI doesn't exist), triggers Packer build automatically via `null_resource.packer_build`.
+
+**AMI Cleanup Control**: Control whether AMIs are preserved during `terraform destroy`:
+```hcl
+# In terraform.tfvars
+cleanup_ami_on_destroy = false  # Set to false to keep AMI for reuse (default: true)
+```
+This is useful for keeping tested AMIs for future deployments without rebuilding.
 
 **Auto-scaling**: Client nodes use `aws_autoscaling_group.nomad_client` (min=0, max=10). The Nomad Autoscaler job (`templates/aws_autoscaler.nomad.tpl`) monitors Prometheus metrics and adjusts ASG capacity.
 
@@ -95,6 +108,8 @@ After `terraform apply`, outputs provide:
 - **Logging pattern**: All scripts (`setup.sh`, `server.sh`, `client.sh`, `net.sh`) use unified logging with `tee` to `/var/log/provision.log` and prevent duplicate logging with `_PROVISION_LOG_INITIALIZED` guard
 - **Error handling**: `set -Eeuo pipefail` and `trap 'log "failed (exit code $?)"' ERR` for all provisioners
 - **Single execution**: `set-prompt.sh` uses marker file `/etc/.custom_prompt_set` to ensure idempotency
+- **OS Detection**: `os-detect.sh` provides centralized OS detection and package manager abstraction for Ubuntu/RedHat support
+- **DNS Compatibility**: RedHat 9+ systemd-resolved automatically configured to work with dnsmasq
 
 ### Terraform Module Pattern
 - **Shared modules**: `aws/terraform/modules/` contains AWS-specific modules; `shared/terraform/modules/` contains cloud-agnostic Nomad job specs
@@ -139,6 +154,8 @@ After `terraform apply`, outputs provide:
 5. **Autoscaler not scaling**: Check Prometheus is scraping Nomad metrics (`http://<prometheus>:9090/targets`) and autoscaler logs (`nomad logs -job autoscaler`)
 6. **Port conflicts**: Dynamic ports require security group ingress rules for 20000-32000 (configured in `sg.tf`)
 7. **DNS resolution failures**: Ensure dnsmasq is running (`systemctl status dnsmasq`) and `/etc/resolv.conf` has `nameserver 127.0.0.1`
+8. **RedHat DNS issues**: On RHEL 9+, systemd-resolved must be configured to work with dnsmasq (automatically handled in provisioning scripts)
+9. **AMI not cleaned up**: Check `cleanup_ami_on_destroy` setting in terraform.tfvars (default: true for cleanup)
 
 ## File Organization Patterns
 
