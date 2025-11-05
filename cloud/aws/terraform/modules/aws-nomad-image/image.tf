@@ -81,7 +81,7 @@ data "aws_ami" "built" {
 # Step 3: Create cleanup file AFTER AMI is found (breaks circular dependency)
 resource "local_file" "cleanup" {
   depends_on = [data.aws_ami.built]
-  count      = local.build_image ? 1 : 0
+  count      = local.build_image && var.cleanup_ami_on_destroy ? 1 : 0
 
   content         = "${local.image_id},${local.snapshot_id},${var.region}"
   filename        = ".cleanup-${local.image_id}"

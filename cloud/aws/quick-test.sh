@@ -41,7 +41,19 @@ warn() {
 REPO_ROOT="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud"
 PACKER_DIR="$REPO_ROOT/aws/packer"
 TERRAFORM_DIR="$REPO_ROOT/aws/terraform/control"
-REGION="us-west-2"
+
+# Read region from terraform.tfvars
+if [ -f "$TERRAFORM_DIR/terraform.tfvars" ]; then
+  REGION=$(grep '^region' "$TERRAFORM_DIR/terraform.tfvars" | sed 's/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
+  if [ -z "$REGION" ]; then
+    error "Could not read region from terraform.tfvars"
+    exit 1
+  fi
+else
+  error "terraform.tfvars not found at $TERRAFORM_DIR/terraform.tfvars"
+  exit 1
+fi
+log "Using AWS Region: $REGION"
 
 # OS-specific variables
 if [[ "$OS_TYPE" == "ubuntu" ]]; then

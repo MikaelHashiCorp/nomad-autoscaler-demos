@@ -118,6 +118,12 @@ variable "packer_os_name" {
   default     = "noble"
 }
 
+variable "cleanup_ami_on_destroy" {
+  description = "Whether to deregister the AMI and delete snapshots when running terraform destroy. Set to false to keep AMIs for later use."
+  type        = bool
+  default     = true
+}
+
 variable "nomad_autoscaler_image" {
   description = "The Docker image to use for the Nomad Autoscaler job."
   type        = string

@@ -28,14 +28,15 @@ module "my_ip_address" {
 module "hashistack_image" {
   source = "../modules/aws-nomad-image"
 
-  ami_id           = var.ami
-  region           = var.region
-  stack_name       = var.stack_name
-  owner_name       = var.owner_name
-  owner_email      = var.owner_email
-  packer_os        = var.packer_os
-  packer_os_version = var.packer_os_version
-  packer_os_name   = var.packer_os_name
+  ami_id                  = var.ami
+  region                  = var.region
+  stack_name              = var.stack_name
+  owner_name              = var.owner_name
+  owner_email             = var.owner_email
+  packer_os               = var.packer_os
+  packer_os_version       = var.packer_os_version
+  packer_os_name          = var.packer_os_name
+  cleanup_ami_on_destroy  = var.cleanup_ami_on_destroy
 }
 
 module "hashistack_cluster" {

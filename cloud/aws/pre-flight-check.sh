@@ -103,8 +103,21 @@ fi
 # Check 5: AWS Region access
 echo ""
 echo "5. Checking AWS region access..."
-REGION="us-west-2"
-if aws ec2 describe-regions --region-names $REGION &> /dev/null; then
+
+# Read region from terraform.tfvars
+TF_VARS_FILE="$TF_DIR/terraform.tfvars"
+if [ -f "$TF_VARS_FILE" ]; then
+  REGION=$(grep '^region' "$TF_VARS_FILE" | sed 's/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
+  if [ -z "$REGION" ]; then
+    echo "   ❌ Could not read region from terraform.tfvars"
+    exit 1
+  fi
+else
+  echo "   ❌ terraform.tfvars not found"
+  exit 1
+fi
+
+if aws ec2 describe-regions --region $REGION --region-names $REGION &> /dev/null; then
   echo "   ✅ Can access region: $REGION"
 else
   echo "   ❌ Cannot access region: $REGION"

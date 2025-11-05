@@ -48,3 +48,9 @@ variable "packer_os_name" {
   default     = "noble"
   description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami_id is empty."
 }
+
+variable "cleanup_ami_on_destroy" {
+  type        = bool
+  default     = true
+  description = "Whether to deregister the AMI and delete snapshots when running terraform destroy. Set to false to keep AMIs for later use."
+}

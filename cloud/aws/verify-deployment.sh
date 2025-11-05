@@ -35,6 +35,19 @@ NOMAD_SERVER_LB=$(terraform output -raw ip_addresses | grep "Nomad UI" | sed 's/
 CLIENT_LB=$(terraform output -raw ip_addresses | grep "Grafana dashboard" | sed 's/.*http:\/\/\(.*\):3000.*/\1/')
 AWS_REGION=$(terraform output -json | jq -r '.ip_addresses.value' | grep -o 'us-[a-z]*-[0-9]*' | head -1)
 
+# If region not found in outputs, read from terraform.tfvars
+if [ -z "$AWS_REGION" ]; then
+  if [ -f "terraform.tfvars" ]; then
+    AWS_REGION=$(grep '^region' terraform.tfvars | sed 's/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
+  fi
+fi
+
+# Final fallback
+if [ -z "$AWS_REGION" ]; then
+  log_warn "Could not determine AWS region, using default: us-west-2"
+  AWS_REGION="us-west-2"
+fi
+
 if [ -z "$NOMAD_SERVER_LB" ]; then
   log_error "Could not determine Nomad server load balancer address"
   exit 1
@@ -43,7 +56,7 @@ fi
 export NOMAD_ADDR="http://${NOMAD_SERVER_LB}:4646"
 
 log_info "Using NOMAD_ADDR: $NOMAD_ADDR"
-log_info "Using AWS Region: ${AWS_REGION:-us-west-2}"
+log_info "Using AWS Region: ${AWS_REGION}"
 log_info ""
 
 # Test 1: Nomad Node Status
@@ -69,13 +82,13 @@ echo ""
 log_info "Test 2: Finding client instance IP address..."
 
 # Check if AWS credentials are available
-if ! aws sts get-caller-identity --region "${AWS_REGION:-us-west-2}" >/dev/null 2>&1; then
+if ! aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
   log_warn "AWS credentials not found. Skipping client IP lookup."
   log_warn "   To authenticate: doormat login -f && eval \$(doormat aws export --account <account>)"
   CLIENT_IP=""
 else
   CLIENT_IP=$(aws ec2 describe-instances \
-    --region "${AWS_REGION:-us-west-2}" \
+    --region "${AWS_REGION}" \
     --filters "Name=tag:Name,Values=*-client" "Name=instance-state-name,Values=running" \
     --query 'Reservations[0].Instances[0].PublicIpAddress' \
     --output text 2>/dev/null || echo "")
