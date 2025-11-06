@@ -245,8 +245,8 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
     warn "Skipping service tests due to missing ELB DNS names"
   else
   log ""
-  log "Waiting for services to start (3 minutes)..."
-  for i in {1..36}; do
+  log "Waiting for ELB health checks to pass (90 seconds)..."
+  for i in {1..18}; do
     echo -n "."
     sleep 5
   done
