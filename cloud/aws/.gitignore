@@ -1,2 +1,3 @@
 aws_autoscaler.nomad
 *.out
+test-logs

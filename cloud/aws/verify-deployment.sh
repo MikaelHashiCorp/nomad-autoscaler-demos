@@ -34,6 +34,8 @@ log_info "Fetching Terraform outputs..."
 NOMAD_SERVER_LB=$(terraform output -raw ip_addresses | grep "Nomad UI" | sed 's/.*http:\/\/\(.*\):4646.*/\1/')
 CLIENT_LB=$(terraform output -raw ip_addresses | grep "Grafana dashboard" | sed 's/.*http:\/\/\(.*\):3000.*/\1/')
 AWS_REGION=$(terraform output -json | jq -r '.ip_addresses.value' | grep -o 'us-[a-z]*-[0-9]*' | head -1)
+SSH_USER=$(terraform output -raw ip_addresses | grep "SSH User:" | sed 's/.*SSH User:[[:space:]]*\(.*\)/\1/' | tr -d '\r\n ')
+SSH_KEY=$(grep '^key_name' terraform.tfvars | sed 's/key_name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
 
 # If region not found in outputs, read from terraform.tfvars
 if [ -z "$AWS_REGION" ]; then
@@ -48,6 +50,18 @@ if [ -z "$AWS_REGION" ]; then
   AWS_REGION="us-west-2"
 fi
 
+# Default SSH user if not found in outputs
+if [ -z "$SSH_USER" ]; then
+  log_warn "Could not determine SSH user from outputs, defaulting to 'ubuntu'"
+  SSH_USER="ubuntu"
+fi
+
+# Check if SSH key is available
+if [ -z "$SSH_KEY" ]; then
+  log_warn "Could not determine SSH key from terraform.tfvars"
+  SSH_KEY="your-key-name"
+fi
+
 if [ -z "$NOMAD_SERVER_LB" ]; then
   log_error "Could not determine Nomad server load balancer address"
   exit 1
@@ -57,6 +71,8 @@ export NOMAD_ADDR="http://${NOMAD_SERVER_LB}:4646"
 
 log_info "Using NOMAD_ADDR: $NOMAD_ADDR"
 log_info "Using AWS Region: ${AWS_REGION}"
+log_info "Using SSH User: ${SSH_USER}"
+log_info "Using SSH Key: ${SSH_KEY}"
 log_info ""
 
 # Test 1: Nomad Node Status
@@ -306,10 +322,59 @@ echo "  Grafana:     http://${CLIENT_LB}:3000/d/AQphTqmMk/demo"
 echo "  Prometheus:  http://${CLIENT_LB}:9090"
 echo "  Webapp:      http://${CLIENT_LB}:80"
 echo ""
-if [ -n "$CLIENT_IP" ]; then
-  echo "Client Node: ssh ec2-user@${CLIENT_IP}"
+
+# Get instance details if AWS credentials are available
+if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
+  echo "Instance Details:"
   echo ""
+  
+  # Get server instances
+  if SERVER_INSTANCES=$(aws ec2 describe-instances \
+    --region "${AWS_REGION}" \
+    --filters "Name=tag:Name,Values=*-server-*" "Name=instance-state-name,Values=running" \
+    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress]' \
+    --output text 2>/dev/null); then
+    
+    if [ -n "$SERVER_INSTANCES" ]; then
+      echo "  Server Nodes:"
+      echo "$SERVER_INSTANCES" | while IFS=$'\t' read -r instance_id name public_ip private_ip; do
+        echo "    - Instance: $instance_id"
+        echo "      Name:     $name"
+        echo "      Public:   $public_ip"
+        echo "      Private:  $private_ip"
+        echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        echo ""
+      done
+    fi
+  fi
+  
+  # Get client instances
+  if CLIENT_INSTANCES=$(aws ec2 describe-instances \
+    --region "${AWS_REGION}" \
+    --filters "Name=tag:Name,Values=*-client" "Name=instance-state-name,Values=running" \
+    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress]' \
+    --output text 2>/dev/null); then
+    
+    if [ -n "$CLIENT_INSTANCES" ]; then
+      echo "  Client Nodes:"
+      echo "$CLIENT_INSTANCES" | while IFS=$'\t' read -r instance_id name public_ip private_ip; do
+        echo "    - Instance: $instance_id"
+        echo "      Name:     $name"
+        echo "      Public:   $public_ip"
+        echo "      Private:  $private_ip"
+        echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        echo ""
+      done
+    fi
+  fi
+else
+  # Fallback if AWS credentials not available
+  if [ -n "$CLIENT_IP" ]; then
+    echo "Client Node SSH: ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${CLIENT_IP}"
+    echo ""
+  fi
 fi
+
 echo "To destroy infrastructure:"
 echo "  cd terraform/control && terraform destroy -auto-approve"
 echo ""
