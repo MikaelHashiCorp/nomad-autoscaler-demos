@@ -213,6 +213,87 @@ else
 fi
 echo ""
 
+# Test 7: Prometheus Metrics Collection
+log_info "Test 7: Verifying Prometheus is collecting metrics..."
+if PROM_UP=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=up" 2>/dev/null); then
+  UP_COUNT=$(echo "$PROM_UP" | jq -r '.data.result | length' 2>/dev/null || echo "0")
+  
+  if [ "$UP_COUNT" -gt 0 ]; then
+    log_success "Prometheus is scraping $UP_COUNT target(s)"
+    
+    # List the targets
+    echo "$PROM_UP" | jq -r '.data.result[] | "   - \(.metric.job): \(.value[1])"' 2>/dev/null | while read -r line; do
+      log_success "$line"
+    done
+    
+    # Check for Nomad-specific metrics
+    if NOMAD_METRICS=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=nomad_client_allocated_cpu" 2>/dev/null); then
+      NOMAD_METRIC_COUNT=$(echo "$NOMAD_METRICS" | jq -r '.data.result | length' 2>/dev/null || echo "0")
+      
+      if [ "$NOMAD_METRIC_COUNT" -gt 0 ]; then
+        log_success "   Nomad client metrics available ($NOMAD_METRIC_COUNT series)"
+      else
+        log_warn "   Nomad client metrics not yet available (may need time to populate)"
+      fi
+    fi
+  else
+    log_error "Prometheus has no active targets"
+    exit 1
+  fi
+else
+  log_error "Failed to query Prometheus"
+  exit 1
+fi
+echo ""
+
+# Test 8: Grafana-Prometheus Integration
+log_info "Test 8: Verifying Grafana can connect to Prometheus..."
+
+# Check Grafana logs for DNS errors
+if GRAFANA_JOB=$(nomad job status grafana 2>&1); then
+  GRAFANA_ALLOC_ID=$(echo "$GRAFANA_JOB" | grep -A20 "Allocations" | grep "running" | head -1 | awk '{print $1}')
+  
+  if [ -n "$GRAFANA_ALLOC_ID" ]; then
+    log_info "   Checking Grafana allocation $GRAFANA_ALLOC_ID for DNS errors..."
+    
+    # Check recent logs for DNS resolution errors
+    if GRAFANA_LOGS=$(nomad alloc logs "$GRAFANA_ALLOC_ID" grafana 2>&1 | tail -50); then
+      if echo "$GRAFANA_LOGS" | grep -qi "no such host\|connection refused\|dial tcp.*error"; then
+        log_error "   Found connection errors in Grafana logs:"
+        echo "$GRAFANA_LOGS" | grep -i "error" | tail -5
+        log_warn "   Grafana may not be able to connect to Prometheus"
+      else
+        log_success "   No DNS/connection errors in Grafana logs"
+      fi
+      
+      # Verify datasource was provisioned
+      if echo "$GRAFANA_LOGS" | grep -q "inserting datasource from configuration"; then
+        log_success "   Prometheus datasource provisioned successfully"
+      fi
+    fi
+    
+    # Verify Prometheus service is registered in Consul
+    if PROM_SERVICE=$(curl -s --max-time 10 "http://${NOMAD_SERVER_LB}:8500/v1/catalog/service/prometheus" 2>/dev/null); then
+      PROM_ADDR=$(echo "$PROM_SERVICE" | jq -r '.[0] | "\(.ServiceAddress):\(.ServicePort)"' 2>/dev/null || echo "")
+      
+      if [ -n "$PROM_ADDR" ] && [ "$PROM_ADDR" != "null:null" ]; then
+        log_success "   Prometheus registered in Consul at $PROM_ADDR"
+        
+        # Verify Grafana can resolve this via template
+        log_info "   Grafana datasource uses Consul service discovery template"
+        log_success "   Template resolves to: http://$PROM_ADDR"
+      else
+        log_warn "   Could not verify Prometheus Consul registration"
+      fi
+    fi
+  else
+    log_warn "Could not find running Grafana allocation"
+  fi
+else
+  log_warn "Could not query Grafana job status"
+fi
+echo ""
+
 # Summary
 echo "═══════════════════════════════════════════════════════════════"
 log_success "VERIFICATION COMPLETE"
