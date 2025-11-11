@@ -112,15 +112,15 @@ variable "packer_os" {
 }
 
 variable "packer_os_version" {
-  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. For Windows: 2019, 2022, 2025. Only used when ami is empty."
+  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9, 9.6.0, etc. For Windows: 2019, 2022, 2025. Only used when ami is empty. Default (24.04) is for Ubuntu; override for RedHat (9) or Windows (2022)."
   type        = string
-  default     = "24.04"
+  default     = "24.04"  # Ubuntu default; use "9" for RedHat, "2022" for Windows
 }
 
 variable "packer_os_name" {
-  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat and Windows. Only used when ami is empty."
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat and Windows. Only used when ami is empty. Default (noble) is for Ubuntu 24.04; use empty string for RedHat/Windows."
   type        = string
-  default     = "noble"
+  default     = "noble"  # Ubuntu 24.04 default; use "" for RedHat/Windows
 }
 
 variable "cleanup_ami_on_destroy" {

@@ -56,6 +56,13 @@ if [ -z "$SSH_USER" ]; then
   SSH_USER="ubuntu"
 fi
 
+# Detect if this is a Windows deployment
+IS_WINDOWS=false
+if [ "$SSH_USER" = "Administrator" ]; then
+  IS_WINDOWS=true
+  log_info "Detected Windows deployment (SSH User: Administrator)"
+fi
+
 # Check if SSH key is available
 if [ -z "$SSH_KEY" ]; then
   log_warn "Could not determine SSH key from terraform.tfvars"
@@ -342,7 +349,11 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
         echo "      Name:     $name"
         echo "      Public:   $public_ip"
         echo "      Private:  $private_ip"
-        echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        if [ "$IS_WINDOWS" = true ]; then
+          echo "      RDP:      Remote Desktop to ${public_ip}:3389 (User: ${SSH_USER})"
+        else
+          echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        fi
         echo ""
       done
     fi
@@ -362,7 +373,11 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
         echo "      Name:     $name"
         echo "      Public:   $public_ip"
         echo "      Private:  $private_ip"
-        echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        if [ "$IS_WINDOWS" = true ]; then
+          echo "      RDP:      Remote Desktop to ${public_ip}:3389 (User: ${SSH_USER})"
+        else
+          echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
+        fi
         echo ""
       done
     fi
@@ -370,7 +385,11 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
 else
   # Fallback if AWS credentials not available
   if [ -n "$CLIENT_IP" ]; then
-    echo "Client Node SSH: ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${CLIENT_IP}"
+    if [ "$IS_WINDOWS" = true ]; then
+      echo "Client Node RDP: Remote Desktop to ${CLIENT_IP}:3389 (User: ${SSH_USER})"
+    else
+      echo "Client Node SSH: ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${CLIENT_IP}"
+    fi
     echo ""
   fi
 fi

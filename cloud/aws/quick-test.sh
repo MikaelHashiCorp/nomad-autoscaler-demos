@@ -1,6 +1,6 @@
 #!/bin/bash
 # Quick Test Script for Multi-OS Support
-# Usage: ./quick-test.sh [ubuntu|redhat] [packer-only|terraform]
+# Usage: ./quick-test.sh [ubuntu|redhat|windows] [packer-only|terraform]
 #   packer-only: Only test Packer build (no Terraform)
 #   terraform:   Run Terraform apply (default - Terraform will call Packer if needed)
 #
@@ -76,8 +76,18 @@ elif [[ "$OS_TYPE" == "redhat" ]]; then
   TF_OS="RedHat"
   TF_OS_VERSION="9.6.0"
   TF_OS_NAME=""
+elif [[ "$OS_TYPE" == "windows" ]]; then
+  log "Testing Windows Server build..."
+  PACKER_VARS="-var 'os=Windows' -var 'os_version=2022' -var 'os_name=' -var 'name_prefix=scale-mws-win'"
+  NAME_FILTER="scale-mws-win-*"
+  SSH_USER="Administrator"
+  EXPECTED_OS_ID="windows"
+  EXPECTED_PKG_MGR="choco"
+  TF_OS="Windows"
+  TF_OS_VERSION="2022"
+  TF_OS_NAME=""
 else
-  error "Invalid OS type. Use 'ubuntu' or 'redhat'"
+  error "Invalid OS type. Use 'ubuntu', 'redhat', or 'windows'"
   exit 1
 fi
 

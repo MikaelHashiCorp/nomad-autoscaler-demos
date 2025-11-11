@@ -10,8 +10,11 @@ variable "region"        { default = "us-west-2" }
 variable "name_prefix"   { default = "scale-mws" }
 variable "architecture"  { default = "amd64" }
 variable "os"            { default = "Ubuntu" }
+# NOTE: os_version defaults to Ubuntu 24.04. 
+# For RedHat, use: packer build -var 'os=RedHat' -var 'os_version=9' -var 'os_name=' .
+# For Windows, use: packer build -var 'os=Windows' -var 'os_version=2022' -var 'os_name=' .
 variable "os_version"    { default = "24.04" }
-variable "os_name"       { default = "noble" }
+variable "os_name"       { default = "noble" }  # Ubuntu codename (leave empty for RedHat/Windows)
 
 # Input variables for version management with hybrid fallback system
 variable "cni_version" { 
