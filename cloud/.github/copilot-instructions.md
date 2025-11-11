@@ -27,8 +27,6 @@ This is a **HashiCorp Nomad Autoscaler demonstration environment** that provisio
 
 **IMPORTANT**: Always authenticate to AWS via Doormat before running any Terraform or Packer commands.
 
-**CRITICAL**: AWS credentials are session-specific. Once authenticated, **STAY IN THE SAME TERMINAL** for all subsequent commands. Opening a new terminal will lose your credentials and require re-authentication.
-
 When opening a new Terminal session, navigate to your repository's Terraform control directory:
 ```bash
 # Navigate to wherever you cloned this repository, then:
@@ -38,7 +36,7 @@ cd cloud/aws/terraform/control
 **Example paths** (yours will vary based on where you cloned the repo):
 - `cd ~/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control`
 - `cd ~/projects/nomad-autoscaler-demos/cloud/aws/terraform/control`
-- `cd ~/workspace/nomad-demos/cloud/aws/terraform/control`
+- `cd ~/workspace/nomad-autoscaler-demos/cloud/aws/terraform/control`
 
 Then authenticate:
 ```bash
@@ -48,8 +46,6 @@ doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ;
 **Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
 
 **Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
-
-**⚠️ REMEMBER**: After authentication, use the same terminal for all AWS/Terraform/Packer commands. Do not switch terminals or run commands that spawn new shells (like `./quick-test.sh`) unless you re-authenticate first.
 
 ### Building AMIs with Packer
 
@@ -78,20 +74,7 @@ terraform init
 terraform apply
 ```
 
-**Region Configuration**: All scripts read the region from `terraform.tfvars` as the single source of truth. This includes:
-- `quick-test.sh` - Automated testing script
-- `pre-flight-check.sh` - Pre-deployment validation
-- `verify-deployment.sh` - Post-deployment verification
-- No hardcoded regions in any script
-
 **AMI Resolution**: The `aws-nomad-image` module checks if `var.ami_id` exists; if not (or AMI doesn't exist), triggers Packer build automatically via `null_resource.packer_build`.
-
-**AMI Cleanup Control**: Control whether AMIs are preserved during `terraform destroy`:
-```hcl
-# In terraform.tfvars
-cleanup_ami_on_destroy = false  # Set to false to keep AMI for reuse (default: true)
-```
-This is useful for keeping tested AMIs for future deployments without rebuilding.
 
 **Auto-scaling**: Client nodes use `aws_autoscaling_group.nomad_client` (min=0, max=10). The Nomad Autoscaler job (`templates/aws_autoscaler.nomad.tpl`) monitors Prometheus metrics and adjusts ASG capacity.
 
@@ -108,8 +91,6 @@ After `terraform apply`, outputs provide:
 - **Logging pattern**: All scripts (`setup.sh`, `server.sh`, `client.sh`, `net.sh`) use unified logging with `tee` to `/var/log/provision.log` and prevent duplicate logging with `_PROVISION_LOG_INITIALIZED` guard
 - **Error handling**: `set -Eeuo pipefail` and `trap 'log "failed (exit code $?)"' ERR` for all provisioners
 - **Single execution**: `set-prompt.sh` uses marker file `/etc/.custom_prompt_set` to ensure idempotency
-- **OS Detection**: `os-detect.sh` provides centralized OS detection and package manager abstraction for Ubuntu/RedHat support
-- **DNS Compatibility**: RedHat 9+ systemd-resolved automatically configured to work with dnsmasq
 
 ### Terraform Module Pattern
 - **Shared modules**: `aws/terraform/modules/` contains AWS-specific modules; `shared/terraform/modules/` contains cloud-agnostic Nomad job specs
@@ -145,17 +126,12 @@ After `terraform apply`, outputs provide:
 ## Common Pitfalls
 
 1. **Missing AWS authentication**: Always run Doormat authentication before any AWS/Terraform/Packer commands. Verify with `aws sts get-caller-identity`.
-2. **Wrong working directory**: 
-   - Terraform commands must be run from `cloud/aws/terraform/control/` (relative to repo root)
-   - Packer commands must be run from `cloud/aws/packer/` (relative to repo root)
-   - Use `pwd` to verify your current directory
+2. **Wrong working directory**: Terraform commands must be run from `aws/terraform/control/`. Packer commands from `aws/packer/`.
 3. **Stale AMI references**: If Packer builds succeed but Terraform uses old AMI, check `ami_id` in `terraform.tfvars` and ensure `data.aws_ami.built` filter matches `name_prefix`
 4. **Client nodes not joining**: Verify `ConsulAutoJoin` tag exists on instances and IAM role has `ec2:DescribeInstances` permission
 5. **Autoscaler not scaling**: Check Prometheus is scraping Nomad metrics (`http://<prometheus>:9090/targets`) and autoscaler logs (`nomad logs -job autoscaler`)
 6. **Port conflicts**: Dynamic ports require security group ingress rules for 20000-32000 (configured in `sg.tf`)
 7. **DNS resolution failures**: Ensure dnsmasq is running (`systemctl status dnsmasq`) and `/etc/resolv.conf` has `nameserver 127.0.0.1`
-8. **RedHat DNS issues**: On RHEL 9+, systemd-resolved must be configured to work with dnsmasq (automatically handled in provisioning scripts)
-9. **AMI not cleaned up**: Check `cleanup_ami_on_destroy` setting in terraform.tfvars (default: true for cleanup)
 
 ## File Organization Patterns
 

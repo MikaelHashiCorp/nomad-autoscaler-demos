@@ -99,6 +99,31 @@ variable "allowlist_ip" {
   default     = []
 }
 
+# Packer build configuration (only used when ami is empty and building new AMI)
+variable "packer_os" {
+  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat. Only used when ami is empty."
+  type        = string
+  default     = "Ubuntu"
+}
+
+variable "packer_os_version" {
+  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. Only used when ami is empty."
+  type        = string
+  default     = "24.04"
+}
+
+variable "packer_os_name" {
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami is empty."
+  type        = string
+  default     = "noble"
+}
+
+variable "cleanup_ami_on_destroy" {
+  description = "Whether to deregister the AMI and delete snapshots when running terraform destroy. Set to false to keep AMIs for later use."
+  type        = bool
+  default     = true
+}
+
 variable "nomad_autoscaler_image" {
   description = "The Docker image to use for the Nomad Autoscaler job."
   type        = string

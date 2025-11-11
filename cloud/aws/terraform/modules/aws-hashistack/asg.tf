@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 resource "aws_launch_template" "nomad_client" {
-  name_prefix            = "nomad-client"
+  name_prefix            = "client"
   image_id               = var.ami
   instance_type          = var.client_instance_type
   key_name               = var.key_name
@@ -46,7 +46,7 @@ resource "aws_launch_template" "nomad_client" {
 }
 
 resource "aws_autoscaling_group" "nomad_client" {
-  name               = "${var.stack_name}-nomad_client"
+  name               = "${var.stack_name}-client"
   availability_zones = var.availability_zones
   desired_capacity   = var.client_count
   min_size           = 0

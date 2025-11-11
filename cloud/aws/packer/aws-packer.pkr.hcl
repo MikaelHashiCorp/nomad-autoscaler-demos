@@ -20,18 +20,25 @@ source "amazon-ebs" "hashistack" {
   region        = var.region
   instance_type = "t3a.2xlarge"
 
+  # Conditional source AMI filter based on OS type
   source_ami_filter {
-    filters = {
+    filters = var.os == "Ubuntu" ? {
       virtualization-type = "hvm"
       name                = "ubuntu/images/*ubuntu-${var.os_name}-${var.os_version}-amd64-server-*"
       root-device-type    = "ebs"
+    } : {
+      virtualization-type = "hvm"
+      name                = "RHEL-${var.os_version}_HVM-*-x86_64-*-Hourly2-GP3"
+      root-device-type    = "ebs"
     }
-    owners      = ["099720109477"] # Canonical's owner ID
+    # Ubuntu: Canonical's owner ID, RedHat: Red Hat's owner ID
+    owners      = var.os == "Ubuntu" ? ["099720109477"] : ["309956199498"]
     most_recent = true
   }
 
   communicator = "ssh"
-  ssh_username = "ubuntu"
+  # Use 'ubuntu' for Ubuntu, 'ec2-user' for RedHat
+  ssh_username = var.os == "Ubuntu" ? "ubuntu" : "ec2-user"
 
   tags = {
     Name           = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
@@ -59,25 +66,27 @@ build {
     ]
   }
 
+  # Conditional debconf setup for Ubuntu only (inline conditional)
   provisioner "shell" {
-    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
+    valid_exit_codes = [
       "0",
       "1",
       "2"
     ]
     inline = [
-      "echo set debconf to Noninteractive", 
-      "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections" ]
+      "if [ -f /etc/debian_version ]; then echo 'set debconf to Noninteractive'; echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections; fi"
+    ]
   }
 
+  # Conditional debconf lock cleanup for Ubuntu only
   provisioner "shell" {
-    valid_exit_codes = [  ## Redefine exit codes.  https://stackoverflow.com/questions/70719041/packer-errors-on-attempt-to-run-a-script
+    valid_exit_codes = [
       "0",
       "1",
       "2"
     ]
     inline = [
-      "sudo fuser -v -k /var/cache/debconf/config.dat"
+      "if [ -f /etc/debian_version ]; then sudo fuser -v -k /var/cache/debconf/config.dat || true; fi"
     ]
   }
 
@@ -98,7 +107,8 @@ build {
     environment_vars = [
       "CNIVERSION=${var.cni_version}",
       "CONSULVERSION=${var.consul_version}",
-      "NOMADVERSION=${var.nomad_version}"
+      "NOMADVERSION=${var.nomad_version}",
+      "TARGET_OS=${var.os}"
     ]
   }
 }

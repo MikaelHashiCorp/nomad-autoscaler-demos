@@ -43,6 +43,7 @@ locals {
   snapshot_id = [for b in local.image.block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0]
 }
 
+# Step 1: Build the AMI with Packer (blocks until complete)
 resource "null_resource" "packer_build" {
   count = local.build_image ? 1 : 0
 
@@ -55,13 +56,32 @@ source env-pkr-var.sh && \
     -var 'created_email=${var.owner_email}' \
     -var 'region=${var.region}' \
     -var 'name_prefix=${var.stack_name}' \
+    -var 'os=${var.packer_os}' \
+    -var 'os_version=${var.packer_os_version}' \
+    -var 'os_name=${var.packer_os_name}' \
     .
 EOF
   }
 }
 
+# Step 2: Find the AMI that was just built (depends on Packer completing)
+data "aws_ami" "built" {
+  depends_on = [null_resource.packer_build]
+  count      = local.build_image ? 1 : 0
+
+  owners      = ["self"]
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["${var.stack_name}-*"]
+  }
+}
+
+# Step 3: Create cleanup file AFTER AMI is found (breaks circular dependency)
 resource "local_file" "cleanup" {
-  count = local.build_image ? 1 : 0
+  depends_on = [data.aws_ami.built]
+  count      = local.build_image && var.cleanup_ami_on_destroy ? 1 : 0
 
   content         = "${local.image_id},${local.snapshot_id},${var.region}"
   filename        = ".cleanup-${local.image_id}"
@@ -73,18 +93,5 @@ resource "local_file" "cleanup" {
 aws ec2 deregister-image --image-id ${split(",", self.content)[0]} --region ${split(",", self.content)[2]} &&
 aws ec2 delete-snapshot --snapshot-id ${split(",", self.content)[1]} --region ${split(",", self.content)[2]}
 EOF
-  }
-}
-
-data "aws_ami" "built" {
-  depends_on = [null_resource.packer_build]
-  count      = local.build_image ? 1 : 0
-
-  owners      = ["self"]
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["${var.stack_name}-*"]
   }
 }

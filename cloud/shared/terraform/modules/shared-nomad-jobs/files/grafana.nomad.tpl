@@ -58,7 +58,7 @@ datasources:
 - name: Prometheus
   type: prometheus
   access: proxy
-  url: http://prometheus.service.consul:9090
+  url: http://{{ range service "prometheus" }}{{ .Address }}:{{ .Port }}{{ end }}
   isDefault: true
   version: 1
   editable: false
