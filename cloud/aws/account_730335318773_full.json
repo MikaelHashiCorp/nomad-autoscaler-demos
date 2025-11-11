@@ -1,0 +1,850 @@
+[
+    [
+        "ami-03ccba933fea39a98",
+        "packer-rhel9-aap-20251018100404",
+        "2025-10-18T10:41:36.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-00dc4be3622d31c76",
+        "ubuntu_2204_nomad_server_1760781813",
+        "2025-10-18T10:13:12.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ee51a1d32946e0cd",
+        "ubuntu_2204_cis1_base_1745899507",
+        "2025-04-29T04:06:42.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0072c14c0a7bcb333",
+        "ubuntu_2204_base_1760729351",
+        "2025-10-17T19:33:18.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0e4009df5a63c6526",
+        "rhel_9_cis1_base_1743895602",
+        "2025-04-05T23:27:36.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0e39242bff4f32005",
+        "rhel_9_cis1_base_1745899724",
+        "2025-04-29T04:09:55.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0b208c37ce110384b",
+        "ubuntu_2204_cis1_base_1745513870",
+        "2025-04-24T16:59:46.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-09464d164be684c65",
+        "packer-rhel9-openshift-crc-20251025100402",
+        "2025-10-25T11:43:56.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL OpenShift (CRC) AMI built by Packer"
+    ],
+    [
+        "ami-0f8b62f0868ad2acc",
+        "ubuntu_2204_cis1_nginx_1746541903",
+        "2025-05-06T14:33:38.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0667183e48fbb687c",
+        "ubuntu_2204_health_assessments_1762277111",
+        "2025-11-04T17:31:25.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0eea077d593389572",
+        "rhel_9_3_base_1760729345",
+        "2025-10-17T19:31:50.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08b5cd58e0269bcd6",
+        "rhel_9_3_base_1750080625",
+        "2025-06-16T13:31:33.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0c0db3910d645b864",
+        "ubuntu_2204_cis1_nomad_client_lnx_1760729353",
+        "2025-10-17T19:40:40.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-091332395d0625ad1",
+        "ubuntu_2204_dynamic_postgres_1760781970",
+        "2025-10-18T10:12:45.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0b1f3ce6a662bc402",
+        "ubuntu_2204_nginx_1758362808",
+        "2025-09-20T10:08:30.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-01caf19f7eccc1c5a",
+        "packer-rhel9-openshift-crc-20251103195955",
+        "2025-11-03T21:33:18.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL OpenShift (CRC) AMI built by Packer"
+    ],
+    [
+        "ami-0579c38e7baf40dfc",
+        "ubuntu_2204_nomad_server_1761991433",
+        "2025-11-01T10:12:57.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08ddad1b7ffcfe840",
+        "ubuntu_2204_cis1_base_1745519162",
+        "2025-04-24T18:26:56.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ab2a4e31a6ce6e2d",
+        "ubuntu_2204_cis1_nginx_1745899793",
+        "2025-04-29T04:11:36.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-069660f7d93ad7cae",
+        "ubuntu_2204_cis1_nomad_client_lnx_1761991500",
+        "2025-11-01T10:13:06.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ae438d89d53c2f3c",
+        "ubuntu_2204_cis1_nginx_1745514176",
+        "2025-04-24T17:04:45.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0b41bd2e23777001a",
+        "ubuntu_2204_nginx_1758967599",
+        "2025-09-27T10:08:31.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0cad634d557d6c124",
+        "ubuntu_2204_dynamic_postgres_1762203665",
+        "2025-11-03T21:10:51.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0364b37404e16b1e6",
+        "rhel_9_cis1_base_1743777259",
+        "2025-04-04T14:35:02.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-059b0c41bfecc64f7",
+        "windows_server_2025_core_base_1743429053",
+        "2025-03-31T13:56:53.000Z",
+        "Windows",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-008b82fafbcab2839",
+        "ubuntu_2204_cis1_mysql_1757757781",
+        "2025-09-13T10:06:24.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0fd000dec3702d4b6",
+        "ubuntu_2204_cis1_mysql_1758362585",
+        "2025-09-20T10:05:33.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0e4d00761a3fcc746",
+        "rhel_9_3_base_1762596386",
+        "2025-11-08T10:08:58.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08dfabdac0548f261",
+        "ubuntu_2204_base_1761991510",
+        "2025-11-01T10:11:02.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-02eae8cfdd2fda662",
+        "ubuntu_2204_dynamic_postgres_1762596378",
+        "2025-11-08T10:14:29.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-04014d4598dce7ceb",
+        "rhel_9_3_base_1750079349",
+        "2025-06-16T13:10:06.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-05611919dfd0a6b8f",
+        "rhel_9_3_base_1750077911",
+        "2025-06-16T12:46:54.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ac79ad93ba67c350",
+        "rhel_9_3_base_1762377194",
+        "2025-11-05T21:34:37.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0dd0c23a686ee0e25",
+        "rhel_9_cis1_base_1745519158",
+        "2025-04-24T18:27:23.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-06a1d85aabe7f5396",
+        "rhel_9_cis1_base_1746538102",
+        "2025-05-06T13:29:16.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-002f3a1c3491d83c2",
+        "ubuntu_2204_health_assessments_1760729350",
+        "2025-10-17T19:34:55.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-07dcbe416a9f1d578",
+        "ubuntu_2204_dynamic_postgres_1761386767",
+        "2025-10-25T10:13:43.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-050309d767ca4258f",
+        "packer-rhel9-aap-20251108100454",
+        "2025-11-08T10:37:29.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-07d90fe5418532d1f",
+        "ubuntu_2204_cis1_base_1746541548",
+        "2025-05-06T14:28:29.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0f3796622743cf33b",
+        "rhel_9_cis1_base_1743647469",
+        "2025-04-03T02:31:48.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-006e183b9b41e5068",
+        "packer-rhel9-openshift-crc-20251015105208",
+        "2025-10-15T12:33:03.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL OpenShift (CRC) AMI built by Packer"
+    ],
+    [
+        "ami-0718a836587c1d08e",
+        "ubuntu_2204_cis1_mysql_1758967359",
+        "2025-09-27T10:05:21.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-05f21c0b92a1f05d5",
+        "ubuntu_2204_nomad_server_1762274980",
+        "2025-11-04T16:55:25.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-01e3dae4a492faad2",
+        "ubuntu_2204_cis1_nginx_1745519410",
+        "2025-04-24T18:31:55.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0a9a98019dfef81df",
+        "rhel_9_3_base_1750077683",
+        "2025-06-16T12:42:50.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0e7d7fb3e0dfb59a7",
+        "ubuntu_2204_nomad_server_1760729348",
+        "2025-10-17T19:38:02.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0d716fbddca2b2410",
+        "rhel_9_cis1_base_1743874767",
+        "2025-04-05T17:40:51.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08b362601d801d6e4",
+        "rhel_9_3_base_1761938933",
+        "2025-10-31T19:32:17.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0690d76ee513c0457",
+        "rhel_9_3_base_1750331399",
+        "2025-06-19T11:10:56.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0222565b87a24bd4d",
+        "rhel_9_cis1_base_1743561116",
+        "2025-04-02T02:32:36.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0634a47590915c162",
+        "ubuntu_2204_cis1_nomad_client_lnx_1762207691",
+        "2025-11-03T22:18:24.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-095004522278670c4",
+        "ubuntu_2204_dynamic_postgres_1760729350",
+        "2025-10-17T19:39:38.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08be7a20880cfd05e",
+        "packer-rhel9-aap-20251101100457",
+        "2025-11-01T10:42:11.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-026cdd763d399d1eb",
+        "packer-rhel9-openshift-crc-20251017192909",
+        "2025-10-17T21:01:30.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL OpenShift (CRC) AMI built by Packer"
+    ],
+    [
+        "ami-0297af54cc1c4ed24",
+        "ubuntu_2204_nomad_server_1762596213",
+        "2025-11-08T10:13:31.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0637abf0c7938c8b9",
+        "ubuntu_2204_cis1_base_1746986876",
+        "2025-05-11T18:10:37.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0476b36fc39cacdbb",
+        "rhel_9_cis1_base_1746538661",
+        "2025-05-06T13:38:50.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08130665170cd3fa4",
+        "ubuntu_2204_cis1_base_1746979627",
+        "2025-05-11T16:08:47.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08a68b75d698c924c",
+        "ubuntu_2204_cis1_mysql_1756548183",
+        "2025-08-30T10:06:27.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-00c684aa717fa3495",
+        "rhel_9_cis1_base_1746504559",
+        "2025-05-06T04:10:58.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ea94f8a5c7034592",
+        "rhel_9_cis1_base_1743733875",
+        "2025-04-04T02:32:10.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-01f10fe03daff3604",
+        "ubuntu_2204_cis1_base_1743895602",
+        "2025-04-05T23:27:36.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-00504ee9572b4fb67",
+        "ubuntu_2204_cis1_nomad_client_lnx_1760781857",
+        "2025-10-18T10:20:14.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-085544508fc3136d9",
+        "ubuntu_2204_health_assessments_1762596296",
+        "2025-11-08T10:11:32.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-020ddbf69e31f7123",
+        "ubuntu_2204_nomad_server_1761386613",
+        "2025-10-25T10:12:32.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0c270201da28b818e",
+        "rhel_9_cis1_base_1745922509",
+        "2025-04-29T10:29:38.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-07bf76423c122c15c",
+        "packer-rhel9-openshift-crc-20251018100402",
+        "2025-10-18T10:55:14.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL OpenShift (CRC) AMI built by Packer"
+    ],
+    [
+        "ami-00c38bffca9ceae61",
+        "ubuntu_2204_cis1_base_1746504303",
+        "2025-05-06T04:07:23.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0f3cf63bd332caaf6",
+        "packer-rhel9-aap-20251025100414",
+        "2025-10-25T10:41:42.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-0727c0334a019cc66",
+        "ubuntu_2204_cis1_base_1746992025",
+        "2025-05-11T19:36:26.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-016d4740aff0aa0de",
+        "ubuntu_2204_nginx_1756548390",
+        "2025-08-30T10:08:01.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0721edde056a2826a",
+        "packer-rhel9-aap-20251017192908",
+        "2025-10-17T20:06:16.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-0ddaaf65d1c306eb7",
+        "rhel_9_base_1747410893",
+        "2025-05-16T15:55:48.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-07c323086f0f3f4bd",
+        "ubuntu_2204_base_1761386687",
+        "2025-10-25T10:09:09.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-00024168944f97fed",
+        "ubuntu_2204_nginx_1757153177",
+        "2025-09-06T10:08:20.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-019d3bb37b75d122b",
+        "rhel_9_cis1_base_1743873430",
+        "2025-04-05T17:18:08.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-073d865b32ccedfe3",
+        "ubuntu_2204_cis1_base_1746983173",
+        "2025-05-11T17:08:38.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-02602142274c2b079",
+        "windows_server_2025_core_base_1743430653",
+        "2025-03-31T14:22:41.000Z",
+        "Windows",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0a91b807c3b2d5bf2",
+        "ubuntu_2204_base_1762596294",
+        "2025-11-08T10:09:16.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-04e2066756793d075",
+        "ubuntu_2204_health_assessments_1760781882",
+        "2025-10-18T10:10:23.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-028eb948789de9121",
+        "ubuntu_2204_cis1_base_1746990345",
+        "2025-05-11T19:08:25.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ceea2f67c4f08a69",
+        "ubuntu_2204_cis1_mysql_1757152954",
+        "2025-09-06T10:05:25.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-01f22e6f9afda15c2",
+        "rhel_9_3_base_1748873265",
+        "2025-06-02T14:08:36.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-03b70e50aa715c62c",
+        "ubuntu_2204_health_assessments_1761991510",
+        "2025-11-01T10:10:36.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0705587f5d61abd67",
+        "packer-rhel9-aap-20251103163804",
+        "2025-11-03T17:17:42.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-01ea1e4d75c7eaf55",
+        "ubuntu_2204_base_1762199924",
+        "2025-11-03T20:01:20.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-08ba95beb6e02023d",
+        "ubuntu_2204_cis1_nginx_1746504648",
+        "2025-05-06T04:13:32.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0dff7729c2c089147",
+        "windows_server_2025_core_base_1743431276",
+        "2025-03-31T14:33:58.000Z",
+        "Windows",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-04e4a63b7bc1d49f3",
+        "rhel_9_3_base_1761857195",
+        "2025-10-30T20:49:12.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0734ad929dc61952b",
+        "packer-rhel9-aap-20251103202256",
+        "2025-11-03T21:00:53.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        "RHEL AAP AMI built by Packer"
+    ],
+    [
+        "ami-0b93ae786d7496597",
+        "ubuntu_2204_nginx_1757757989",
+        "2025-09-13T10:08:39.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-048e7afe3256c614d",
+        "windows_server_2025_core_base_1753887227",
+        "2025-07-30T14:56:32.000Z",
+        "Windows",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0eac485892c64ab75",
+        "ubuntu_2204_base_1760781884",
+        "2025-10-18T10:08:35.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-09b1ecb04b3f4b4e0",
+        "ubuntu_2204_cis1_nomad_client_lnx_1761386676",
+        "2025-10-25T10:17:52.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0216b89c17cfeb233",
+        "ubuntu_2204_cis1_nomad_client_lnx_1760722226",
+        "2025-10-17T17:43:44.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-05550284f68e41aa2",
+        "rhel_9_3_base_1761386782",
+        "2025-10-25T10:08:49.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-058f3db416a067636",
+        "rhel_9_cis1_base_1746541542",
+        "2025-05-06T14:26:36.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0e4888ef628516a12",
+        "ubuntu_2204_cis1_nomad_client_lnx_1743156321",
+        "2025-03-28T10:11:21.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0efb1af4acb8704dd",
+        "rhel_9_3_base_1760781981",
+        "2025-10-18T10:09:34.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-062e299a745e968bb",
+        "windows_server_2025_core_base_1743430738",
+        "2025-03-31T14:25:31.000Z",
+        "Windows",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0cdf366577e06304f",
+        "ubuntu_2204_dynamic_postgres_1761991653",
+        "2025-11-01T10:13:10.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-036e15e21fcfee486",
+        "ubuntu_2204_base_1762201085",
+        "2025-11-03T20:21:56.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-015f2d256d9c121ec",
+        "ubuntu_2204_cis1_base_1746538101",
+        "2025-05-06T13:29:16.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-080562204bad93404",
+        "ubuntu_2204_cis1_base_1743874771",
+        "2025-04-05T17:40:56.000Z",
+        "Ubuntu Pro Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ac2ca1beea78031c",
+        "rhel_9_3_base_1750272023",
+        "2025-06-18T18:41:31.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ],
+    [
+        "ami-0ae4660a8c11b2aa2",
+        "rhel_9_3_base_1761991655",
+        "2025-11-01T10:10:32.000Z",
+        "Red Hat Enterprise Linux",
+        "x86_64",
+        null
+    ]
+]

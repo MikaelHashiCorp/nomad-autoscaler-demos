@@ -26,19 +26,37 @@ source "amazon-ebs" "hashistack" {
       virtualization-type = "hvm"
       name                = "ubuntu/images/*ubuntu-${var.os_name}-${var.os_version}-amd64-server-*"
       root-device-type    = "ebs"
-    } : {
+    } : var.os == "RedHat" ? {
       virtualization-type = "hvm"
       name                = "RHEL-${var.os_version}_HVM-*-x86_64-*-Hourly2-GP3"
       root-device-type    = "ebs"
+    } : var.os == "Windows" ? {
+      virtualization-type = "hvm"
+      name                = var.os_version == "2025" ? "windows_server_2025_core_base*" : "Windows_Server-${var.os_version}-English-*-Base-*"
+      root-device-type    = "ebs"
+    } : {
+      virtualization-type = "hvm"
+      name                = "unknown"
+      root-device-type    = "ebs"
     }
-    # Ubuntu: Canonical's owner ID, RedHat: Red Hat's owner ID
-    owners      = var.os == "Ubuntu" ? ["099720109477"] : ["309956199498"]
+    # Ubuntu: Canonical's owner ID, RedHat: Red Hat's owner ID, Windows: 3-tier priority
+    # Note: IBM (764552833819) does not currently publish Windows Server base AMIs, but included for future compatibility
+    owners      = var.os == "Ubuntu" ? ["099720109477"] : var.os == "RedHat" ? ["309956199498"] : var.os == "Windows" ? ["730335318773", "764552833819", "801119661308"] : ["self"]
     most_recent = true
   }
 
-  communicator = "ssh"
-  # Use 'ubuntu' for Ubuntu, 'ec2-user' for RedHat
-  ssh_username = var.os == "Ubuntu" ? "ubuntu" : "ec2-user"
+  # Conditional communicator based on OS type
+  communicator = var.os == "Windows" ? "winrm" : "ssh"
+  
+  # WinRM configuration (only used when communicator is winrm)
+  winrm_username = "Administrator"
+  winrm_use_ssl  = true
+  winrm_insecure = true
+  user_data_file = var.os == "Windows" ? "${path.root}/windows-userdata.ps1" : ""
+  
+  # SSH configuration (only used when communicator is ssh)
+  # Use 'ubuntu' for Ubuntu, 'ec2-user' for RedHat, not used for Windows (WinRM)
+  ssh_username = var.os == "Ubuntu" ? "ubuntu" : var.os == "RedHat" ? "ec2-user" : ""
 
   tags = {
     Name           = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
@@ -60,7 +78,9 @@ build {
     "source.amazon-ebs.hashistack"
   ]
 
+  # Linux-only provisioners (Ubuntu and RedHat)
   provisioner "shell" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     inline = [
       "cloud-init status --wait"
     ]
@@ -68,6 +88,7 @@ build {
 
   # Conditional debconf setup for Ubuntu only (inline conditional)
   provisioner "shell" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     valid_exit_codes = [
       "0",
       "1",
@@ -80,6 +101,7 @@ build {
 
   # Conditional debconf lock cleanup for Ubuntu only
   provisioner "shell" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     valid_exit_codes = [
       "0",
       "1",
@@ -90,20 +112,54 @@ build {
     ]
   }
 
+  # Linux directory setup
   provisioner "shell" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     inline = [
       "sudo mkdir -p /ops",
       "sudo chmod 777 /ops"
     ]
   }
 
+  # Linux file copy
   provisioner "file" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     source      = "../../shared/packer/"
     destination = "/ops"
   }
 
+  # Linux setup script
   provisioner "shell" {
+    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
     script = "../../shared/packer/scripts/setup.sh"
+    environment_vars = [
+      "CNIVERSION=${var.cni_version}",
+      "CONSULVERSION=${var.consul_version}",
+      "NOMADVERSION=${var.nomad_version}",
+      "TARGET_OS=${var.os}"
+    ]
+  }
+
+  # Windows-only provisioners
+  # Windows directory setup
+  provisioner "powershell" {
+    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
+    inline = [
+      "New-Item -ItemType Directory -Force -Path C:\\ops"
+    ]
+  }
+
+  # Windows file copy
+  provisioner "file" {
+    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
+    source      = "../../shared/packer/"
+    destination = "C:/ops"
+  }
+
+  # Windows setup script
+  provisioner "powershell" {
+    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
+    script = "../../shared/packer/scripts/setup.ps1"
     environment_vars = [
       "CNIVERSION=${var.cni_version}",
       "CONSULVERSION=${var.consul_version}",

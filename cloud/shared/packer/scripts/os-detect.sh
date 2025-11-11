@@ -56,6 +56,12 @@ case "${DETECTED_OS}" in
     export DOCKER_REPO="rhel"
     export LSB_RELEASE_CMD="echo '9'"
     ;;
+  Windows)
+    # Windows uses PowerShell scripts instead of bash
+    # This script won't run on Windows - handled by setup.ps1 instead
+    export HOME_DIR="Administrator"
+    export PKG_MANAGER="choco"
+    ;;
   *)
     echo "ERROR: Unsupported OS: ${DETECTED_OS}"
     exit 1

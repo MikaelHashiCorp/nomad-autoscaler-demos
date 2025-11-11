@@ -101,19 +101,24 @@ variable "allowlist_ip" {
 
 # Packer build configuration (only used when ami is empty and building new AMI)
 variable "packer_os" {
-  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat. Only used when ami is empty."
+  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat, Windows. Only used when ami is empty."
   type        = string
   default     = "Ubuntu"
+  
+  validation {
+    condition     = contains(["Ubuntu", "RedHat", "Windows"], var.packer_os)
+    error_message = "packer_os must be one of: Ubuntu, RedHat, Windows."
+  }
 }
 
 variable "packer_os_version" {
-  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. Only used when ami is empty."
+  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. For Windows: 2019, 2022, 2025. Only used when ami is empty."
   type        = string
   default     = "24.04"
 }
 
 variable "packer_os_name" {
-  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami is empty."
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat and Windows. Only used when ami is empty."
   type        = string
   default     = "noble"
 }
