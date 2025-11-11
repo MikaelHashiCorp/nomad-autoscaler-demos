@@ -19,6 +19,13 @@ provider "nomad" {
   address = "http://${module.hashistack_cluster.server_elb_dns}:4646"
 }
 
+locals {
+  # Create OS-specific stack name for AWS resources
+  # Maps OS names to lowercase: "Ubuntu" -> "ubuntu", "RedHat" -> "redhat", etc.
+  os_suffix = lower(var.packer_os)
+  stack_name_with_os = "${var.stack_name}-${local.os_suffix}"
+}
+
 module "my_ip_address" {
   source = "matti/resource/shell"
 
@@ -30,7 +37,7 @@ module "hashistack_image" {
 
   ami_id                  = var.ami
   region                  = var.region
-  stack_name              = var.stack_name
+  stack_name              = local.stack_name_with_os
   owner_name              = var.owner_name
   owner_email             = var.owner_email
   packer_os               = var.packer_os
@@ -51,7 +58,7 @@ module "hashistack_cluster" {
   key_name              = var.key_name
   owner_name            = var.owner_name
   owner_email           = var.owner_email
-  stack_name            = var.stack_name
+  stack_name            = local.stack_name_with_os
   allowlist_ip          = length(var.allowlist_ip) > 0 ? var.allowlist_ip : ["${module.my_ip_address.stdout}/32"]
   server_instance_type  = var.server_instance_type
   client_instance_type  = var.client_instance_type

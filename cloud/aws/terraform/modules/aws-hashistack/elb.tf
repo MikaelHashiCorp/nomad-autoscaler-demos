@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 resource "aws_elb" "nomad_server" {
-  name               = "${var.stack_name}-nomad-server"
+  name               = "${var.stack_name}-server"
   availability_zones = distinct(aws_instance.nomad_server.*.availability_zone)
   internal           = false
   instances          = aws_instance.nomad_server.*.id
@@ -24,7 +24,7 @@ resource "aws_elb" "nomad_server" {
 }
 
 resource "aws_elb" "nomad_client" {
-  name               = "${var.stack_name}-nomad-client"
+  name               = "${var.stack_name}-client"
   availability_zones = var.availability_zones
   internal           = false
   listener {

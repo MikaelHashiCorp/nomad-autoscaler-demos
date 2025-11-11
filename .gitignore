@@ -25,3 +25,4 @@ cloud/aws/terraform/control/.terraform.lock.hcl
 *.out
 cloud/aws/test-logs/plan-ubuntu.tfplan
 cloud/aws/test-logs/plan-redhat.tfplan
+cloud/aws/terraform/control/test.tfplan
