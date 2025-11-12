@@ -7,7 +7,7 @@
 variable "created_email" { default = "mikael.sikora@hashicorp.com" }
 variable "created_name"  { default = "mikael_sikora"}
 variable "region"        { default = "us-west-2" }
-variable "name_prefix"   { default = "scale-mws" }
+variable "name_prefix"   { default = "mws-scale" }
 variable "architecture"  { default = "amd64" }
 variable "os"            { default = "Ubuntu" }
 # NOTE: os_version defaults to Ubuntu 24.04. 

@@ -43,7 +43,7 @@ locals {
   snapshot_id = [for b in local.image.block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0]
 }
 
-# Step 1: Build the AMI with Packer (blocks until complete)
+# Step 1: Build the AMI with Packer and capture the AMI ID (blocks until complete)
 resource "null_resource" "packer_build" {
   count = local.build_image ? 1 : 0
 
@@ -59,22 +59,42 @@ source env-pkr-var.sh && \
     -var 'os=${var.packer_os}' \
     -var 'os_version=${var.packer_os_version}' \
     -var 'os_name=${var.packer_os_name}' \
-    .
+    . > /tmp/packer-build-output.txt 2>&1 && \
+  aws ec2 describe-images \
+    --owners self \
+    --filters "Name=name,Values=${var.stack_name}-*" \
+    --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+    --output text \
+    --region ${var.region} > /tmp/ami-id-${var.stack_name}.txt
 EOF
+  }
+  
+  triggers = {
+    # Rebuild if any of these variables change
+    stack_name    = var.stack_name
+    packer_os     = var.packer_os
+    packer_os_version = var.packer_os_version
+    packer_os_name = var.packer_os_name
   }
 }
 
-# Step 2: Find the AMI that was just built (depends on Packer completing)
-data "aws_ami" "built" {
+# Step 2: Read the AMI ID from the file created by packer build
+data "local_file" "ami_id" {
   depends_on = [null_resource.packer_build]
   count      = local.build_image ? 1 : 0
+  
+  filename = "/tmp/ami-id-${var.stack_name}.txt"
+}
 
-  owners      = ["self"]
-  most_recent = true
+# Step 3: Query the AMI details using the ID we got from the file
+data "aws_ami" "built" {
+  count = local.build_image ? 1 : 0
+
+  owners = ["self"]
 
   filter {
-    name   = "name"
-    values = ["${var.stack_name}-*"]
+    name   = "image-id"
+    values = [trimspace(data.local_file.ami_id[0].content)]
   }
 }
 

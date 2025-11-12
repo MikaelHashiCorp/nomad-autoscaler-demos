@@ -73,98 +73,130 @@ source "amazon-ebs" "hashistack" {
   }
 }
 
+locals {
+  is_windows = var.os == "Windows"
+  is_linux   = var.os != "Windows"
+}
+
 build {
   sources = [
     "source.amazon-ebs.hashistack"
   ]
 
   # Linux-only provisioners (Ubuntu and RedHat)
-  provisioner "shell" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    inline = [
-      "cloud-init status --wait"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["shell"]
+    content {
+      inline = [
+        "cloud-init status --wait"
+      ]
+    }
   }
 
   # Conditional debconf setup for Ubuntu only (inline conditional)
-  provisioner "shell" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    valid_exit_codes = [
-      "0",
-      "1",
-      "2"
-    ]
-    inline = [
-      "if [ -f /etc/debian_version ]; then echo 'set debconf to Noninteractive'; echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections; fi"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["shell"]
+    content {
+      valid_exit_codes = [
+        "0",
+        "1",
+        "2"
+      ]
+      inline = [
+        "if [ -f /etc/debian_version ]; then echo 'set debconf to Noninteractive'; echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections; fi"
+      ]
+    }
   }
 
   # Conditional debconf lock cleanup for Ubuntu only
-  provisioner "shell" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    valid_exit_codes = [
-      "0",
-      "1",
-      "2"
-    ]
-    inline = [
-      "if [ -f /etc/debian_version ]; then sudo fuser -v -k /var/cache/debconf/config.dat || true; fi"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["shell"]
+    content {
+      valid_exit_codes = [
+        "0",
+        "1",
+        "2"
+      ]
+      inline = [
+        "if [ -f /etc/debian_version ]; then sudo fuser -v -k /var/cache/debconf/config.dat || true; fi"
+      ]
+    }
   }
 
   # Linux directory setup
-  provisioner "shell" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    inline = [
-      "sudo mkdir -p /ops",
-      "sudo chmod 777 /ops"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["shell"]
+    content {
+      inline = [
+        "sudo mkdir -p /ops",
+        "sudo chmod 777 /ops"
+      ]
+    }
   }
 
   # Linux file copy
-  provisioner "file" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    source      = "../../shared/packer/"
-    destination = "/ops"
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["file"]
+    content {
+      source      = "../../shared/packer/"
+      destination = "/ops"
+    }
   }
 
   # Linux setup script
-  provisioner "shell" {
-    only = var.os != "Windows" ? ["amazon-ebs.hashistack"] : []
-    script = "../../shared/packer/scripts/setup.sh"
-    environment_vars = [
-      "CNIVERSION=${var.cni_version}",
-      "CONSULVERSION=${var.consul_version}",
-      "NOMADVERSION=${var.nomad_version}",
-      "TARGET_OS=${var.os}"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_linux ? [1] : []
+    labels   = ["shell"]
+    content {
+      script = "../../shared/packer/scripts/setup.sh"
+      environment_vars = [
+        "CNIVERSION=${var.cni_version}",
+        "CONSULVERSION=${var.consul_version}",
+        "NOMADVERSION=${var.nomad_version}",
+        "TARGET_OS=${var.os}"
+      ]
+    }
   }
 
   # Windows-only provisioners
   # Windows directory setup
-  provisioner "powershell" {
-    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
-    inline = [
-      "New-Item -ItemType Directory -Force -Path C:\\ops"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_windows ? [1] : []
+    labels   = ["powershell"]
+    content {
+      inline = [
+        "New-Item -ItemType Directory -Force -Path C:\\ops"
+      ]
+    }
   }
 
   # Windows file copy
-  provisioner "file" {
-    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
-    source      = "../../shared/packer/"
-    destination = "C:/ops"
+  dynamic "provisioner" {
+    for_each = local.is_windows ? [1] : []
+    labels   = ["file"]
+    content {
+      source      = "../../shared/packer/"
+      destination = "C:/ops"
+    }
   }
 
   # Windows setup script
-  provisioner "powershell" {
-    only = var.os == "Windows" ? ["amazon-ebs.hashistack"] : []
-    script = "../../shared/packer/scripts/setup.ps1"
-    environment_vars = [
-      "CNIVERSION=${var.cni_version}",
-      "CONSULVERSION=${var.consul_version}",
-      "NOMADVERSION=${var.nomad_version}",
-      "TARGET_OS=${var.os}"
-    ]
+  dynamic "provisioner" {
+    for_each = local.is_windows ? [1] : []
+    labels   = ["powershell"]
+    content {
+      script = "../../shared/packer/scripts/setup.ps1"
+      environment_vars = [
+        "CNIVERSION=${var.cni_version}",
+        "CONSULVERSION=${var.consul_version}",
+        "NOMADVERSION=${var.nomad_version}",
+        "TARGET_OS=${var.os}"
+      ]
+    }
   }
 }
