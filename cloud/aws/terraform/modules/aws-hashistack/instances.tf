@@ -7,6 +7,7 @@ resource "aws_instance" "nomad_server" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
   count                  = var.server_count
+  user_data_replace_on_change = true
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -28,7 +29,13 @@ resource "aws_instance" "nomad_server" {
     delete_on_termination = "true"
   }
 
-  user_data = templatefile(
+  user_data = var.os_type == "Windows" ? templatefile(
+    "${path.module}/templates/user-data-server.ps1", {
+      server_count           = var.server_count
+      region                 = var.region
+      retry_join             = var.retry_join
+      windows_ssh_public_key = var.windows_ssh_public_key
+    }) : templatefile(
     "${path.module}/templates/user-data-server.sh", {
       server_count  = var.server_count
       region        = var.region

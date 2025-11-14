@@ -24,6 +24,9 @@ locals {
   # Maps OS names to lowercase: "Ubuntu" -> "ubuntu", "RedHat" -> "redhat", etc.
   os_suffix = lower(var.packer_os)
   stack_name_with_os = "${var.stack_name}-${local.os_suffix}"
+  
+  # Windows requires larger root volume (30GB minimum), Linux can use 16GB
+  root_block_device_size = var.packer_os == "Windows" ? 30 : 16
 }
 
 module "my_ip_address" {
@@ -52,22 +55,26 @@ module "hashistack_cluster" {
   # Explicit dependency ensures AMI is fully built before creating infrastructure
   depends_on = [module.hashistack_image]
 
-  region                = var.region
-  availability_zones    = var.availability_zones
-  ami                   = module.hashistack_image.id
-  key_name              = var.key_name
-  owner_name            = var.owner_name
-  owner_email           = var.owner_email
-  stack_name            = local.stack_name_with_os
-  allowlist_ip          = length(var.allowlist_ip) > 0 ? var.allowlist_ip : ["${module.my_ip_address.stdout}/32"]
-  server_instance_type  = var.server_instance_type
-  client_instance_type  = var.client_instance_type
-  server_count          = var.server_count
-  client_count          = var.client_count
+  region                  = var.region
+  availability_zones      = var.availability_zones
+  ami                     = module.hashistack_image.id
+  key_name                = var.key_name
+  owner_name              = var.owner_name
+  owner_email             = var.owner_email
+  stack_name              = local.stack_name_with_os
+  allowlist_ip            = length(var.allowlist_ip) > 0 ? var.allowlist_ip : ["${module.my_ip_address.stdout}/32"]
+  server_instance_type    = var.server_instance_type
+  client_instance_type    = var.client_instance_type
+  server_count            = var.server_count
+  client_count            = var.client_count
+  root_block_device_size  = local.root_block_device_size
+  os_type                 = var.packer_os == "Windows" ? "Windows" : "Linux"
+  windows_ssh_public_key  = var.windows_ssh_public_key
 }
 
 module "hashistack_jobs" {
   source = "../../../shared/terraform/modules/shared-nomad-jobs"
 
   nomad_addr = "http://${module.hashistack_cluster.server_elb_dns}:4646"
+  wait_timeout_seconds = var.packer_os == "Windows" ? 180 : 600
 }

@@ -103,3 +103,19 @@ variable "nomad_autoscaler_image" {
   type        = string
   default     = "hashicorp/nomad-autoscaler:0.3.3"
 }
+
+variable "os_type" {
+  description = "The operating system type (Linux or Windows) for selecting appropriate user data scripts."
+  type        = string
+  default     = "Linux"
+  validation {
+    condition     = contains(["Linux", "Windows"], var.os_type)
+    error_message = "The os_type must be either 'Linux' or 'Windows'."
+  }
+}
+
+variable "windows_ssh_public_key" {
+  description = "Public SSH key to install for Administrator on Windows instances. Empty string disables installation."
+  type        = string
+  default     = ""
+}

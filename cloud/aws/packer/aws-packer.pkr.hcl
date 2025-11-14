@@ -15,7 +15,8 @@ packer {
 }
 
 source "amazon-ebs" "hashistack" {
-  temporary_key_pair_type = "ed25519"
+  # Windows AMIs don't support ED25519 keys, use RSA for Windows and ED25519 for Linux
+  temporary_key_pair_type = var.os == "Windows" ? "rsa" : "ed25519"
   ami_name      = format("%s%s", var.name_prefix, "-{{timestamp}}")
   region        = var.region
   instance_type = "t3a.2xlarge"

@@ -37,10 +37,10 @@ data "aws_ami" "existing" {
 }
 
 locals {
-  # Select the appropriate image based on whether we built it or found an existing one
-  image       = local.build_image ? data.aws_ami.built[0] : data.aws_ami.existing[0]
-  image_id    = local.image.id
-  snapshot_id = [for b in local.image.block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0]
+  # Select the appropriate image safely, handling destroy-time when AMI may no longer exist
+  image       = local.build_image ? try(data.aws_ami.built[0], null) : try(data.aws_ami.existing[0], null)
+  image_id    = try(local.image.id, "")
+  snapshot_id = local.image != null ? try([for b in local.image.block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0], "") : ""
 }
 
 # Step 1: Build the AMI with Packer and capture the AMI ID (blocks until complete)
@@ -59,7 +59,7 @@ source env-pkr-var.sh && \
     -var 'os=${var.packer_os}' \
     -var 'os_version=${var.packer_os_version}' \
     -var 'os_name=${var.packer_os_name}' \
-    . > /tmp/packer-build-output.txt 2>&1 && \
+    . 2>&1 | tee /tmp/packer-build-output.txt && \
   aws ec2 describe-images \
     --owners self \
     --filters "Name=name,Values=${var.stack_name}-*" \

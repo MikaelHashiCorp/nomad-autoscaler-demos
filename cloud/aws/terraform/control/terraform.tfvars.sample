@@ -20,3 +20,9 @@ allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]
 # To build with RedHat 9, add to terraform apply command:
 #   terraform apply -var="packer_os=RedHat" -var="packer_os_version=9.6.0" -var="packer_os_name="
 
+# For Windows builds, also set windows_ssh_public_key with contents of your public key.
+# Example:
+# windows_ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMyExamplePublicKeyGoesHere user@example"
+# This key will be added to C:\\ProgramData\\ssh\\administrators_authorized_keys for SSH access as Administrator.
+windows_ssh_public_key  = ""
+

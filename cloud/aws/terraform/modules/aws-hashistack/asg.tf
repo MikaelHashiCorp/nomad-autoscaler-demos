@@ -7,7 +7,13 @@ resource "aws_launch_template" "nomad_client" {
   instance_type          = var.client_instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
-  user_data              = base64encode(templatefile(
+  user_data              = base64encode(var.os_type == "Windows" ? templatefile(
+    "${path.module}/templates/user-data-client.ps1", {
+      region                 = var.region
+      retry_join             = var.retry_join
+      node_class             = "hashistack"
+      windows_ssh_public_key = var.windows_ssh_public_key
+    }) : templatefile(
     "${path.module}/templates/user-data-client.sh", {
       region        = var.region
       retry_join    = var.retry_join

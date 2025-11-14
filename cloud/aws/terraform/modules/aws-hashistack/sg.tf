@@ -81,9 +81,18 @@ resource "aws_security_group" "primary" {
   name   = var.stack_name
   vpc_id = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
 
+  # SSH for Linux and Windows
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.allowlist_ip
+  }
+
+  # RDP for Windows instances
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = var.allowlist_ip
   }

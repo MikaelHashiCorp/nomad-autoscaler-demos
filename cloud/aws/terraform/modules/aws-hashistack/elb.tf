@@ -20,6 +20,14 @@ resource "aws_elb" "nomad_server" {
     lb_port           = 8500
     lb_protocol       = "http"
   }
+  
+  health_check {
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "TCP:4646"
+    interval            = 10
+  }
   security_groups = [aws_security_group.server_lb.id]
 }
 

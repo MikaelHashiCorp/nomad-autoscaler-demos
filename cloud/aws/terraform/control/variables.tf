@@ -135,3 +135,9 @@ variable "nomad_autoscaler_image" {
   default     = "hashicorp/nomad-autoscaler:0.3.3"
 }
 
+variable "windows_ssh_public_key" {
+  description = "Public SSH key to install for Administrator on Windows instances. Leave empty to skip injection."
+  type        = string
+  default     = ""
+}
+
