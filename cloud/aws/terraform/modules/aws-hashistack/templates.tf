@@ -14,3 +14,8 @@ resource "null_resource" "nomad_autoscaler_jobspec" {
     command = "echo '${local.rendered_template}' > aws_autoscaler.nomad"
   }
 }
+
+  # Windows user data (only used for optional test instance outside cluster)
+  data "template_file" "windows_user_data" {
+    template = file("${path.module}/templates/user-data-windows.ps1")
+  }

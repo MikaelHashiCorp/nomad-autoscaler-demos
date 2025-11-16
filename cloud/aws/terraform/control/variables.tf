@@ -101,21 +101,40 @@ variable "allowlist_ip" {
 
 # Packer build configuration (only used when ami is empty and building new AMI)
 variable "packer_os" {
-  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat. Only used when ami is empty."
+  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat, Windows. Only used when ami is empty."
   type        = string
   default     = "Ubuntu"
 }
 
 variable "packer_os_version" {
-  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. Only used when ami is empty."
+  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. For Windows: 2022. Only used when ami is empty."
   type        = string
   default     = "24.04"
 }
 
 variable "packer_os_name" {
-  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami is empty."
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat and Windows. Only used when ami is empty."
   type        = string
   default     = "noble"
+}
+
+# Optional Windows test instance (not part of hashistack cluster)
+variable "enable_windows_test" {
+  description = "If true, launch a standalone Windows Server 2022 test instance for SSH/SSM validation."
+  type        = bool
+  default     = false
+}
+
+variable "windows_instance_type" {
+  description = "Instance type for the Windows test instance (if enabled)."
+  type        = string
+  default     = "t3.large"
+}
+
+variable "windows_ami_override" {
+  description = "Override AMI ID for Windows test instance. Leave empty to use built Windows AMI if packer_os=Windows else public base AMI lookup."
+  type        = string
+  default     = ""
 }
 
 variable "cleanup_ami_on_destroy" {

@@ -34,19 +34,19 @@ variable "stack_name" {
 variable "packer_os" {
   type        = string
   default     = "Ubuntu"
-  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat. Only used when ami_id is empty."
+  description = "Operating system type for Packer build. Valid values: Ubuntu, RedHat, Windows. Only used when ami_id is empty."
 }
 
 variable "packer_os_version" {
   type        = string
   default     = "24.04"
-  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. Only used when ami_id is empty."
+  description = "Operating system version for Packer build. For Ubuntu: 24.04, 22.04, etc. For RedHat: 9.6.0, etc. For Windows: 2022. Only used when ami_id is empty."
 }
 
 variable "packer_os_name" {
   type        = string
   default     = "noble"
-  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami_id is empty."
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat and Windows. Only used when ami_id is empty."
 }
 
 variable "cleanup_ami_on_destroy" {

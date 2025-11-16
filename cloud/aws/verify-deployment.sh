@@ -33,6 +33,9 @@ cd terraform/control
 log_info "Fetching Terraform outputs..."
 NOMAD_SERVER_LB=$(terraform output -raw ip_addresses | grep "Nomad UI" | sed 's/.*http:\/\/\(.*\):4646.*/\1/')
 CLIENT_LB=$(terraform output -raw ip_addresses | grep "Grafana dashboard" | sed 's/.*http:\/\/\(.*\):3000.*/\1/')
+WINDOWS_ID=$(terraform output -raw windows_instance_id 2>/dev/null || echo "")
+WINDOWS_DNS=$(terraform output -raw windows_instance_public_dns 2>/dev/null || echo "")
+WINDOWS_IP=$(terraform output -raw windows_instance_public_ip 2>/dev/null || echo "")
 AWS_REGION=$(terraform output -json | jq -r '.ip_addresses.value' | grep -o 'us-[a-z]*-[0-9]*' | head -1)
 SSH_USER=$(terraform output -raw ip_addresses | grep "SSH User:" | sed 's/.*SSH User:[[:space:]]*\(.*\)/\1/' | tr -d '\r\n ')
 SSH_KEY=$(grep '^key_name' terraform.tfvars | sed 's/key_name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
@@ -73,6 +76,11 @@ log_info "Using NOMAD_ADDR: $NOMAD_ADDR"
 log_info "Using AWS Region: ${AWS_REGION}"
 log_info "Using SSH User: ${SSH_USER}"
 log_info "Using SSH Key: ${SSH_KEY}"
+if [ -n "$WINDOWS_ID" ]; then
+  log_info "Windows Instance ID: $WINDOWS_ID"
+  log_info "Windows Public DNS: $WINDOWS_DNS"
+  log_info "Windows Public IP : $WINDOWS_IP"
+fi
 log_info ""
 
 # Test 1: Nomad Node Status
@@ -321,6 +329,9 @@ echo "  Consul UI:   http://${NOMAD_SERVER_LB}:8500/ui"
 echo "  Grafana:     http://${CLIENT_LB}:3000/d/AQphTqmMk/demo"
 echo "  Prometheus:  http://${CLIENT_LB}:9090"
 echo "  Webapp:      http://${CLIENT_LB}:80"
+if [ -n "$WINDOWS_DNS" ]; then
+  echo "  Windows Host: $WINDOWS_DNS (SSH: Administrator@${WINDOWS_DNS})"
+fi
 echo ""
 
 # Get instance details if AWS credentials are available
@@ -367,6 +378,23 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
       done
     fi
   fi
+
+  # Get windows instance details
+  if [ -n "$WINDOWS_ID" ]; then
+    echo "  Windows Instance:"
+    echo "    - Instance: $WINDOWS_ID"
+    echo "      Public:   $WINDOWS_IP"
+    echo "      DNS:      $WINDOWS_DNS"
+    echo "      SSH:      ssh Administrator@${WINDOWS_DNS}" 
+    echo "      SSM:      aws ssm start-session --target $WINDOWS_ID --region $AWS_REGION"
+    echo ""
+    # Check SSM registration
+    if aws ssm describe-instance-information --region "$AWS_REGION" --query 'InstanceInformationList[].InstanceId' --output text 2>/dev/null | grep -q "$WINDOWS_ID"; then
+      log_success "Windows instance registered with SSM"
+    else
+      log_warn "Windows instance not yet registered with SSM (agent may still be initializing)"
+    fi
+  fi
 else
   # Fallback if AWS credentials not available
   if [ -n "$CLIENT_IP" ]; then
@@ -377,4 +405,7 @@ fi
 
 echo "To destroy infrastructure:"
 echo "  cd terraform/control && terraform destroy -auto-approve"
+if [ -n "$WINDOWS_ID" ]; then
+  echo "Windows SSM session sample: aws ssm start-session --target $WINDOWS_ID --region $AWS_REGION"
+fi
 echo ""

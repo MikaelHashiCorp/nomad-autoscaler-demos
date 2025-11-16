@@ -27,6 +27,13 @@ Traefik can be accessed at http://${module.hashistack_cluster.client_elb_dns}:80
 Prometheus can be accessed at http://${module.hashistack_cluster.client_elb_dns}:9090
 Webapp can be accessed at http://${module.hashistack_cluster.client_elb_dns}:80
 
+Windows (optional):
+  Instance ID:   ${module.hashistack_cluster.windows_instance_id}
+  Public IP:     ${module.hashistack_cluster.windows_instance_public_ip}
+  Public DNS:    ${module.hashistack_cluster.windows_instance_public_dns}
+  SSH Example:   ssh Administrator@${module.hashistack_cluster.windows_instance_public_dns}
+  SSM Example:   aws ssm start-session --target ${module.hashistack_cluster.windows_instance_id} --region ${var.region}
+
 CLI environment variables:
 export NOMAD_CLIENT_DNS=http://${module.hashistack_cluster.client_elb_dns}
 export NOMAD_ADDR=${module.hashistack_cluster.nomad_addr}

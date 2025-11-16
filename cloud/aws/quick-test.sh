@@ -1,6 +1,6 @@
 #!/bin/bash
 # Quick Test Script for Multi-OS Support
-# Usage: ./quick-test.sh [ubuntu|redhat] [packer-only|terraform]
+# Usage: ./quick-test.sh [ubuntu|redhat|windows] [packer-only|terraform]
 #   packer-only: Only test Packer build (no Terraform)
 #   terraform:   Run Terraform apply (default - Terraform will call Packer if needed)
 #
@@ -76,8 +76,18 @@ elif [[ "$OS_TYPE" == "redhat" ]]; then
   TF_OS="RedHat"
   TF_OS_VERSION="9.6.0"
   TF_OS_NAME=""
+elif [[ "$OS_TYPE" == "windows" ]]; then
+  log "Testing Windows Server 2022 build..."
+  PACKER_VARS="-var 'os=Windows' -var 'os_version=2022' -var 'os_name=' -var 'name_prefix=scale-mws-win'"
+  NAME_FILTER="scale-mws-win-*"
+  SSH_USER="Administrator"
+  EXPECTED_OS_ID="windows"
+  EXPECTED_PKG_MGR="powershell"
+  TF_OS="Windows"
+  TF_OS_VERSION="2022"
+  TF_OS_NAME=""
 else
-  error "Invalid OS type. Use 'ubuntu' or 'redhat'"
+  error "Invalid OS type. Use 'ubuntu', 'redhat', or 'windows'"
   exit 1
 fi
 
@@ -123,7 +133,7 @@ if [[ "$TEST_MODE" == "packer-only" ]]; then
   log "Validating Packer configuration..."
   packer validate . || { error "Packer validation failed"; exit 1; }
 
-  log "Building AMI (this will take 10-15 minutes)..."
+  log "Building AMI (this will take 10-20 minutes for Linux, 20-30 for Windows)..."
   if [[ -n "$PACKER_VARS" ]]; then
     eval "packer build $PACKER_VARS ." 2>&1 | tee "$LOG_DIR/packer-$OS_TYPE-$TIMESTAMP.log"
   else
@@ -160,7 +170,7 @@ if [[ "$TEST_MODE" == "packer-only" ]]; then
     --image-ids "$AMI_ID" \
     --region "$REGION" \
     --query 'Images[0].Tags[?Key==`OS`||Key==`OS_Version`]' \
-    --output table
+    --output table || true
 
   # If packer-only mode, exit here
   if [[ "$TEST_MODE" == "packer-only" ]]; then
@@ -178,6 +188,9 @@ fi
 if [[ "$TEST_MODE" == "terraform" ]]; then
   log ""
   log "Terraform Infrastructure Deployment..."
+  if [[ "$OS_TYPE" == "windows" ]]; then
+    log "NOTE: Windows build will produce optional standalone instance (enable_windows_test=true)."
+  fi
   cd "$TERRAFORM_DIR"
 
   log "Initializing Terraform..."
@@ -186,10 +199,15 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
 
   log "Creating Terraform plan..."
   # Let Terraform call Packer if needed, passing OS-specific variables
+  EXTRA_VARS=""
+  if [[ "$OS_TYPE" == "windows" ]]; then
+    EXTRA_VARS="-var 'enable_windows_test=true'"
+  fi
   terraform plan \
     -var "packer_os=$TF_OS" \
     -var "packer_os_version=$TF_OS_VERSION" \
     -var "packer_os_name=$TF_OS_NAME" \
+    $EXTRA_VARS \
     -out="$LOG_DIR/plan-$OS_TYPE.tfplan" 2>&1 | tee "$LOG_DIR/terraform-plan-$OS_TYPE-$TIMESTAMP.log"
   log "✅ Terraform plan created"
 
@@ -228,11 +246,22 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
   log "  Deployment Complete!"
   log "============================================"
   
+  WINDOWS_ID=$(terraform output -raw windows_instance_id 2>/dev/null || echo "")
+  WINDOWS_DNS=$(terraform output -raw windows_instance_public_dns 2>/dev/null || echo "")
+  WINDOWS_IP=$(terraform output -raw windows_instance_public_ip 2>/dev/null || echo "")
+
   if [[ -n "$SERVER_LB" && -n "$CLIENT_LB" ]]; then
     log "Consul UI:  http://$SERVER_LB:8500/ui"
     log "Nomad UI:   http://$SERVER_LB:4646/ui"
     log "Grafana:    http://$CLIENT_LB:3000"
     log "Web App:    http://$CLIENT_LB"
+    if [[ "$OS_TYPE" == "windows" || -n "$WINDOWS_ID" ]]; then
+      log "Windows Instance ID: $WINDOWS_ID"
+      log "Windows Public DNS: $WINDOWS_DNS"
+      log "Windows Public IP : $WINDOWS_IP"
+      log "Windows SSH: ssh Administrator@$WINDOWS_DNS"
+      log "Windows SSM: aws ssm start-session --target $WINDOWS_ID --region $REGION"
+    fi
   else
     warn "Unable to extract ELB DNS names from outputs"
     warn "Run 'cd $TERRAFORM_DIR && terraform output' to see connection details"
@@ -280,7 +309,7 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
   NOMAD_NODES=$(curl -s "http://$SERVER_LB:4646/v1/nodes" | jq -r '.[] | .Name' 2>/dev/null | wc -l)
   log "  Found $NOMAD_NODES Nomad nodes"
 
-  # SSH Test
+  # SSH / SSM Test
   log ""
   log "Getting server instance IP for SSH test..."
   SERVER_IP=$(aws ec2 describe-instances \
@@ -303,6 +332,21 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
     warn "  tail -50 /var/log/provision.log"
   else
     error "Could not retrieve server IP"
+  fi
+
+  if [[ "$OS_TYPE" == "windows" || -n "$WINDOWS_ID" ]]; then
+    log "Windows connectivity checks..."
+    if [[ -n "$WINDOWS_ID" && "$WINDOWS_ID" != "" ]]; then
+      # Check SSM registration
+      if aws ssm describe-instance-information --region "$REGION" --query 'InstanceInformationList[].InstanceId' --output text | grep -q "$WINDOWS_ID"; then
+        log "✅ Windows instance registered with SSM"
+      else
+        warn "Windows instance not yet registered with SSM (agent may still start)"
+      fi
+      warn "Windows SSH test (if OpenSSH enabled): ssh Administrator@$WINDOWS_DNS"
+    else
+      warn "No Windows instance outputs found. Skipping Windows connectivity checks."
+    fi
   fi
   fi  # End of service tests if block
 

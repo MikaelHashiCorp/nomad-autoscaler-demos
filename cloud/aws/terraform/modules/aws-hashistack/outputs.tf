@@ -60,3 +60,16 @@ output "ssh_file" {
     formatlist("Host %v.hs\n  User ubuntu\n  HostName %v\n", aws_instance.nomad_server.*.tags.Name, aws_instance.nomad_server.*.public_dns)
   ))
 }
+
+# Windows test instance outputs (empty if not enabled)
+output "windows_instance_id" {
+  value = try(aws_instance.windows[0].id, "")
+}
+
+output "windows_instance_public_ip" {
+  value = try(aws_instance.windows[0].public_ip, "")
+}
+
+output "windows_instance_public_dns" {
+  value = try(aws_instance.windows[0].public_dns, "")
+}

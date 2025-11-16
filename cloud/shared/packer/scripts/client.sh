@@ -77,6 +77,13 @@ sudo systemctl start nomad.service
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
 
+# Ensure SSM agent running if installed
+if systemctl list-unit-files 2>/dev/null | grep -q amazon-ssm-agent; then
+  sudo systemctl enable amazon-ssm-agent || true
+  sudo systemctl start amazon-ssm-agent || true
+  log "Ensured amazon-ssm-agent running (client)"
+fi
+
 # Add hostname to /etc/hosts
 echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
 

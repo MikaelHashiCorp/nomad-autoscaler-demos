@@ -71,6 +71,31 @@ rm -rf awscliv2.zip aws/
 log "Installing dnsmasq..."
 pkg_install dnsmasq || log "dnsmasq install completed with warnings (systemctl not available in Packer environment)"
 
+# Install and enable SSM Agent & EC2 Instance Connect (where supported)
+log "Installing SSM Agent and EC2 Instance Connect components..."
+if [[ "${DETECTED_OS}" == "Ubuntu" ]]; then
+  # ec2-instance-connect package available on Ubuntu
+  if pkg_install amazon-ssm-agent ec2-instance-connect; then
+    log "Installed amazon-ssm-agent and ec2-instance-connect"
+  else
+    log "WARNING: Failed to install one or more packages (amazon-ssm-agent/ec2-instance-connect)"
+  fi
+elif [[ "${DETECTED_OS}" == "RedHat" ]]; then
+  # Try install SSM agent; ec2-instance-connect may not exist in repos
+  pkg_install amazon-ssm-agent || log "WARNING: amazon-ssm-agent install failed"
+  pkg_install ec2-instance-connect || log "INFO: ec2-instance-connect not available on RedHat (continuing; use SSM for access)"
+fi
+
+# Enable/start SSM agent if service present
+if systemctl list-unit-files 2>/dev/null | grep -q amazon-ssm-agent; then
+  sudo systemctl enable amazon-ssm-agent || true
+  sudo systemctl start amazon-ssm-agent || true
+  log "SSM agent enabled and started"
+else
+  log "SSM agent service not found"
+fi
+
+
 CONFIGDIR=/ops/config
 
 # CONSULVERSION=1.12.2

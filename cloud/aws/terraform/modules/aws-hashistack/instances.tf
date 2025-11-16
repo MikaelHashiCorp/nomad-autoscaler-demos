@@ -39,3 +39,42 @@ resource "aws_instance" "nomad_server" {
 
   iam_instance_profile = aws_iam_instance_profile.nomad_server.name
 }
+
+# Optional Windows Server 2022 test instance (not part of Nomad cluster)
+data "aws_ami" "windows_public" {
+  count       = var.enable_windows_test && var.windows_ami_override == "" ? 1 : 0
+  owners      = ["801119661308"]
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
+resource "aws_instance" "windows" {
+  count         = var.enable_windows_test ? 1 : 0
+  ami           = var.windows_ami_override != "" ? var.windows_ami_override : (var.packer_os == "Windows" ? var.ami : data.aws_ami.windows_public[0].id)
+  instance_type = var.windows_instance_type
+  key_name      = var.key_name
+  subnet_id     = element(aws_subnet.public.*.id, 0)
+  vpc_security_group_ids = [aws_security_group.default.id]
+  iam_instance_profile   = aws_iam_instance_profile.nomad_client.name
+
+  user_data = data.template_file.windows_user_data.rendered
+
+  tags = {
+    Name        = "${var.stack_name}-win"
+    Stack       = var.stack_name
+    Role        = "windows"
+    OwnerName   = var.owner_name
+    OwnerEmail  = var.owner_email
+  }
+}

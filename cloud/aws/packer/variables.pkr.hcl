@@ -13,6 +13,9 @@ variable "os"            { default = "Ubuntu" }
 variable "os_version"    { default = "24.04" }
 variable "os_name"       { default = "noble" }
 
+# When building Windows images set:
+# -var 'os=Windows' -var 'os_version=2022' -var 'os_name=' (blank codename)
+
 # Input variables for version management with hybrid fallback system
 variable "cni_version" { 
   description = "CNI plugins version. If empty, will use environment variable or default"

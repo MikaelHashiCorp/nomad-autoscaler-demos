@@ -55,6 +55,20 @@ else
   echo "   ✅ curl installed"
 fi
 
+if ! command -v aws &> /dev/null; then
+  MISSING_TOOLS+=("awscli")
+  echo "   ❌ awscli not found"
+else
+  echo "   ✅ awscli installed: $(aws --version | cut -d' ' -f1)"
+fi
+
+if ! command -v session-manager-plugin &> /dev/null; then
+  echo "   ⚠️  session-manager-plugin not found (SSM interactive sessions will fail)"
+  echo "      Install: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
+else
+  echo "   ✅ session-manager-plugin installed"
+fi
+
 if [ ${#MISSING_TOOLS[@]} -ne 0 ]; then
   echo ""
   echo "   Missing tools: ${MISSING_TOOLS[*]}"
@@ -93,6 +107,13 @@ else
   exit 1
 fi
 
+# Check 6: SSM / EC2 Instance Connect IAM hints
+echo ""
+echo "6. Checking IAM prerequisites (informational)..."
+echo "   Ensure instance roles include: AmazonSSMManagedInstanceCore"
+echo "   For EC2 Instance Connect (Ubuntu): AmazonEC2InstanceConnect"
+echo "   (This script does not validate IAM policies directly.)"
+
 if [ -f "$PACKER_DIR/env-pkr-var.sh" ]; then
   echo "   ✅ env-pkr-var.sh exists"
 else
@@ -126,7 +147,7 @@ fi
 
 # Check 6: Disk space
 echo ""
-echo "6. Checking available disk space..."
+echo "7. Checking available disk space..."
 AVAILABLE_GB=$(df -h . | awk 'NR==2 {print $4}' | sed 's/Gi//')
 if [ "${AVAILABLE_GB%%.*}" -gt 10 ]; then
   echo "   ✅ Sufficient disk space available: ${AVAILABLE_GB}GB"
