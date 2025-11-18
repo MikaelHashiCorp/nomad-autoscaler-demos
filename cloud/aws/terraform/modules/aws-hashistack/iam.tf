@@ -87,3 +87,14 @@ data "aws_iam_policy_document" "nomad_client" {
     resources = ["*"]
   }
 }
+
+# Attach AmazonSSMManagedInstanceCore managed policy to allow SSM/Session Manager
+resource "aws_iam_role_policy_attachment" "nomad_server_ssm" {
+  role       = aws_iam_role.nomad_server.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "nomad_client_ssm" {
+  role       = aws_iam_role.nomad_client.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}

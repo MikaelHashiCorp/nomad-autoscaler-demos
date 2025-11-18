@@ -63,10 +63,11 @@ else
 fi
 
 if ! command -v session-manager-plugin &> /dev/null; then
-  echo "   ⚠️  session-manager-plugin not found (SSM interactive sessions will fail)"
-  echo "      Install: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
+  MISSING_TOOLS+=("session-manager-plugin")
+  echo "   ❌ session-manager-plugin not found (required for SSM interactive sessions)"
+  echo "      Install with: brew install --cask session-manager-plugin"
 else
-  echo "   ✅ session-manager-plugin installed"
+  echo "   ✅ session-manager-plugin installed: $(session-manager-plugin --version)"
 fi
 
 if [ ${#MISSING_TOOLS[@]} -ne 0 ]; then

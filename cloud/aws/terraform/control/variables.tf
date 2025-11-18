@@ -119,23 +119,6 @@ variable "packer_os_name" {
 }
 
 # Optional Windows test instance (not part of hashistack cluster)
-variable "enable_windows_test" {
-  description = "If true, launch a standalone Windows Server 2022 test instance for SSH/SSM validation."
-  type        = bool
-  default     = false
-}
-
-variable "windows_instance_type" {
-  description = "Instance type for the Windows test instance (if enabled)."
-  type        = string
-  default     = "t3.large"
-}
-
-variable "windows_ami_override" {
-  description = "Override AMI ID for Windows test instance. Leave empty to use built Windows AMI if packer_os=Windows else public base AMI lookup."
-  type        = string
-  default     = ""
-}
 
 variable "cleanup_ami_on_destroy" {
   description = "Whether to deregister the AMI and delete snapshots when running terraform destroy. Set to false to keep AMIs for later use."
@@ -148,4 +131,7 @@ variable "nomad_autoscaler_image" {
   type        = string
   default     = "hashicorp/nomad-autoscaler:0.3.3"
 }
+
+# When set true and a Windows test instance is enabled, suppress Linux HashiStack
+# details in the consolidated output and show only Windows information.
 

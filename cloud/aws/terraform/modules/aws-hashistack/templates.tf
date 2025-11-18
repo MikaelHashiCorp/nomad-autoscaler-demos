@@ -15,7 +15,4 @@ resource "null_resource" "nomad_autoscaler_jobspec" {
   }
 }
 
-  # Windows user data (only used for optional test instance outside cluster)
-  data "template_file" "windows_user_data" {
-    template = file("${path.module}/templates/user-data-windows.ps1")
-  }
+  # Windows user data handled directly via templatefile() in instances.tf (removed template_file data source)

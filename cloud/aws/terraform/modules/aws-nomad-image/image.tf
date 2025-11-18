@@ -52,6 +52,7 @@ resource "null_resource" "packer_build" {
     command = <<EOF
 source env-pkr-var.sh && \
   packer build -force \
+    ${var.packer_os == "Windows" ? "-only=amazon-ebs.win2022" : "-only=amazon-ebs.hashistack"} \
     -var 'created_name=${var.owner_name}' \
     -var 'created_email=${var.owner_email}' \
     -var 'region=${var.region}' \

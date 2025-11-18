@@ -31,6 +31,12 @@ resource "aws_security_group" "server_lb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    cidr_blocks = var.allowlist_ip
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
+  }
 }
 
 resource "aws_security_group" "client_lb" {

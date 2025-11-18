@@ -4,6 +4,99 @@
 
 DO NOT PUT ANY MATCHED PUBLIC CODE in your response!
 
+## Windows Test Workflow (Authoritative Steps 1–4)
+
+These steps MUST be executed sequentially in ONE terminal session. Do not open a new tab/window after authenticating. If you lose the terminal, restart from Step 2 (authentication). Step 1 (plugin install) can be done once per machine.
+
+### Step 1: Install & Verify session-manager-plugin (required for SSM checks)
+Only needed once per workstation. Skip if already installed and `session-manager-plugin --version` works.
+
+macOS (Homebrew):
+```bash
+brew install --cask session-manager-plugin
+session-manager-plugin --version  # expect a semantic version
+```
+If Homebrew is unavailable, follow AWS docs: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+
+### Step 2: Authenticate via Doormat (REQUIRED before any AWS / Terraform / Packer)
+From repository root (or any path), change to control directory then authenticate. Replace the account name if different.
+```bash
+cd cloud/aws/terraform/control
+doormat login -f ; eval $(doormat aws export --account aws_mikael.sikora_test) ; aws sts get-caller-identity --output table
+```
+Verification: The table output must show your AWS Account and AssumedRole. Stay in THIS terminal for everything that follows.
+
+### Step 3: Pre-Flight Environment Check
+Run from the `cloud/aws` directory (still same terminal).
+```bash
+cd ../../aws
+./pre-flight-check.sh | tee test-logs/pre-flight-$(date +%Y%m%d-%H%M%S).log
+```
+Confirm: All required tools OK. Only acceptable warning is possibly missing optional tools. If `session-manager-plugin` still missing, return to Step 1.
+
+### Step 4: Execute Windows Quick Test (Packer + Terraform)
+Still in the SAME terminal (credentials intact):
+```bash
+./quick-test.sh windows terraform | tee test-logs/quick-test-windows-$(date +%Y%m%d-%H%M%S).log
+```
+Behavior:
+- Builds or locates Windows Server 2022 AMI (variables: `os=Windows`, `os_version=2022`, `os_name=` blank)
+- Applies Terraform with `enable_windows_test=true`
+- Injects hardened `sshd_config.windows` via `windows_sshd_config` variable
+- Creates SSM Port 22 check document + association
+
+Do NOT open a subshell or use tools that spawn a new login shell; they can discard exported credentials.
+
+### Post-Deployment Validation (Immediately After Step 4)
+All in SAME terminal unless explicitly re-authenticated.
+
+1. Change to control directory and view outputs:
+```bash
+cd terraform/control
+terraform output
+```
+2. Identify Windows instance id (output or tag) then test SSM:
+```bash
+WIN_INSTANCE_ID=<i-xxxxxxxxxxxxxxxxx>
+aws ssm start-session --target "$WIN_INSTANCE_ID" --region $(grep '^region' terraform.tfvars | awk -F'=' '{print $2}' | tr -d ' "')
+```
+3. Inside SSM session (if required) inspect SSH:
+```powershell
+Get-Service sshd
+netstat -an | findstr :22
+Get-Content C:\ProgramData\Port22Check.log -Tail 50
+Get-Content C:\ProgramData\user-data.log -Tail 80
+```
+4. Local SSH test (public DNS once security groups allow):
+```bash
+ssh -i ~/.ssh/mhc-aws-mws-west-2.pem Administrator@<windows_public_dns>
+```
+If connection fails: use SSM to verify service, regenerate keys, or check firewall rules.
+
+### Terminal Discipline (Critical Reminder)
+All AWS, Terraform, Packer, and validation commands must occur in the SAME authenticated terminal session. Opening a new terminal REQUIRES repeating Step 2 before any other steps. Avoid scripts that run `bash -c` spawning fresh shells without inherited env vars.
+
+### Quick Recovery Flow
+If something breaks mid-way:
+1. Abort current process (Ctrl+C)
+2. Verify credentials: `aws sts get-caller-identity --output table`
+3. If fails, re-run Step 2 only
+4. Resume at the failed Step (3 or 4)
+
+### Common Windows-Specific Checks
+- SSH service: `Get-Service sshd` should be Running
+- Port 22 listening: `netstat -an | findstr :22`
+- Config file path: `C:\ProgramData\ssh\sshd_config`
+- Authorized key file: `C:\ProgramData\ssh\administrators_authorized_keys`
+
+### Log Locations (Windows)
+- User-Data Transcript: `C:\ProgramData\user-data.log`
+- Port 22 Check: `C:\ProgramData\Port22Check.log`
+- SSHD Service Events: Windows Event Viewer (if deeper debugging needed)
+
+---
+Use this single authoritative workflow whenever deploying or validating the Windows test instance.
+
 ## Project Overview
 
 This is a **HashiCorp Nomad Autoscaler demonstration environment** that provisions cloud infrastructure (AWS) with a complete "hashistack" (Nomad, Consul, Vault) for testing horizontal and vertical autoscaling capabilities. The project uses **Packer** to build AMIs and **Terraform** to deploy infrastructure with Auto Scaling Groups managed by the Nomad Autoscaler.
@@ -42,7 +135,7 @@ cd cloud/aws/terraform/control
 
 Then authenticate:
 ```bash
-doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
+doormat login -f ; eval $(doormat aws export --account aws_mikael.sikora_test) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
 ```
 
 **Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
@@ -50,6 +143,29 @@ doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ;
 **Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
 
 **⚠️ REMEMBER**: After authentication, use the same terminal for all AWS/Terraform/Packer commands. Do not switch terminals or run commands that spawn new shells (like `./quick-test.sh`) unless you re-authenticate first.
+
+**Single Session Workflow Example (DO NOT OPEN NEW TERMINAL):**
+```bash
+# 1. Start in control directory and authenticate
+cd cloud/aws/terraform/control
+doormat login -f ; eval $(doormat aws export --account aws_mikael.sikora_test) ; aws sts get-caller-identity --output table
+
+# 2. Re-use SAME terminal: move to aws root and run quick test
+cd ../../aws
+./quick-test.sh windows terraform
+
+# 3. If you need to build an AMI manually, still in SAME terminal:
+cd packer
+source env-pkr-var.sh
+packer build -var 'os=Windows' -var 'os_version=2022' -var 'os_name=' aws-packer-windows.pkr.hcl
+
+# 4. Return to control for terraform operations without re-auth
+cd ../terraform/control
+terraform plan -var "packer_os=Windows" -var "packer_os_version=2022" -var "packer_os_name="
+terraform apply -auto-approve
+```
+
+If you accidentally open a new terminal or tab, you MUST repeat the authentication step before running any AWS/Terraform/Packer commands again.
 
 ### Building AMIs with Packer
 

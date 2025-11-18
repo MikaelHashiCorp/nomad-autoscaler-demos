@@ -85,7 +85,7 @@ elif [[ "$OS_TYPE" == "windows" ]]; then
   EXPECTED_PKG_MGR="powershell"
   TF_OS="Windows"
   TF_OS_VERSION="2022"
-  TF_OS_NAME=""
+  TF_OS_NAME="" # Not used for Windows
 else
   error "Invalid OS type. Use 'ubuntu', 'redhat', or 'windows'"
   exit 1
@@ -93,6 +93,14 @@ fi
 
 # Convert to uppercase for display (zsh/bash compatible)
 OS_TYPE_UPPER=$(echo "$OS_TYPE" | tr '[:lower:]' '[:upper:]')
+
+# Normalize short OS suffix for naming (ubuntu|rhel|win)
+case "$OS_TYPE" in
+  ubuntu) OS_SUFFIX="ubuntu" ;;
+  redhat) OS_SUFFIX="rhel" ;;
+  windows) OS_SUFFIX="win" ;;
+  *) OS_SUFFIX="$OS_TYPE" ;;
+esac
 
 # Validate test mode
 case "$TEST_MODE" in
@@ -188,9 +196,36 @@ fi
 if [[ "$TEST_MODE" == "terraform" ]]; then
   log ""
   log "Terraform Infrastructure Deployment..."
-  if [[ "$OS_TYPE" == "windows" ]]; then
-    log "NOTE: Windows build will produce optional standalone instance (enable_windows_test=true)."
+  # Pre-build AMI for all OS types to avoid plan-time data source failure
+  log "Building AMI for $OS_TYPE before Terraform plan..."
+  pushd "$PACKER_DIR" >/dev/null
+  source env-pkr-var.sh
+  case "$OS_TYPE" in
+    windows)
+      packer build -force -only=amazon-ebs.win2022 \
+        -var "os=Windows" -var "os_version=2022" -var "os_name=" \
+        -var "name_prefix=scale-mws-${OS_SUFFIX}" . 2>&1 | tee "$LOG_DIR/packer-$OS_TYPE-$TIMESTAMP.log" || { error "Packer build failed"; exit 1; } ;;
+    ubuntu)
+      packer build -force -only=amazon-ebs.hashistack \
+        -var "os=Ubuntu" -var "os_version=24.04" -var "os_name=noble" \
+        -var "name_prefix=scale-mws-${OS_SUFFIX}" . 2>&1 | tee "$LOG_DIR/packer-$OS_TYPE-$TIMESTAMP.log" || { error "Packer build failed"; exit 1; } ;;
+    redhat)
+      packer build -force -only=amazon-ebs.hashistack \
+        -var "os=RedHat" -var "os_version=9.6.0" -var "os_name=" \
+        -var "name_prefix=scale-mws-${OS_SUFFIX}" . 2>&1 | tee "$LOG_DIR/packer-$OS_TYPE-$TIMESTAMP.log" || { error "Packer build failed"; exit 1; } ;;
+  esac
+  BUILT_AMI_ID=$(aws ec2 describe-images \
+    --owners self \
+    --filters "Name=name,Values=scale-mws-${OS_SUFFIX}-*" \
+    --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+    --output text \
+    --region "$REGION" || echo "")
+  popd >/dev/null
+  if [[ -z "$BUILT_AMI_ID" || "$BUILT_AMI_ID" == "None" ]]; then
+    error "Could not retrieve built AMI ID after build"
+    exit 1
   fi
+  log "Built AMI ID: $BUILT_AMI_ID"
   cd "$TERRAFORM_DIR"
 
   log "Initializing Terraform..."
@@ -200,9 +235,7 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
   log "Creating Terraform plan..."
   # Let Terraform call Packer if needed, passing OS-specific variables
   EXTRA_VARS=""
-  if [[ "$OS_TYPE" == "windows" ]]; then
-    EXTRA_VARS="-var 'enable_windows_test=true'"
-  fi
+  EXTRA_VARS="-var ami=$BUILT_AMI_ID"
   terraform plan \
     -var "packer_os=$TF_OS" \
     -var "packer_os_version=$TF_OS_VERSION" \

@@ -20,9 +20,14 @@ provider "nomad" {
 }
 
 locals {
-  # Create OS-specific stack name for AWS resources
-  # Maps OS names to lowercase: "Ubuntu" -> "ubuntu", "RedHat" -> "redhat", etc.
-  os_suffix = lower(var.packer_os)
+  # Normalize OS suffix mapping to required short forms
+  # Ubuntu -> ubuntu, RedHat -> rhel, Windows -> win (avoid long 'windows')
+  os_suffix_map = {
+    Ubuntu  = "ubuntu"
+    RedHat  = "rhel"
+    Windows = "win"
+  }
+  os_suffix         = lookup(local.os_suffix_map, var.packer_os, lower(var.packer_os))
   stack_name_with_os = "${var.stack_name}-${local.os_suffix}"
 }
 
@@ -64,6 +69,7 @@ module "hashistack_cluster" {
   client_instance_type  = var.client_instance_type
   server_count          = var.server_count
   client_count          = var.client_count
+  packer_os             = var.packer_os
 }
 
 module "hashistack_jobs" {

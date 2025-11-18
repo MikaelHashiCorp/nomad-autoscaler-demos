@@ -104,27 +104,10 @@ variable "nomad_autoscaler_image" {
   default     = "hashicorp/nomad-autoscaler:0.3.3"
 }
 
-# Windows test instance controls
-variable "enable_windows_test" {
-  description = "If true, launch a standalone Windows Server 2022 test instance for SSH/SSM validation."
-  type        = bool
-  default     = false
-}
-
-variable "windows_instance_type" {
-  description = "Instance type for Windows test instance."
-  type        = string
-  default     = "t3.large"
-}
-
-variable "windows_ami_override" {
-  description = "Override AMI ID for Windows test instance (leave empty to auto select public base or built AMI)."
-  type        = string
-  default     = ""
-}
 
 variable "packer_os" {
   description = "Propagated Packer OS string (Ubuntu, RedHat, Windows) used for conditional logic."
   type        = string
   default     = "Ubuntu"
 }
+

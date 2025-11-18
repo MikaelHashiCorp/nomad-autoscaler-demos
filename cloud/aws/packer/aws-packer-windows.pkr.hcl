@@ -6,7 +6,8 @@
 # Only use this file if var.os == "Windows"; we keep variables consistent
 
 source "amazon-ebs" "win2022" {
-  ami_name      = format("%s%s", var.name_prefix, "-win-{{timestamp}}")
+  # AMI name aligns with Linux pattern: <prefix>-<timestamp>
+  ami_name      = format("%s%s", var.name_prefix, "-{{timestamp}}")
   region        = var.region
   instance_type = "t3a.2xlarge"
   # Windows does not support ED25519 temporary keys; use RSA
@@ -43,7 +44,7 @@ Write-Host "[user_data] WinRM ready"
 EOF
 
   tags = {
-    Name           = format("%s%s", var.name_prefix, formatdate("'_win_'YYYY-MM-DD", timestamp()))
+    Name           = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
     Architecture   = var.architecture
     OS             = var.os
     OS_Version     = var.os_version

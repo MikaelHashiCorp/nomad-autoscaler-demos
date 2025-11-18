@@ -7,14 +7,27 @@ resource "aws_launch_template" "nomad_client" {
   instance_type          = var.client_instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.primary.id]
-  user_data              = base64encode(templatefile(
-    "${path.module}/templates/user-data-client.sh", {
-      region        = var.region
-      retry_join    = var.retry_join
-      consul_binary = var.consul_binary
-      nomad_binary  = var.nomad_binary
-      node_class    = "hashistack"
-    }))
+  user_data              = base64encode(
+    var.packer_os == "Windows" ? templatefile(
+      "${path.module}/templates/user-data-client-win.ps1",
+      {
+        region        = var.region
+        retry_join    = var.retry_join
+        consul_binary = var.consul_binary
+        nomad_binary  = var.nomad_binary
+        node_class    = "hashistack"
+      }
+    ) : templatefile(
+      "${path.module}/templates/user-data-client.sh",
+      {
+        region        = var.region
+        retry_join    = var.retry_join
+        consul_binary = var.consul_binary
+        nomad_binary  = var.nomad_binary
+        node_class    = "hashistack"
+      }
+    )
+  )
 
   metadata_options {
     http_endpoint               = "enabled"

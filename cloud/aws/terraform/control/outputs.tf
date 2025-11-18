@@ -1,9 +1,8 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-output "ip_addresses" {
-  value = <<CONFIGURATION
-
+locals {
+  cluster_output = <<EOT
 AMI Information:
   ID:         ${module.hashistack_image.id}
   OS:         ${module.hashistack_image.os} ${module.hashistack_image.os_version}
@@ -12,31 +11,25 @@ AMI Information:
 Server IPs:
 ${module.hashistack_cluster.server_addresses}
 
-
 To connect, add your private key and SSH into any client or server with
-`ssh ${module.hashistack_image.ssh_user}@PUBLIC_IP`. You can test the integrity of the cluster by running:
+`ssh ${module.hashistack_image.ssh_user}@PUBLIC_IP`. Validate cluster:
+  consul members
+  nomad server members
+  nomad node status
 
-  $ consul members
-  $ nomad server members
-  $ nomad node status
-
-The Nomad UI can be accessed at ${module.hashistack_cluster.nomad_addr}/ui
-The Consul UI can be accessed at ${module.hashistack_cluster.consul_addr}/ui
-Grafana dashboard can be accessed at http://${module.hashistack_cluster.client_elb_dns}:3000/d/AQphTqmMk/demo?orgId=1&refresh=5s
-Traefik can be accessed at http://${module.hashistack_cluster.client_elb_dns}:8081
-Prometheus can be accessed at http://${module.hashistack_cluster.client_elb_dns}:9090
-Webapp can be accessed at http://${module.hashistack_cluster.client_elb_dns}:80
-
-Windows (optional):
-  Instance ID:   ${module.hashistack_cluster.windows_instance_id}
-  Public IP:     ${module.hashistack_cluster.windows_instance_public_ip}
-  Public DNS:    ${module.hashistack_cluster.windows_instance_public_dns}
-  SSH Example:   ssh Administrator@${module.hashistack_cluster.windows_instance_public_dns}
-  SSM Example:   aws ssm start-session --target ${module.hashistack_cluster.windows_instance_id} --region ${var.region}
+Nomad UI:    ${module.hashistack_cluster.nomad_addr}/ui
+Consul UI:   ${module.hashistack_cluster.consul_addr}/ui
+Grafana:     http://${module.hashistack_cluster.client_elb_dns}:3000/d/AQphTqmMk/demo?orgId=1&refresh=5s
+Traefik:     http://${module.hashistack_cluster.client_elb_dns}:8081
+Prometheus:  http://${module.hashistack_cluster.client_elb_dns}:9090
+Webapp:      http://${module.hashistack_cluster.client_elb_dns}:80
 
 CLI environment variables:
 export NOMAD_CLIENT_DNS=http://${module.hashistack_cluster.client_elb_dns}
 export NOMAD_ADDR=${module.hashistack_cluster.nomad_addr}
+EOT
+}
 
-CONFIGURATION
+output "ip_addresses" {
+  value = local.cluster_output
 }
