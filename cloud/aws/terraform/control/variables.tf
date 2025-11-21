@@ -135,3 +135,15 @@ variable "nomad_autoscaler_image" {
 # When set true and a Windows test instance is enabled, suppress Linux HashiStack
 # details in the consolidated output and show only Windows information.
 
+variable "enable_nomad_jobs" {
+  description = "Whether to deploy Nomad jobs module (set false while debugging bootstrap)."
+  type        = bool
+  default     = true
+}
+
+variable "ssh_authorized_key" {
+  description = "Public SSH key (single line) to authorize for Windows OpenSSH Administrator login. Leave blank to skip key provisioning."
+  type        = string
+  default     = ""
+}
+

@@ -7,6 +7,9 @@ resource "null_resource" "wait_for_nomad_api" {
 bash -c '
 START=$(date +%s)
 TIMEOUT=300
+if [ "$SKIP_NOMAD_WAIT" = "true" ]; then
+  echo "[wait-for-nomad] Skip enabled (bootstrap debugging)."; exit 0;
+fi
 echo "[wait-for-nomad] Waiting up to $TIMEOUT seconds for Nomad API..."
 while ! nomad server members > /dev/null 2>&1; do
   NOW=$(date +%s)
@@ -31,6 +34,7 @@ echo "[wait-for-nomad] Nomad API ready after $READY_AFTER seconds."
 EOT
     environment = {
       NOMAD_ADDR = var.nomad_addr
+      SKIP_NOMAD_WAIT = var.skip_nomad_wait
     }
   }
 }

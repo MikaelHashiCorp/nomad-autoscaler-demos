@@ -12,6 +12,7 @@ locals {
       consul_binary = var.consul_binary
       nomad_binary  = var.nomad_binary
       region        = var.region
+      ssh_pub_key   = var.ssh_pub_key
     }
   ) : templatefile(
     "${path.module}/templates/user-data-server.sh",

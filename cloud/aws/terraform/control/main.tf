@@ -41,6 +41,7 @@ module "hashistack_image" {
   source = "../modules/aws-nomad-image"
 
   ami_id                  = var.ami
+  public_ami              = true
   region                  = var.region
   stack_name              = local.stack_name_with_os
   owner_name              = var.owner_name
@@ -70,10 +71,13 @@ module "hashistack_cluster" {
   server_count          = var.server_count
   client_count          = var.client_count
   packer_os             = var.packer_os
+  ssh_pub_key           = var.ssh_authorized_key
 }
 
 module "hashistack_jobs" {
-  source = "../../../shared/terraform/modules/shared-nomad-jobs"
+  for_each = var.enable_nomad_jobs ? { enabled = true } : {}
+  source   = "../../../shared/terraform/modules/shared-nomad-jobs"
 
-  nomad_addr = "http://${module.hashistack_cluster.server_elb_dns}:4646"
+  nomad_addr      = "http://${module.hashistack_cluster.server_elb_dns}:4646"
+  skip_nomad_wait = var.packer_os == "Windows" ? true : false
 }

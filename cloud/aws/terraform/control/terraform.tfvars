@@ -1,6 +1,6 @@
 region                 = "us-west-2"
 availability_zones     = ["us-west-2a", "us-west-2b", "us-west-2c"]
-ami                    = "ami-03f821fb33eb14ef1"  # Pinned Windows AMI (scale-mws-win-1763425557)
+ami                    = "ami-06c51948c651b8e45"  # Latest public Windows Server 2022 English Full Base (for bootstrap test)
 cleanup_ami_on_destroy = true
 key_name               = "mhc-aws-mws-west-2"
 owner_name             = "Mikael Sikora"
@@ -20,4 +20,7 @@ allowlist_ip           = []  # Empty => your current IP only
 packer_os              = "Windows"
 packer_os_version      = "2022"
 packer_os_name         = ""  # Not used for Windows
+
+# Disable Nomad jobs while debugging Windows bootstrap (skip provider usage)
+enable_nomad_jobs      = false
 

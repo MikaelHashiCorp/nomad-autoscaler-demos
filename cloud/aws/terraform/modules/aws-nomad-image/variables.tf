@@ -24,6 +24,12 @@ variable "ami_id" {
   description = "The ID of an existing AMI. If left empty, a new AMI will be built."
 }
 
+variable "public_ami" {
+  type        = bool
+  default     = false
+  description = "Set true when ami_id refers to a public (non-self-owned) AMI so ownership checks are skipped."
+}
+
 variable "stack_name" {
   type        = string
   default     = "hashistack"

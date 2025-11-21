@@ -12,6 +12,13 @@ client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]
 
+# Windows/OpenSSH key-based login (optional):
+# Provide a single-line SSH RSA/ED25519 public key to enable Administrator key auth.
+# Example (ED25519):
+# ssh_authorized_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMyExamplePublicKeyHere user@host"
+# Leave blank to skip provisioning; password auth will remain unless disabled manually.
+# ssh_authorized_key = ""
+
 # Operating System Configuration (for Packer builds only)
 # If 'ami' is empty, Packer will build a new AMI with these settings
 # If 'ami' is specified, these are ignored and OS info comes from AMI tags

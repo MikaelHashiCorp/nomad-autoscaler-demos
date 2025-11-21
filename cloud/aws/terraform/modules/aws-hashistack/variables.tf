@@ -111,3 +111,9 @@ variable "packer_os" {
   default     = "Ubuntu"
 }
 
+variable "ssh_pub_key" {
+  description = "Public SSH key for Windows Administrator (added to administrators_authorized_keys). If empty, key setup skipped."
+  type        = string
+  default     = ""
+}
+
