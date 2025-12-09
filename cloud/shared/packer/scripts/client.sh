@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright IBM Corp. 2020, 2024
+# SPDX-License-Identifier: MPL-2.0
+
 set -Eeuo pipefail
 
 LOG_FILE=/var/log/provision.log
@@ -15,9 +18,6 @@ trap 'log "client.sh failed (exit code $?)"' ERR
 trap 'log "Finished client.sh (exit code $?)"' EXIT
 
 echo -e "\nInstalling CLIENT...\n"
-
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
 
 SHAREDDIR=/ops/
 CONFIGDIR=$SHAREDDIR/config

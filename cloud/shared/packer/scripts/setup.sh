@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright IBM Corp. 2020, 2024
+# SPDX-License-Identifier: MPL-2.0
+
 set -Eeuo pipefail
 
 # --- unified logging (console + packer.log + local file) ---
