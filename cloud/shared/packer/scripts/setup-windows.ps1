@@ -239,9 +239,8 @@ Write-Host "  Total rules configured: $($firewallRules.Count + 1)" -ForegroundCo
 Write-Host ""
 
 # Install Docker (required for Nomad)
-# DISABLED: Docker installation via PowerShell Gallery is unreliable in packer builds
-# Install Docker manually after AMI creation or use alternative installation method
-$InstallDocker = $false
+# Using direct download method instead of PowerShell Gallery for reliability
+$InstallDocker = $true
 
 if ($InstallDocker) {
     Write-Host "" -ForegroundColor Cyan
@@ -250,32 +249,73 @@ if ($InstallDocker) {
     Write-Host "========================================" -ForegroundColor Cyan
 
     try {
-        Write-Host "[1/4] Checking for existing Docker installation..." -ForegroundColor Yellow
-        $dockerInstalled = Get-Package -Name Docker -ErrorAction SilentlyContinue
-        if ($dockerInstalled) {
-            Write-Host "  Docker is already installed (version: $($dockerInstalled.Version))" -ForegroundColor Green
+        Write-Host "[1/5] Installing Windows Containers feature..." -ForegroundColor Yellow
+        $containersFeature = Get-WindowsFeature -Name Containers -ErrorAction SilentlyContinue
+        if ($containersFeature -and $containersFeature.Installed) {
+            Write-Host "  Windows Containers feature already installed" -ForegroundColor Green
+        } else {
+            Write-Host "  Installing Windows Containers feature (this may take a few minutes)..." -ForegroundColor Cyan
+            Install-WindowsFeature -Name Containers -ErrorAction Stop | Out-Null
+            Write-Host "  [OK] Windows Containers feature installed" -ForegroundColor Green
+        }
+        
+        Write-Host "[2/5] Checking for existing Docker installation..." -ForegroundColor Yellow
+        $dockerExe = Test-Path "C:\Program Files\Docker\dockerd.exe"
+        if ($dockerExe) {
+            Write-Host "  Docker is already installed" -ForegroundColor Green
         } else {
             Write-Host "  Docker not found, proceeding with installation" -ForegroundColor Cyan
-            Write-Host "  NOTE: This can take 10-15 minutes" -ForegroundColor Yellow
             
-            Write-Host "[2/4] Installing DockerMsftProvider module from PSGallery..." -ForegroundColor Yellow
-            Write-Host "  This may take 1-2 minutes without progress output..." -ForegroundColor Yellow
-            Install-Module -Name DockerMsftProvider -Repository PSGallery -Force -Confirm:$false -AllowClobber -SkipPublisherCheck -ErrorAction Stop
-            Write-Host "  [OK] DockerMsftProvider module installed successfully" -ForegroundColor Green
+            Write-Host "[3/5] Downloading Docker 24.0.7..." -ForegroundColor Yellow
+            $dockerUrl = "https://download.docker.com/win/static/stable/x86_64/docker-24.0.7.zip"
+            $dockerZip = "$env:TEMP\docker.zip"
+            Write-Host "  URL: $dockerUrl" -ForegroundColor Cyan
+            Invoke-WebRequest -Uri $dockerUrl -OutFile $dockerZip -UseBasicParsing -ErrorAction Stop
+            Write-Host "  [OK] Download complete" -ForegroundColor Green
             
-            Write-Host "[3/4] Installing Docker package..." -ForegroundColor Yellow
-            Write-Host "  This may take 5-10 minutes without progress output..." -ForegroundColor Yellow
-            Write-Host "  Please be patient, the installation is running..." -ForegroundColor Yellow
-            Install-Package -Name docker -ProviderName DockerMsftProvider -Force -Confirm:$false -ErrorAction Stop
-            Write-Host "  [OK] Docker package installed successfully" -ForegroundColor Green
+            Write-Host "[4/5] Extracting Docker to C:\Program Files..." -ForegroundColor Yellow
+            Expand-Archive -Path $dockerZip -DestinationPath "C:\Program Files" -Force -ErrorAction Stop
+            Remove-Item $dockerZip -Force
+            Write-Host "  [OK] Docker extracted successfully" -ForegroundColor Green
             
-            Write-Host "[4/4] Verifying Docker installation..." -ForegroundColor Yellow
-            $dockerService = Get-Service -Name docker -ErrorAction SilentlyContinue
-            if ($dockerService) {
-                Write-Host "  Docker service found: $($dockerService.Status)" -ForegroundColor Green
-            } else {
-                Write-Host "  Docker service not found (may require reboot)" -ForegroundColor Yellow
+            Write-Host "[5/5] Configuring Docker..." -ForegroundColor Yellow
+            
+            # Add Docker to PATH
+            $dockerPath = "C:\Program Files\Docker"
+            $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+            if ($currentPath -notlike "*$dockerPath*") {
+                Write-Host "  Adding Docker to system PATH..." -ForegroundColor Cyan
+                [Environment]::SetEnvironmentVariable("Path", "$currentPath;$dockerPath", "Machine")
+                $env:Path = "$env:Path;$dockerPath"
+                Write-Host "  [OK] PATH updated" -ForegroundColor Green
             }
+            
+            # Register Docker service
+            Write-Host "  Registering Docker service..." -ForegroundColor Cyan
+            & "C:\Program Files\Docker\dockerd.exe" --register-service
+            Write-Host "  [OK] Docker service registered" -ForegroundColor Green
+            
+            # Start Docker service
+            Write-Host "  Starting Docker service..." -ForegroundColor Cyan
+            Start-Service docker -ErrorAction Stop
+            Write-Host "  [OK] Docker service started" -ForegroundColor Green
+            
+            # Set Docker service to automatic startup
+            Set-Service -Name docker -StartupType Automatic
+            Write-Host "  [OK] Docker service set to automatic startup" -ForegroundColor Green
+        }
+        
+        # Verify Docker installation
+        Write-Host "" -ForegroundColor Cyan
+        Write-Host "Verifying Docker installation..." -ForegroundColor Yellow
+        $dockerVersion = & docker version 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  [OK] Docker is working correctly" -ForegroundColor Green
+            Write-Host "" -ForegroundColor Cyan
+            & docker version
+        } else {
+            Write-Host "  [WARN] Docker verification failed, but installation completed" -ForegroundColor Yellow
+            Write-Host "  Docker may require a system restart to function properly" -ForegroundColor Yellow
         }
         
         Write-Host "" -ForegroundColor Green
@@ -289,16 +329,69 @@ if ($InstallDocker) {
     }
 
     Write-Host "========================================" -ForegroundColor Cyan
-} else {
-    Write-Host "" -ForegroundColor Yellow
-    Write-Host "========================================" -ForegroundColor Yellow
-    Write-Host "Docker Installation SKIPPED" -ForegroundColor Yellow
-    Write-Host "========================================" -ForegroundColor Yellow
-    Write-Host "Docker installation is disabled for faster AMI builds." -ForegroundColor Cyan
-    Write-Host "To enable Docker, set `$InstallDocker = `$true in setup-windows.ps1" -ForegroundColor Cyan
-    Write-Host "Or install Docker manually after launching instances from this AMI." -ForegroundColor Cyan
-    Write-Host ""
 }
+
+# Install OpenSSH Server
+Write-Host "" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "OpenSSH Server Installation" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+try {
+    Write-Host "[1/4] Checking for existing OpenSSH Server..." -ForegroundColor Yellow
+    $sshService = Get-Service -Name sshd -ErrorAction SilentlyContinue
+    if ($sshService) {
+        Write-Host "  OpenSSH Server is already installed" -ForegroundColor Green
+    } else {
+        Write-Host "  OpenSSH Server not found, proceeding with installation" -ForegroundColor Cyan
+        
+        Write-Host "[2/4] Installing OpenSSH Server capability..." -ForegroundColor Yellow
+        Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 -ErrorAction Stop | Out-Null
+        Write-Host "  [OK] OpenSSH Server installed" -ForegroundColor Green
+    }
+    
+    Write-Host "[3/4] Configuring SSH service..." -ForegroundColor Yellow
+    
+    # Start SSH service
+    Write-Host "  Starting SSH service..." -ForegroundColor Cyan
+    Start-Service sshd -ErrorAction Stop
+    Write-Host "  [OK] SSH service started" -ForegroundColor Green
+    
+    # Set SSH service to automatic startup
+    Write-Host "  Setting SSH service to automatic startup..." -ForegroundColor Cyan
+    Set-Service -Name sshd -StartupType Automatic
+    Write-Host "  [OK] SSH service configured for automatic startup" -ForegroundColor Green
+    
+    Write-Host "[4/4] Configuring Windows Firewall for SSH..." -ForegroundColor Yellow
+    try {
+        New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server (sshd)" `
+            -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 `
+            -ErrorAction Stop | Out-Null
+        Write-Host "  [OK] Firewall rule created for SSH (port 22)" -ForegroundColor Green
+    } catch {
+        Write-Host "  [WARN] Firewall rule may already exist" -ForegroundColor Yellow
+    }
+    
+    # Verify SSH installation
+    Write-Host "" -ForegroundColor Cyan
+    Write-Host "Verifying SSH installation..." -ForegroundColor Yellow
+    $sshServiceStatus = Get-Service -Name sshd
+    Write-Host "  SSH Service Status: $($sshServiceStatus.Status)" -ForegroundColor Green
+    Write-Host "  SSH Service Startup Type: $($sshServiceStatus.StartType)" -ForegroundColor Green
+    
+    Write-Host "" -ForegroundColor Green
+    Write-Host "OpenSSH Server installation completed successfully!" -ForegroundColor Green
+    Write-Host "  Note: SSH keys must be configured after instance launch" -ForegroundColor Cyan
+    Write-Host "  Administrator keys location: C:\ProgramData\ssh\administrators_authorized_keys" -ForegroundColor Cyan
+    
+} catch {
+    Write-Host "" -ForegroundColor Yellow
+    Write-Host "OpenSSH Server installation encountered an issue:" -ForegroundColor Yellow
+    Write-Host "  Error: $_" -ForegroundColor Red
+    Write-Host "  This is non-critical - SSH can be installed later if needed" -ForegroundColor Yellow
+}
+
+Write-Host "========================================" -ForegroundColor Cyan
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Windows Server 2022 Setup Complete!" -ForegroundColor Cyan
@@ -308,11 +401,22 @@ Write-Host "Installed components:" -ForegroundColor Green
 Write-Host "  - Consul $ConsulVersion" -ForegroundColor White
 Write-Host "  - Nomad $NomadVersion" -ForegroundColor White
 Write-Host "  - Vault $VaultVersion" -ForegroundColor White
+Write-Host "  - Docker 24.0.7 (with Windows Containers)" -ForegroundColor White
+Write-Host "  - OpenSSH Server" -ForegroundColor White
 Write-Host ""
 Write-Host "Installation directory: $BinDir" -ForegroundColor Green
 Write-Host "Configuration directories:" -ForegroundColor Green
 Write-Host "  - Consul: $ConsulDir" -ForegroundColor White
 Write-Host "  - Nomad: $NomadDir" -ForegroundColor White
 Write-Host "  - Vault: $VaultDir" -ForegroundColor White
+Write-Host ""
+Write-Host "Additional services:" -ForegroundColor Green
+Write-Host "  - Docker: C:\Program Files\Docker" -ForegroundColor White
+Write-Host "  - SSH: OpenSSH Server (port 22)" -ForegroundColor White
+Write-Host ""
+Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "  1. SSH keys must be configured after instance launch" -ForegroundColor Cyan
+Write-Host "  2. Add public key to: C:\ProgramData\ssh\administrators_authorized_keys" -ForegroundColor Cyan
+Write-Host "  3. Set proper permissions on authorized_keys file" -ForegroundColor Cyan
 
 # Made with Bob

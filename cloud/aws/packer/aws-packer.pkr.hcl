@@ -17,9 +17,9 @@ packer {
 source "amazon-ebs" "hashistack" {
   # Windows AMIs don't support ED25519, use RSA for Windows, ED25519 for Linux
   temporary_key_pair_type = var.os == "Windows" ? "rsa" : "ed25519"
-  ami_name      = format("%s%s", var.name_prefix, "-{{timestamp}}")
-  region        = var.region
-  instance_type = "m5ad.4xlarge"   # "m5ad.4xlarge" ; "m6a.4xlarge" ; "t3a.2xlarge"
+  ami_name                = format("%s%s", var.name_prefix, "-{{timestamp}}")
+  region                  = var.region
+  instance_type           = "m5ad.4xlarge" # "m5ad.4xlarge" ; "m6a.4xlarge" ; "t3a.2xlarge"
 
   # Conditional source AMI filter based on OS type
   source_ami_filter {
@@ -27,11 +27,11 @@ source "amazon-ebs" "hashistack" {
       virtualization-type = "hvm"
       name                = "Windows_Server-2022-English-Full-Base-*"
       root-device-type    = "ebs"
-    } : var.os == "Ubuntu" ? {
+      } : var.os == "Ubuntu" ? {
       virtualization-type = "hvm"
       name                = "ubuntu/images/*ubuntu-${var.os_name}-${var.os_version}-amd64-server-*"
       root-device-type    = "ebs"
-    } : {
+      } : {
       virtualization-type = "hvm"
       name                = "RHEL-${var.os_version}_HVM-*-x86_64-*-Hourly2-GP3"
       root-device-type    = "ebs"
@@ -43,7 +43,7 @@ source "amazon-ebs" "hashistack" {
 
   # Conditional communicator based on OS type
   communicator = var.os == "Windows" ? "winrm" : "ssh"
-  
+
   # WinRM configuration for Windows
   # Use HTTP (port 5985) instead of HTTPS for initial connection
   winrm_username = var.os == "Windows" ? "Administrator" : null
@@ -51,26 +51,26 @@ source "amazon-ebs" "hashistack" {
   winrm_insecure = var.os == "Windows" ? true : null
   winrm_timeout  = var.os == "Windows" ? "5m" : null
   winrm_port     = var.os == "Windows" ? 5985 : null
-  
+
   # SSH configuration for Linux
   # Use 'ubuntu' for Ubuntu, 'ec2-user' for RedHat
   ssh_username = var.os == "Windows" ? null : var.os == "Ubuntu" ? "ubuntu" : "ec2-user"
-  
+
   # User data for Windows to configure WinRM
   user_data_file = var.os == "Windows" ? "${path.root}/windows-userdata.ps1" : null
 
   tags = {
-    Name           = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
-    Architecture   = var.architecture
-    OS             = var.os
-    OS_Version     = var.os_version
-    CNI_Version    = var.cni_version
-    Consul_Version = var.consul_version
-    Nomad_Version  = var.nomad_version
-    Vault_Version  = var.vault_version
+    Name                    = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
+    Architecture            = var.architecture
+    OS                      = var.os
+    OS_Version              = var.os_version
+    CNI_Version             = var.cni_version
+    Consul_Version          = var.consul_version
+    Nomad_Version           = var.nomad_version
+    Vault_Version           = var.vault_version
     Consul_Template_Version = var.consul_template_version
-    Created_Email  = var.created_email
-    Created_Name   = var.created_name
+    Created_Email           = var.created_email
+    Created_Name            = var.created_name
   }
 }
 
@@ -83,7 +83,7 @@ build {
 
   # Only run this build for non-Windows OS
   # Note: Packer doesn't support build-level conditionals, so we handle this at runtime
-  
+
   provisioner "shell" {
     inline = [
       "cloud-init status --wait"
@@ -170,11 +170,48 @@ build {
     # Or source env-pkr-var.sh to fetch latest versions into environment
   }
 
-  # Windows sysprep for AMI preparation (EC2Launch v2 for Windows Server 2022)
+  # Restart Windows to complete Windows Containers feature installation
+  # This is required before Docker can be started
+  provisioner "windows-restart" {
+    restart_timeout = "15m"
+  }
+
+  # Post-reboot: Start Docker service and verify installation
   provisioner "powershell" {
     inline = [
-      "Write-Host 'Preparing Windows for AMI creation using EC2Launch v2'",
-      "& 'C:\\Program Files\\Amazon\\EC2Launch\\ec2launch.exe' sysprep --shutdown=false"
+      "Write-Host 'Post-reboot: Starting Docker service...'",
+      "Start-Service docker -ErrorAction SilentlyContinue",
+      "Start-Sleep -Seconds 10",
+      "$dockerStatus = Get-Service docker -ErrorAction SilentlyContinue",
+      "if ($dockerStatus -and $dockerStatus.Status -eq 'Running') {",
+      "  Write-Host 'Docker service is running'",
+      "  docker version",
+      "} else {",
+      "  Write-Host 'Docker service not running (non-critical)'",
+      "}"
+    ]
+  }
+
+  # NOTE: Sysprep removed to preserve installed HashiStack components
+  # Linux AMIs don't run any generalization step, and neither should Windows for this use case
+  # Sysprep with /generalize removes user-installed applications, which defeats the purpose
+  # of baking HashiStack into the AMI.
+  #
+  # Trade-offs of skipping sysprep:
+  # - Computer name will be the same across instances (acceptable for demo/dev)
+  # - SID won't be unique (acceptable if not joining AD domain)
+  # - Installed software persists (THIS IS WHAT WE WANT!)
+  #
+  # If sysprep is needed in the future, use EC2Launch v2 with a custom unattend.xml
+  # that preserves C:\bin and installed applications.
+  
+  provisioner "powershell" {
+    inline = [
+      "Write-Host 'Windows AMI preparation complete - HashiStack components preserved'",
+      "Write-Host 'Installed components:'",
+      "Get-ChildItem C:\\bin\\*.exe | ForEach-Object { Write-Host \"  - $($_.Name)\" }",
+      "Write-Host 'Docker service status:'",
+      "Get-Service docker | Format-List Name,Status,StartType"
     ]
   }
 }
