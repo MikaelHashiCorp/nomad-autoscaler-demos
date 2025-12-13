@@ -9,9 +9,18 @@ variable "created_name"  { default = "mikael_sikora"}
 variable "region"        { default = "us-west-2" }
 variable "name_prefix"   { default = "scale-mws" }
 variable "architecture"  { default = "amd64" }
-variable "os"            { default = "Ubuntu" }
-variable "os_version"    { default = "24.04" }
-variable "os_name"       { default = "noble" }
+variable "os"            {
+  description = "Operating system: Ubuntu, RedHat, or Windows"
+  default     = "Ubuntu"
+}
+variable "os_version"    {
+  description = "OS version: 24.04 for Ubuntu, 9.6.0 for RedHat, 2022 for Windows"
+  default     = "24.04"
+}
+variable "os_name"       {
+  description = "OS codename: noble for Ubuntu 24.04, empty for RedHat/Windows"
+  default     = "noble"
+}
 
 # Input variables for version management with hybrid fallback system
 variable "cni_version" { 

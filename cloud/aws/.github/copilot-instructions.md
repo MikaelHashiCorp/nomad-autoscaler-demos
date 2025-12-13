@@ -42,7 +42,7 @@ cd cloud/aws/terraform/control
 
 Then authenticate:
 ```bash
-doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
+doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ; curl -s https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
 ```
 
 **Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
