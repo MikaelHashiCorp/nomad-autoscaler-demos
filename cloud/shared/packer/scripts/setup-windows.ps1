@@ -571,68 +571,6 @@ if ($InstallDocker) {
     Write-Host "========================================" -ForegroundColor Cyan
 }
 
-# Install OpenSSH Server
-Write-Host "" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "OpenSSH Server Installation" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
-
-try {
-    Write-Host "[1/4] Checking for existing OpenSSH Server..." -ForegroundColor Yellow
-    $sshService = Get-Service -Name sshd -ErrorAction SilentlyContinue
-    if ($sshService) {
-        Write-Host "  OpenSSH Server is already installed" -ForegroundColor Green
-    } else {
-        Write-Host "  OpenSSH Server not found, proceeding with installation" -ForegroundColor Cyan
-        
-        Write-Host "[2/4] Installing OpenSSH Server capability..." -ForegroundColor Yellow
-        Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 -ErrorAction Stop | Out-Null
-        Write-Host "  [OK] OpenSSH Server installed" -ForegroundColor Green
-    }
-    
-    Write-Host "[3/4] Configuring SSH service..." -ForegroundColor Yellow
-    
-    # Start SSH service
-    Write-Host "  Starting SSH service..." -ForegroundColor Cyan
-    Start-Service sshd -ErrorAction Stop
-    Write-Host "  [OK] SSH service started" -ForegroundColor Green
-    
-    # Set SSH service to automatic startup
-    Write-Host "  Setting SSH service to automatic startup..." -ForegroundColor Cyan
-    Set-Service -Name sshd -StartupType Automatic
-    Write-Host "  [OK] SSH service configured for automatic startup" -ForegroundColor Green
-    
-    Write-Host "[4/4] Configuring Windows Firewall for SSH..." -ForegroundColor Yellow
-    try {
-        New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server (sshd)" `
-            -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 `
-            -ErrorAction Stop | Out-Null
-        Write-Host "  [OK] Firewall rule created for SSH (port 22)" -ForegroundColor Green
-    } catch {
-        Write-Host "  [WARN] Firewall rule may already exist" -ForegroundColor Yellow
-    }
-    
-    # Verify SSH installation
-    Write-Host "" -ForegroundColor Cyan
-    Write-Host "Verifying SSH installation..." -ForegroundColor Yellow
-    $sshServiceStatus = Get-Service -Name sshd
-    Write-Host "  SSH Service Status: $($sshServiceStatus.Status)" -ForegroundColor Green
-    Write-Host "  SSH Service Startup Type: $($sshServiceStatus.StartType)" -ForegroundColor Green
-    
-    Write-Host "" -ForegroundColor Green
-    Write-Host "OpenSSH Server installation completed successfully!" -ForegroundColor Green
-    Write-Host "  Note: SSH keys must be configured after instance launch" -ForegroundColor Cyan
-    Write-Host "  Administrator keys location: C:\ProgramData\ssh\administrators_authorized_keys" -ForegroundColor Cyan
-    
-} catch {
-    Write-Host "" -ForegroundColor Yellow
-    Write-Host "OpenSSH Server installation encountered an issue:" -ForegroundColor Yellow
-    Write-Host "  Error: $_" -ForegroundColor Red
-    Write-Host "  This is non-critical - SSH can be installed later if needed" -ForegroundColor Yellow
-}
-
-Write-Host "========================================" -ForegroundColor Cyan
-
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Windows Server 2022 Setup Complete!" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
