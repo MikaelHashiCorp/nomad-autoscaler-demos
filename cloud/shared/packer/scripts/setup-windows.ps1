@@ -238,6 +238,246 @@ Write-Host "Firewall configuration completed!" -ForegroundColor Green
 Write-Host "  Total rules configured: $($firewallRules.Count + 1)" -ForegroundColor Cyan
 Write-Host ""
 
+# ============================================================================
+# Chocolatey Package Manager Installation
+# ============================================================================
+Write-Host "" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Chocolatey Package Manager Installation" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+try {
+    # Check if Chocolatey is already installed
+    $chocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
+    
+    if ($chocoInstalled) {
+        Write-Host "Chocolatey is already installed" -ForegroundColor Green
+        $chocoVersion = & choco --version
+        Write-Host "  Version: $chocoVersion" -ForegroundColor Cyan
+    } else {
+        Write-Host "Installing Chocolatey package manager..." -ForegroundColor Yellow
+        
+        # Set execution policy for this process
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        
+        # Download and install Chocolatey
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        
+        # Refresh environment variables
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        
+        Write-Host "  [OK] Chocolatey installed successfully" -ForegroundColor Green
+        
+        # Verify installation
+        $chocoVersion = & choco --version
+        Write-Host "  Chocolatey version: $chocoVersion" -ForegroundColor Green
+    }
+    
+    Write-Host "" -ForegroundColor Green
+    Write-Host "SUCCESS: Chocolatey package manager ready" -ForegroundColor Green
+    Write-Host "" -ForegroundColor Cyan
+    
+} catch {
+    Write-Host "" -ForegroundColor Red
+    Write-Host "ERROR: Chocolatey installation failed" -ForegroundColor Red
+    Write-Host "  Error: $_" -ForegroundColor Red
+    Write-Host "  This is non-critical - continuing with manual Docker installation" -ForegroundColor Yellow
+    Write-Host "" -ForegroundColor Cyan
+}
+
+# ============================================================================
+# OpenSSH Server Installation (via Chocolatey)
+# ============================================================================
+Write-Host "" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "OpenSSH Server Installation" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+try {
+    Write-Host "[1/5] Checking for existing OpenSSH Server..." -ForegroundColor Yellow
+    
+    # Check if SSH service exists
+    $sshService = Get-Service sshd -ErrorAction SilentlyContinue
+    
+    if ($sshService) {
+        Write-Host "  OpenSSH Server already installed" -ForegroundColor Green
+    } else {
+        Write-Host "  OpenSSH Server not found, installing via Chocolatey..." -ForegroundColor Cyan
+        
+        Write-Host "[2/5] Installing OpenSSH via Chocolatey..." -ForegroundColor Yellow
+        # Install OpenSSH with server feature enabled
+        choco install openssh -y --params '"/SSHServerFeature"' --force
+        
+        # Refresh environment to pick up new PATH entries
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        
+        Write-Host "  [OK] OpenSSH installed via Chocolatey" -ForegroundColor Green
+    }
+    
+    Write-Host "[3/5] Configuring SSH service..." -ForegroundColor Yellow
+    # Ensure service exists after installation
+    $sshService = Get-Service sshd -ErrorAction SilentlyContinue
+    if ($sshService) {
+        # Start and configure for automatic startup
+        if ($sshService.Status -ne 'Running') {
+            Start-Service sshd -ErrorAction SilentlyContinue
+        }
+        Set-Service -Name sshd -StartupType 'Automatic'
+        Write-Host "  [OK] SSH service configured for automatic startup" -ForegroundColor Green
+    }
+    
+    Write-Host "[4/5] Configuring Windows Firewall..." -ForegroundColor Yellow
+    # Configure firewall
+    $firewallRule = Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue
+    if (-not $firewallRule) {
+        New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+        Write-Host "  [OK] Firewall rule created (port 22)" -ForegroundColor Green
+    } else {
+        Write-Host "  Firewall rule already exists" -ForegroundColor Green
+    }
+    
+    Write-Host "[5/5] Configuring RSA key authentication..." -ForegroundColor Yellow
+    # Configure for RSA key authentication
+    $sshdConfigPath = "C:\ProgramData\ssh\sshd_config"
+    
+    if (Test-Path $sshdConfigPath) {
+        # Backup original config
+        Copy-Item $sshdConfigPath "$sshdConfigPath.backup" -Force -ErrorAction SilentlyContinue
+        
+        # Read config
+        $config = Get-Content $sshdConfigPath
+        
+        # Ensure RSA keys are accepted
+        $newConfig = @()
+        $foundPubkey = $false
+        $foundKeyTypes = $false
+        
+        foreach ($line in $config) {
+            if ($line -match "^#?PubkeyAuthentication") {
+                $newConfig += "PubkeyAuthentication yes"
+                $foundPubkey = $true
+            }
+            elseif ($line -match "^#?PubkeyAcceptedKeyTypes") {
+                $newConfig += "PubkeyAcceptedKeyTypes +ssh-rsa"
+                $foundKeyTypes = $true
+            }
+            else {
+                $newConfig += $line
+            }
+        }
+        
+        # Add if not found
+        if (-not $foundPubkey) {
+            $newConfig += "PubkeyAuthentication yes"
+        }
+        if (-not $foundKeyTypes) {
+            $newConfig += "PubkeyAcceptedKeyTypes +ssh-rsa"
+        }
+        
+        # Write back
+        $newConfig | Set-Content $sshdConfigPath
+        
+        # Restart SSH to apply changes
+        Restart-Service sshd -ErrorAction SilentlyContinue
+        Write-Host "  [OK] RSA key authentication enabled" -ForegroundColor Green
+    } else {
+        Write-Host "  Warning: sshd_config not found at expected location" -ForegroundColor Yellow
+    }
+    
+    Write-Host "[6/6] Creating SSH key injection startup script..." -ForegroundColor Yellow
+    # Create a PowerShell script that runs on startup to inject EC2 key pair
+    # This fetches the public key from EC2 instance metadata and adds it to authorized_keys
+    # Works with any EC2 key pair specified at instance launch (e.g., aws-mikael-test)
+    
+    $startupScriptPath = "C:\ProgramData\ssh\inject-ec2-key.ps1"
+    $startupScript = @'
+# SSH Key Injection Script for EC2 Instances
+# Fetches the EC2 key pair public key from instance metadata and adds to authorized_keys
+# This enables SSH access using the key pair specified at instance launch
+
+try {
+    # Get EC2 instance metadata token (IMDSv2)
+    $tokenUrl = "http://169.254.169.254/latest/api/token"
+    $token = Invoke-RestMethod -Headers @{"X-aws-ec2-metadata-token-ttl-seconds" = "21600"} -Method PUT -Uri $tokenUrl -ErrorAction Stop
+    
+    # Get public key from instance metadata
+    $pubKeyUrl = "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key"
+    $pubKey = Invoke-RestMethod -Headers @{"X-aws-ec2-metadata-token" = $token} -Uri $pubKeyUrl -ErrorAction Stop
+    
+    if ($pubKey) {
+        $sshDir = "C:\ProgramData\ssh"
+        $authKeysFile = Join-Path $sshDir "administrators_authorized_keys"
+        
+        # Create directory if it doesn't exist
+        if (-not (Test-Path $sshDir)) {
+            New-Item -ItemType Directory -Path $sshDir -Force | Out-Null
+        }
+        
+        # Write public key (overwrite to ensure it matches the instance's key pair)
+        Set-Content -Path $authKeysFile -Value $pubKey -Force
+        
+        # Set proper permissions (SYSTEM and Administrators only)
+        icacls $authKeysFile /inheritance:r | Out-Null
+        icacls $authKeysFile /grant "SYSTEM:(F)" | Out-Null
+        icacls $authKeysFile /grant "Administrators:(F)" | Out-Null
+        
+        Write-Host "SSH key injected successfully from EC2 metadata"
+    } else {
+        Write-Host "No SSH key found in EC2 metadata"
+    }
+} catch {
+    Write-Host "Failed to inject SSH key: $_"
+}
+'@
+    
+    # Write the startup script
+    Set-Content -Path $startupScriptPath -Value $startupScript -Force
+    Write-Host "  [OK] Startup script created at $startupScriptPath" -ForegroundColor Green
+    
+    # Create a scheduled task to run the script on startup
+    $taskName = "InjectEC2SSHKey"
+    $taskExists = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+    
+    if ($taskExists) {
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+    }
+    
+    $action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File `"$startupScriptPath`""
+    $trigger = New-ScheduledTaskTrigger -AtStartup
+    $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+    
+    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Inject EC2 key pair into SSH authorized_keys on instance startup" | Out-Null
+    
+    Write-Host "  [OK] Scheduled task '$taskName' created to run on startup" -ForegroundColor Green
+    Write-Host "  SSH will automatically work with any EC2 key pair specified at launch" -ForegroundColor Cyan
+    
+    # Verify installation
+    $sshService = Get-Service sshd -ErrorAction SilentlyContinue
+    if ($sshService) {
+        Write-Host "" -ForegroundColor Green
+        Write-Host "SUCCESS: OpenSSH Server ready" -ForegroundColor Green
+        Write-Host "  Service Status: $($sshService.Status)" -ForegroundColor Green
+        Write-Host "  Startup Type: $($sshService.StartType)" -ForegroundColor Green
+        Write-Host "  Port: 22" -ForegroundColor Green
+        Write-Host "  RSA key authentication: Enabled" -ForegroundColor Green
+    } else {
+        Write-Host "" -ForegroundColor Yellow
+        Write-Host "WARNING: SSH service not found after installation" -ForegroundColor Yellow
+        Write-Host "  SSH may require manual configuration after instance launch" -ForegroundColor Yellow
+    }
+    Write-Host "" -ForegroundColor Cyan
+    
+} catch {
+    Write-Host "" -ForegroundColor Red
+    Write-Host "OpenSSH Server installation encountered an issue:" -ForegroundColor Red
+    Write-Host "  Error: $_" -ForegroundColor Red
+    Write-Host "" -ForegroundColor Yellow
+    Write-Host "  This is non-critical - SSH can be configured manually if needed" -ForegroundColor Yellow
+    Write-Host "" -ForegroundColor Cyan
+}
+
 # Install Docker (required for Nomad)
 # Using direct download method instead of PowerShell Gallery for reliability
 $InstallDocker = $true

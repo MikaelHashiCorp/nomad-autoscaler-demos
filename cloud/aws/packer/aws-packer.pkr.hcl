@@ -3,7 +3,16 @@
 
 # https://developer.hashicorp.com/nomad/tutorials/autoscaler/horizontal-cluster-scaling?in=nomad%2Fautoscaler#build-demo-environment-ami
 # The "packer build ."" command loads all the contents in the current directory.
-# USAGE:  source env-pkr-var.sh && packer init . && packer validate . && packer build .
+#
+# USAGE:
+#   source env-pkr-var.sh && packer init . && packer validate . && packer build .
+#
+# RECOMMENDED: Use run-with-timestamps.sh for timestamped output:
+#   source env-pkr-var.sh && bash ./run-with-timestamps.sh -only="windows.amazon-ebs.hashistack" -var-file=windows-2022.pkrvars.hcl .
+#
+# NOTE: Packer doesn't support timestamps in console output natively.
+#       Timestamps are available in packer.log (via PACKER_LOG_TIMESTAMP=1)
+#       or via run-with-timestamps.sh which pipes output through date/ts/gawk.
 
 packer {
   required_plugins {
@@ -19,7 +28,7 @@ source "amazon-ebs" "hashistack" {
   temporary_key_pair_type = var.os == "Windows" ? "rsa" : "ed25519"
   ami_name                = format("%s%s", var.name_prefix, "-{{timestamp}}")
   region                  = var.region
-  instance_type           = "m5ad.4xlarge" # "m5ad.4xlarge" ; "m6a.4xlarge" ; "t3a.2xlarge"
+  instance_type           = "m5ad.2xlarge" # "m5ad.4xlarge" ; "m6a.4xlarge" ; "t3a.2xlarge"
 
   # Conditional source AMI filter based on OS type
   source_ami_filter {
@@ -209,7 +218,7 @@ build {
     inline = [
       "Write-Host 'Windows AMI preparation complete - HashiStack components preserved'",
       "Write-Host 'Installed components:'",
-      "Get-ChildItem C:\\bin\\*.exe | ForEach-Object { Write-Host \"  - $($_.Name)\" }",
+      "Get-ChildItem C:\\HashiCorp\\bin\\*.exe | ForEach-Object { Write-Host \"  - $($_.Name)\" }",
       "Write-Host 'Docker service status:'",
       "Get-Service docker | Format-List Name,Status,StartType"
     ]

@@ -47,6 +47,16 @@ doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ;
 
 **Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
 
+
+## Bob-Specific Instructions
+
+**CRITICAL**: Bob must follow the mandatory command execution rules defined in [`.github/bob-instructions.md`](.github/bob-instructions.md).
+
+### Quick Reference for Bob:
+- **Every command** must start with: `source ~/.zshrc 2>/dev/null && logcmd <command>`
+- **Every packer build** must use: `source ~/.zshrc 2>/dev/null && cd packer && ./run-with-timestamps.sh packer build <options> .`
+- See [bob-instructions.md](.github/bob-instructions.md) for complete details
+
 **Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
 
 **⚠️ REMEMBER**: After authentication, use the same terminal for all AWS/Terraform/Packer commands. Do not switch terminals or run commands that spawn new shells (like `./quick-test.sh`) unless you re-authenticate first.
