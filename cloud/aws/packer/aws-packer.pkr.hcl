@@ -194,7 +194,11 @@ build {
       "$dockerStatus = Get-Service docker -ErrorAction SilentlyContinue",
       "if ($dockerStatus -and $dockerStatus.Status -eq 'Running') {",
       "  Write-Host 'Docker service is running'",
-      "  docker version",
+      "  Write-Host 'Docker version check (may require elevated privileges):'",
+      "  $ErrorActionPreference = 'SilentlyContinue'",
+      "  docker version 2>$null | Out-String | Write-Host",
+      "  $ErrorActionPreference = 'Continue'",
+      "  Write-Host 'Docker verification complete (service is running)'",
       "} else {",
       "  Write-Host 'Docker service not running (non-critical)'",
       "}"

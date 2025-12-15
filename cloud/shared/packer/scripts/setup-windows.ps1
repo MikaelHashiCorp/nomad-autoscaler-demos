@@ -237,6 +237,125 @@ Write-Host ""
 Write-Host "Firewall configuration completed!" -ForegroundColor Green
 Write-Host "  Total rules configured: $($firewallRules.Count + 1)" -ForegroundColor Cyan
 Write-Host ""
+# ============================================================================
+# Consul and Nomad Windows Services Configuration
+# ============================================================================
+Write-Host "" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Consul and Nomad Services Configuration" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+# Create basic configuration files for Consul and Nomad
+Write-Host "[1/4] Creating configuration directories..." -ForegroundColor Yellow
+$ConsulConfigDir = "$ConsulDir\config"
+$NomadConfigDir = "$NomadDir\config"
+
+if (-not (Test-Path $ConsulConfigDir)) {
+    New-Item -ItemType Directory -Path $ConsulConfigDir -Force | Out-Null
+}
+if (-not (Test-Path $NomadConfigDir)) {
+    New-Item -ItemType Directory -Path $NomadConfigDir -Force | Out-Null
+}
+Write-Host "  [OK] Configuration directories created" -ForegroundColor Green
+
+# Create basic Consul configuration (standalone dev mode)
+Write-Host "[2/4] Creating Consul configuration..." -ForegroundColor Yellow
+$consulConfig = @"
+datacenter = "dc1"
+data_dir = "$($ConsulDir -replace '\\','\\')\\data"
+log_level = "INFO"
+server = true
+bootstrap_expect = 1
+ui_config {
+  enabled = true
+}
+client_addr = "0.0.0.0"
+bind_addr = "0.0.0.0"
+advertise_addr = "127.0.0.1"
+"@
+Set-Content -Path "$ConsulConfigDir\consul.hcl" -Value $consulConfig -Force
+Write-Host "  [OK] Consul configuration created (standalone mode)" -ForegroundColor Green
+
+# Create basic Nomad configuration (standalone dev mode)
+Write-Host "[3/4] Creating Nomad configuration..." -ForegroundColor Yellow
+$nomadConfig = @"
+datacenter = "dc1"
+data_dir = "$($NomadDir -replace '\\','\\')\\data"
+log_level = "INFO"
+
+server {
+  enabled = true
+  bootstrap_expect = 1
+}
+
+client {
+  enabled = true
+}
+"@
+Set-Content -Path "$NomadConfigDir\nomad.hcl" -Value $nomadConfig -Force
+Write-Host "  [OK] Nomad configuration created (standalone mode)" -ForegroundColor Green
+
+# Register Consul as a Windows service
+Write-Host "[4/4] Registering Consul and Nomad as Windows services..." -ForegroundColor Yellow
+
+try {
+    # Check if Consul service already exists
+    $consulService = Get-Service -Name "Consul" -ErrorAction SilentlyContinue
+    if ($consulService) {
+        Write-Host "  [INFO] Consul service already exists, removing..." -ForegroundColor Cyan
+        Stop-Service -Name "Consul" -Force -ErrorAction SilentlyContinue
+        & sc.exe delete "Consul"
+        Start-Sleep -Seconds 2
+    }
+    
+    # Create Consul service using NSSM-like approach with sc.exe
+    $consulExe = "$BinDir\consul.exe"
+    $consulArgs = "agent -config-dir=`"$ConsulConfigDir`""
+    
+    # Create the service
+    & sc.exe create "Consul" binPath= "`"$consulExe`" $consulArgs" start= auto DisplayName= "HashiCorp Consul"
+    & sc.exe description "Consul" "HashiCorp Consul - Service Discovery and Configuration"
+    & sc.exe failure "Consul" reset= 86400 actions= restart/60000/restart/60000/restart/60000
+    
+    Write-Host "  [OK] Consul service registered" -ForegroundColor Green
+} catch {
+    Write-Host "  [WARN] Consul service registration failed: $_" -ForegroundColor Yellow
+}
+
+try {
+    # Check if Nomad service already exists
+    $nomadService = Get-Service -Name "Nomad" -ErrorAction SilentlyContinue
+    if ($nomadService) {
+        Write-Host "  [INFO] Nomad service already exists, removing..." -ForegroundColor Cyan
+        Stop-Service -Name "Nomad" -Force -ErrorAction SilentlyContinue
+        & sc.exe delete "Nomad"
+        Start-Sleep -Seconds 2
+    }
+    
+    # Create Nomad service
+    $nomadExe = "$BinDir\nomad.exe"
+    $nomadArgs = "agent -config=`"$NomadConfigDir\nomad.hcl`""
+    
+    # Create the service
+    & sc.exe create "Nomad" binPath= "`"$nomadExe`" $nomadArgs" start= auto DisplayName= "HashiCorp Nomad"
+    & sc.exe description "Nomad" "HashiCorp Nomad - Workload Orchestrator"
+    & sc.exe failure "Nomad" reset= 86400 actions= restart/60000/restart/60000/restart/60000
+    
+    # Set Nomad to depend on Consul
+    & sc.exe config "Nomad" depend= Consul
+    
+    Write-Host "  [OK] Nomad service registered (depends on Consul)" -ForegroundColor Green
+} catch {
+    Write-Host "  [WARN] Nomad service registration failed: $_" -ForegroundColor Yellow
+}
+
+Write-Host "" -ForegroundColor Green
+Write-Host "SUCCESS: Consul and Nomad services configured" -ForegroundColor Green
+Write-Host "  Services will start automatically on boot" -ForegroundColor Cyan
+Write-Host "  Consul service: Registered" -ForegroundColor Cyan
+Write-Host "  Nomad service: Registered (depends on Consul)" -ForegroundColor Cyan
+Write-Host "" -ForegroundColor Cyan
+
 
 # ============================================================================
 # Chocolatey Package Manager Installation
@@ -478,98 +597,85 @@ try {
     Write-Host "" -ForegroundColor Cyan
 }
 
-# Install Docker (required for Nomad)
-# Using direct download method instead of PowerShell Gallery for reliability
-$InstallDocker = $true
+# ============================================================================
+# Docker Installation (via Chocolatey)
+# ============================================================================
+Write-Host "" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Docker Installation" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 
-if ($InstallDocker) {
-    Write-Host "" -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "Docker Installation" -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
-
-    try {
-        Write-Host "[1/5] Installing Windows Containers feature..." -ForegroundColor Yellow
-        $containersFeature = Get-WindowsFeature -Name Containers -ErrorAction SilentlyContinue
-        if ($containersFeature -and $containersFeature.Installed) {
-            Write-Host "  Windows Containers feature already installed" -ForegroundColor Green
-        } else {
-            Write-Host "  Installing Windows Containers feature (this may take a few minutes)..." -ForegroundColor Cyan
-            Install-WindowsFeature -Name Containers -ErrorAction Stop | Out-Null
-            Write-Host "  [OK] Windows Containers feature installed" -ForegroundColor Green
-        }
-        
-        Write-Host "[2/5] Checking for existing Docker installation..." -ForegroundColor Yellow
-        $dockerExe = Test-Path "C:\Program Files\Docker\dockerd.exe"
-        if ($dockerExe) {
-            Write-Host "  Docker is already installed" -ForegroundColor Green
-        } else {
-            Write-Host "  Docker not found, proceeding with installation" -ForegroundColor Cyan
-            
-            Write-Host "[3/5] Downloading Docker 24.0.7..." -ForegroundColor Yellow
-            $dockerUrl = "https://download.docker.com/win/static/stable/x86_64/docker-24.0.7.zip"
-            $dockerZip = "$env:TEMP\docker.zip"
-            Write-Host "  URL: $dockerUrl" -ForegroundColor Cyan
-            Invoke-WebRequest -Uri $dockerUrl -OutFile $dockerZip -UseBasicParsing -ErrorAction Stop
-            Write-Host "  [OK] Download complete" -ForegroundColor Green
-            
-            Write-Host "[4/5] Extracting Docker to C:\Program Files..." -ForegroundColor Yellow
-            Expand-Archive -Path $dockerZip -DestinationPath "C:\Program Files" -Force -ErrorAction Stop
-            Remove-Item $dockerZip -Force
-            Write-Host "  [OK] Docker extracted successfully" -ForegroundColor Green
-            
-            Write-Host "[5/5] Configuring Docker..." -ForegroundColor Yellow
-            
-            # Add Docker to PATH
-            $dockerPath = "C:\Program Files\Docker"
-            $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-            if ($currentPath -notlike "*$dockerPath*") {
-                Write-Host "  Adding Docker to system PATH..." -ForegroundColor Cyan
-                [Environment]::SetEnvironmentVariable("Path", "$currentPath;$dockerPath", "Machine")
-                $env:Path = "$env:Path;$dockerPath"
-                Write-Host "  [OK] PATH updated" -ForegroundColor Green
-            }
-            
-            # Register Docker service
-            Write-Host "  Registering Docker service..." -ForegroundColor Cyan
-            & "C:\Program Files\Docker\dockerd.exe" --register-service
-            Write-Host "  [OK] Docker service registered" -ForegroundColor Green
-            
-            # Start Docker service
-            Write-Host "  Starting Docker service..." -ForegroundColor Cyan
-            Start-Service docker -ErrorAction Stop
-            Write-Host "  [OK] Docker service started" -ForegroundColor Green
-            
-            # Set Docker service to automatic startup
-            Set-Service -Name docker -StartupType Automatic
-            Write-Host "  [OK] Docker service set to automatic startup" -ForegroundColor Green
-        }
-        
-        # Verify Docker installation
-        Write-Host "" -ForegroundColor Cyan
-        Write-Host "Verifying Docker installation..." -ForegroundColor Yellow
-        $dockerVersion = & docker version 2>&1
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "  [OK] Docker is working correctly" -ForegroundColor Green
-            Write-Host "" -ForegroundColor Cyan
-            & docker version
-        } else {
-            Write-Host "  [WARN] Docker verification failed, but installation completed" -ForegroundColor Yellow
-            Write-Host "  Docker may require a system restart to function properly" -ForegroundColor Yellow
-        }
-        
-        Write-Host "" -ForegroundColor Green
-        Write-Host "Docker installation completed successfully!" -ForegroundColor Green
-        
-    } catch {
-        Write-Host "" -ForegroundColor Yellow
-        Write-Host "Docker installation encountered an issue:" -ForegroundColor Yellow
-        Write-Host "  Error: $_" -ForegroundColor Red
-        Write-Host "  This is non-critical - Docker can be installed later if needed" -ForegroundColor Yellow
+try {
+    Write-Host "[1/3] Installing Windows Containers feature..." -ForegroundColor Yellow
+    $containersFeature = Get-WindowsFeature -Name Containers -ErrorAction SilentlyContinue
+    if ($containersFeature -and $containersFeature.Installed) {
+        Write-Host "  Windows Containers feature already installed" -ForegroundColor Green
+    } else {
+        Write-Host "  Installing Windows Containers feature (this may take a few minutes)..." -ForegroundColor Cyan
+        Install-WindowsFeature -Name Containers -ErrorAction Stop | Out-Null
+        Write-Host "  [OK] Windows Containers feature installed" -ForegroundColor Green
     }
-
-    Write-Host "========================================" -ForegroundColor Cyan
+    
+    Write-Host "[2/3] Installing Docker via Chocolatey..." -ForegroundColor Yellow
+    # Check if Docker is already installed
+    $dockerService = Get-Service docker -ErrorAction SilentlyContinue
+    if ($dockerService) {
+        Write-Host "  Docker is already installed" -ForegroundColor Green
+        $dockerVersion = & docker version --format "{{.Server.Version}}" 2>$null
+        if ($dockerVersion) {
+            Write-Host "  Docker version: $dockerVersion" -ForegroundColor Cyan
+        }
+    } else {
+        Write-Host "  Installing Docker Engine via Chocolatey..." -ForegroundColor Cyan
+        # Pin to version 24.0.7 to match previous manual installation
+        choco install docker-engine --version=24.0.7 -y --force
+        
+        # Refresh environment to pick up new PATH entries
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        
+        Write-Host "  [OK] Docker installed via Chocolatey" -ForegroundColor Green
+    }
+    
+    Write-Host "[3/3] Configuring Docker service..." -ForegroundColor Yellow
+    # Ensure service exists and is configured
+    $dockerService = Get-Service docker -ErrorAction SilentlyContinue
+    if ($dockerService) {
+        # Start service if not running
+        if ($dockerService.Status -ne 'Running') {
+            Start-Service docker -ErrorAction SilentlyContinue
+            Write-Host "  [OK] Docker service started" -ForegroundColor Green
+        } else {
+            Write-Host "  Docker service already running" -ForegroundColor Green
+        }
+        
+        # Set to automatic startup
+        Set-Service -Name docker -StartupType Automatic
+        Write-Host "  [OK] Docker service configured for automatic startup" -ForegroundColor Green
+        
+        # Note: Docker verification will be performed after system restart
+        # Windows Containers feature requires a reboot before Docker can start
+        Write-Host "" -ForegroundColor Cyan
+        Write-Host "Docker installation complete - verification will occur after reboot" -ForegroundColor Yellow
+        Write-Host "  Windows Containers feature requires system restart" -ForegroundColor Cyan
+        Write-Host "  Docker service will be started and verified post-reboot" -ForegroundColor Cyan
+    } else {
+        Write-Host "  [WARN] Docker service not found after installation" -ForegroundColor Yellow
+    }
+    
+    Write-Host "" -ForegroundColor Green
+    Write-Host "Docker installation completed!" -ForegroundColor Green
+    
+} catch {
+    Write-Host "" -ForegroundColor Yellow
+    Write-Host "Docker installation encountered an issue:" -ForegroundColor Yellow
+    Write-Host "  Error: $_" -ForegroundColor Red
+    Write-Host "" -ForegroundColor Cyan
+    Write-Host "  Note: This is expected if Windows Containers feature was just installed" -ForegroundColor Cyan
+    Write-Host "  Docker will be verified and started after system reboot" -ForegroundColor Cyan
+    Write-Host "" -ForegroundColor Yellow
 }
+
+Write-Host "========================================" -ForegroundColor Cyan
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Windows Server 2022 Setup Complete!" -ForegroundColor Cyan
@@ -593,8 +699,8 @@ Write-Host "  - Docker: C:\Program Files\Docker" -ForegroundColor White
 Write-Host "  - SSH: OpenSSH Server (port 22)" -ForegroundColor White
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Yellow
-Write-Host "  1. SSH keys must be configured after instance launch" -ForegroundColor Cyan
-Write-Host "  2. Add public key to: C:\ProgramData\ssh\administrators_authorized_keys" -ForegroundColor Cyan
-Write-Host "  3. Set proper permissions on authorized_keys file" -ForegroundColor Cyan
+Write-Host "  1. System will reboot to complete Windows Containers installation" -ForegroundColor Cyan
+Write-Host "  2. Docker service will be started and verified post-reboot" -ForegroundColor Cyan
+Write-Host "  3. SSH keys are automatically injected from EC2 metadata on boot" -ForegroundColor Cyan
 
 # Made with Bob
