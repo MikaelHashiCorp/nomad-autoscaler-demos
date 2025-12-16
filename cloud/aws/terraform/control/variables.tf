@@ -49,7 +49,7 @@ variable "key_name" {
 variable "server_instance_type" {
   description = "The EC2 instance type to launch for Nomad servers."
   type        = string
-  default     = "t3.small"
+  default     = "t3a.medium"
 }
 
 variable "server_count" {
@@ -61,12 +61,30 @@ variable "server_count" {
 variable "client_instance_type" {
   description = "The EC2 instance type to launch for Nomad clients."
   type        = string
-  default     = "t3.small"
+  default     = "t3a.medium"
 }
 variable "client_count" {
-  description = "The number of Nomad clients to run."
+  description = "The number of Linux Nomad clients to run."
   type        = number
   default     = 1
+}
+
+variable "windows_client_instance_type" {
+  description = "The EC2 instance type to launch for Windows Nomad clients."
+  type        = string
+  default     = "t3a.xlarge"
+}
+
+variable "windows_client_count" {
+  description = "The number of Windows Nomad clients to run. Set to 0 to disable Windows clients."
+  type        = number
+  default     = 0
+}
+
+variable "windows_ami" {
+  description = "The Windows AMI to use for Windows clients. If left empty, a new Windows AMI will be built automatically when windows_client_count > 0."
+  type        = string
+  default     = ""
 }
 
 variable "root_block_device_size" {
@@ -113,9 +131,15 @@ variable "packer_os_version" {
 }
 
 variable "packer_os_name" {
-  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat. Only used when ami is empty."
+  description = "Ubuntu codename for Packer build (e.g., noble, jammy). Leave empty for RedHat/Windows. Only used when ami is empty."
   type        = string
   default     = "noble"
+}
+
+variable "packer_windows_version" {
+  description = "Windows Server version for Packer build (e.g., 2022). Only used when windows_ami is empty and windows_client_count > 0."
+  type        = string
+  default     = "2022"
 }
 
 variable "cleanup_ami_on_destroy" {

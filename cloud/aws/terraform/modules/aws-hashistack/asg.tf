@@ -1,8 +1,9 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-resource "aws_launch_template" "nomad_client" {
-  name_prefix            = "client"
+# Linux Client Launch Template and ASG
+resource "aws_launch_template" "nomad_client_linux" {
+  name_prefix            = "client-linux"
   image_id               = var.ami
   instance_type          = var.client_instance_type
   key_name               = var.key_name
@@ -13,7 +14,7 @@ resource "aws_launch_template" "nomad_client" {
       retry_join    = var.retry_join
       consul_binary = var.consul_binary
       nomad_binary  = var.nomad_binary
-      node_class    = "hashistack"
+      node_class    = "hashistack-linux"
     }))
 
   metadata_options {
@@ -30,8 +31,9 @@ resource "aws_launch_template" "nomad_client" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name           = "${var.stack_name}-client"
+      Name           = "${var.stack_name}-client-linux"
       ConsulAutoJoin = "auto-join"
+      OS             = "Linux"
     }
   }
 
@@ -45,8 +47,8 @@ resource "aws_launch_template" "nomad_client" {
   }
 }
 
-resource "aws_autoscaling_group" "nomad_client" {
-  name               = "${var.stack_name}-client"
+resource "aws_autoscaling_group" "nomad_client_linux" {
+  name               = "${var.stack_name}-client-linux"
   availability_zones = var.availability_zones
   desired_capacity   = var.client_count
   min_size           = 0
@@ -55,7 +57,7 @@ resource "aws_autoscaling_group" "nomad_client" {
   load_balancers     = [aws_elb.nomad_client.name]
 
   launch_template {
-    id      = aws_launch_template.nomad_client.id
+    id      = aws_launch_template.nomad_client_linux.id
     version = "$Latest"
   }
 
@@ -67,6 +69,90 @@ resource "aws_autoscaling_group" "nomad_client" {
   tag {
     key                 = "OwnerEmail"
     value               = var.owner_email
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "OS"
+    value               = "Linux"
+    propagate_at_launch = true
+  }
+}
+
+# Windows Client Launch Template and ASG
+resource "aws_launch_template" "nomad_client_windows" {
+  count                  = var.windows_client_count > 0 ? 1 : 0
+  name_prefix            = "client-windows"
+  image_id               = var.windows_ami
+  instance_type          = var.windows_client_instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.primary.id]
+  user_data              = base64encode(templatefile(
+    "${path.module}/templates/user-data-client-windows.ps1", {
+      region        = var.region
+      retry_join    = var.retry_join
+      consul_binary = var.consul_binary
+      nomad_binary  = var.nomad_binary
+      node_class    = "hashistack-windows"
+    }))
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.nomad_client.name
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name           = "${var.stack_name}-client-windows"
+      ConsulAutoJoin = "auto-join"
+      OS             = "Windows"
+    }
+  }
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_type           = "gp2"
+      volume_size           = "50"
+      delete_on_termination = "true"
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "nomad_client_windows" {
+  count              = var.windows_client_count > 0 ? 1 : 0
+  name               = "${var.stack_name}-client-windows"
+  availability_zones = var.availability_zones
+  desired_capacity   = var.windows_client_count
+  min_size           = 0
+  max_size           = 10
+  depends_on         = [aws_instance.nomad_server]
+  load_balancers     = [aws_elb.nomad_client.name]
+
+  launch_template {
+    id      = aws_launch_template.nomad_client_windows[0].id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "OwnerName"
+    value               = var.owner_name
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "OwnerEmail"
+    value               = var.owner_email
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "OS"
+    value               = "Windows"
     propagate_at_launch = true
   }
 }

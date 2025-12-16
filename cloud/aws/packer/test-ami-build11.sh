@@ -6,7 +6,7 @@ set -e
 
 # Configuration
 AMI_ID="ami-0d4f68180eaf66dac"
-INSTANCE_TYPE="t3.medium"
+INSTANCE_TYPE="t3a.xlarge"
 KEY_NAME="${AWS_KEYPAIR_NAME:-nomad-autoscaler}"
 SECURITY_GROUP="test-windows-build11-sg"
 INSTANCE_NAME="test-windows-build11-$(date +%s)"

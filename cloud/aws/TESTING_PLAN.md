@@ -1,11 +1,12 @@
-# Testing Plan: Multi-OS Support (Ubuntu & RedHat)
+# Testing Plan: Multi-OS Support (Ubuntu, RedHat & Windows Clients)
 
 ## Overview
 
-This document outlines the comprehensive testing strategy to validate that both Ubuntu and RedHat builds work correctly with the Packer → Terraform → HashiStack deployment pipeline.
+This document outlines the comprehensive testing strategy to validate that Ubuntu, RedHat, and Windows builds work correctly with the Packer → Terraform → HashiStack deployment pipeline. This includes testing mixed OS deployments with Linux servers and flexible client configurations.
 
 ## Test Objectives
 
+### Linux Server & Client Testing
 1. ✅ Verify Packer builds succeed for both Ubuntu and RedHat
 2. ✅ Verify Terraform can deploy infrastructure using both AMI types
 3. ✅ Verify HashiStack services (Consul, Nomad, Vault) function correctly on both OS types
@@ -13,6 +14,14 @@ This document outlines the comprehensive testing strategy to validate that both 
 5. ✅ Verify cleanup process removes both AMIs and instances (or preserves them based on configuration)
 6. ✅ Verify DNS resolution works on both OS types, especially RedHat 9+ with systemd-resolved
 7. ✅ Verify region configuration is read from terraform.tfvars in all scripts
+
+### Windows Client Testing (New)
+8. ⏳ Verify Packer builds succeed for Windows Server 2022
+9. ⏳ Verify Windows clients can join Linux-based HashiStack cluster
+10. ⏳ Verify mixed OS deployments (Linux + Windows clients simultaneously)
+11. ⏳ Verify Windows-specific autoscaling
+12. ⏳ Verify job targeting via OS constraints
+13. ⏳ Verify dual AMI cleanup on terraform destroy
 
 ## Prerequisites
 
@@ -570,6 +579,370 @@ aws ec2 describe-images \
   --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ AMI deleted" || echo "❌ AMI still exists"
 
 # Verify instances are terminated
+
+---
+
+## Phase 4: Windows Client Testing
+
+### 4.1 Windows AMI Build Test
+
+**Location**: `aws/packer/`
+
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-win-bob/cloud/aws/packer
+
+# Clean any previous builds
+rm -f packer.log
+rm -f .cleanup-*
+
+# Set environment variables
+source env-pkr-var.sh
+
+# Build Windows AMI
+packer build -var-file=windows-2022.pkrvars.hcl .
+```
+
+**Expected Results**:
+- ✅ Packer build completes successfully (may take 30-45 minutes)
+- ✅ AMI created with name: `scale-mws-windows-<timestamp>`
+- ✅ AMI tags include: OS=Windows, OS_Version=2022
+- ✅ HashiStack components installed in `C:\HashiCorp\bin\`
+- ✅ Docker service installed and configured
+- ✅ WinRM communication successful during build
+
+**Verification**:
+```bash
+# Save the Windows AMI ID
+export WINDOWS_AMI_ID=$(aws ec2 describe-images \
+  --owners self \
+  --filters "Name=name,Values=*-windows-*" \
+  --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+  --output text \
+  --region us-west-2)
+
+echo "Windows AMI ID: $WINDOWS_AMI_ID"
+
+# Verify AMI details
+aws ec2 describe-images \
+  --image-ids $WINDOWS_AMI_ID \
+  --region us-west-2 \
+  --query 'Images[0].[ImageId,Name,State,Platform,Tags]' \
+  --output table
+```
+
+### 4.2 Windows-Only Client Deployment
+
+**Location**: `aws/terraform/control/`
+
+**Test Configuration** (`terraform.tfvars`):
+```hcl
+region             = "us-west-2"
+availability_zones = ["us-west-2a"]
+key_name           = "my-dev-ec2-keypair"
+owner_name         = "test-user"
+owner_email        = "test@example.com"
+stack_name         = "win-test"
+
+# Linux servers only
+server_count = 1
+client_count = 0  # No Linux clients
+
+# Windows clients only
+windows_client_count = 2
+windows_client_instance_type = "t3a.xlarge"
+# windows_ami = ""  # Leave empty to auto-build
+```
+
+**Deploy**:
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-win-bob/cloud/aws/terraform/control
+
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+**Expected Results**:
+- ✅ Linux AMI built automatically (for servers)
+- ✅ Windows AMI built automatically (for clients)
+- ✅ 1 Linux server instance created
+- ✅ 2 Windows client instances created via ASG
+- ✅ Both AMIs tagged correctly
+- ✅ Resources named with `-linux` and `-windows` suffixes
+
+**Verification**:
+```bash
+# Check instances
+aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=win-test-*" \
+  --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],State.Name,Platform]' \
+  --output table
+
+# Verify ASGs
+aws autoscaling describe-auto-scaling-groups \
+  --query 'AutoScalingGroups[?contains(AutoScalingGroupName, `win-test`)].{Name:AutoScalingGroupName,Desired:DesiredCapacity,Current:Instances|length(@)}' \
+  --output table
+```
+
+### 4.3 Mixed OS Deployment (Linux + Windows Clients)
+
+**Test Configuration** (`terraform.tfvars`):
+```hcl
+region             = "us-west-2"
+availability_zones = ["us-west-2a"]
+key_name           = "my-dev-ec2-keypair"
+owner_name         = "test-user"
+owner_email        = "test@example.com"
+stack_name         = "mixed-test"
+
+# Linux infrastructure
+server_count = 1
+client_count = 2  # Linux clients
+
+# Windows clients
+windows_client_count = 2
+windows_client_instance_type = "t3a.xlarge"
+```
+
+**Deploy**:
+```bash
+terraform apply -auto-approve
+```
+
+**Expected Results**:
+- ✅ 2 AMIs built (Linux and Windows)
+- ✅ 1 Linux server
+- ✅ 2 Linux clients (via linux ASG)
+- ✅ 2 Windows clients (via windows ASG)
+- ✅ Total: 5 instances (1 server + 4 clients)
+
+### 4.4 Service Validation - Windows Clients
+
+#### Test 1: Verify Windows Clients Join Cluster
+
+```bash
+# Get Nomad server address
+export NOMAD_ADDR=$(terraform output -raw nomad_addr)
+
+# List all clients
+nomad node status
+
+# Expected output should show both Linux and Windows nodes
+# Look for node class: hashistack-linux and hashistack-windows
+```
+
+**Expected Results**:
+- ✅ All Windows clients appear in `nomad node status`
+- ✅ Node class is `hashistack-windows`
+- ✅ Status is `ready`
+- ✅ Consul and Nomad services running
+
+#### Test 2: Verify Node Attributes
+
+```bash
+# Get a Windows node ID
+WINDOWS_NODE=$(nomad node status -json | jq -r '.[] | select(.NodeClass=="hashistack-windows") | .ID' | head -1)
+
+# Inspect Windows node
+nomad node status $WINDOWS_NODE
+
+# Check attributes
+nomad node status -verbose $WINDOWS_NODE | grep -i "kernel.name\|os.name"
+```
+
+**Expected Results**:
+- ✅ `kernel.name = windows`
+- ✅ `os.name = Windows Server 2022`
+- ✅ Docker driver available
+- ✅ Correct node class
+
+#### Test 3: Deploy Windows-Targeted Job
+
+Create `test-windows-job.nomad`:
+```hcl
+job "windows-test" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "windows"
+  }
+
+  group "test" {
+    count = 1
+
+    task "powershell" {
+      driver = "exec"
+
+      config {
+        command = "powershell.exe"
+        args    = ["-Command", "while($true) { Write-Host 'Windows task running'; Start-Sleep -Seconds 10 }"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}
+```
+
+**Deploy**:
+```bash
+nomad job run test-windows-job.nomad
+nomad job status windows-test
+nomad alloc logs <alloc-id>
+```
+
+**Expected Results**:
+- ✅ Job placed on Windows node only
+- ✅ Allocation running successfully
+- ✅ Logs show "Windows task running"
+
+#### Test 4: Deploy Linux-Targeted Job
+
+Create `test-linux-job.nomad`:
+```hcl
+job "linux-test" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "test" {
+    count = 1
+
+    task "bash" {
+      driver = "exec"
+
+      config {
+        command = "bash"
+        args    = ["-c", "while true; do echo 'Linux task running'; sleep 10; done"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}
+```
+
+**Deploy**:
+```bash
+nomad job run test-linux-job.nomad
+nomad job status linux-test
+```
+
+**Expected Results**:
+- ✅ Job placed on Linux node only
+- ✅ Does NOT run on Windows nodes
+- ✅ Allocation running successfully
+
+### 4.5 Windows Autoscaling Test
+
+**Trigger Scale-Up**:
+```bash
+# Deploy multiple Windows jobs to trigger autoscaling
+for i in {1..5}; do
+  nomad job run -detach test-windows-job.nomad
+done
+
+# Monitor ASG
+watch -n 5 'aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-names mixed-test-client-windows \
+  --query "AutoScalingGroups[0].{Desired:DesiredCapacity,Current:Instances|length(@),Min:MinSize,Max:MaxSize}"'
+```
+
+**Expected Results**:
+- ✅ Windows ASG scales up based on demand
+- ✅ New Windows instances join cluster automatically
+- ✅ Jobs are placed on new instances
+- ✅ Linux ASG remains unchanged
+
+### 4.6 Dual AMI Cleanup Test
+
+```bash
+# Capture AMI IDs before destroy
+export LINUX_AMI=$(terraform output -raw ami_id 2>/dev/null || echo "")
+export WINDOWS_AMI=$(aws ec2 describe-images \
+  --owners self \
+  --filters "Name=name,Values=*-windows-*" \
+  --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+  --output text)
+
+echo "Linux AMI: $LINUX_AMI"
+echo "Windows AMI: $WINDOWS_AMI"
+
+# Destroy infrastructure
+terraform destroy -auto-approve
+
+# Wait for cleanup
+sleep 30
+
+# Verify both AMIs are deregistered
+aws ec2 describe-images --image-ids $LINUX_AMI --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ Linux AMI cleaned up" || echo "❌ Linux AMI still exists"
+
+aws ec2 describe-images --image-ids $WINDOWS_AMI --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ Windows AMI cleaned up" || echo "❌ Windows AMI still exists"
+```
+
+**Expected Results**:
+- ✅ All instances terminated
+- ✅ Both ASGs deleted
+- ✅ Linux AMI deregistered
+- ✅ Windows AMI deregistered
+- ✅ Both snapshots deleted
+- ✅ No orphaned resources
+
+### 4.7 Edge Cases - Windows
+
+#### Test: Windows-Only with Existing AMI
+
+```hcl
+# terraform.tfvars
+windows_ami = "ami-xxxxx"  # Specify existing Windows AMI
+windows_client_count = 2
+client_count = 0
+```
+
+**Expected Results**:
+- ✅ No Windows AMI build triggered
+- ✅ Uses specified AMI
+- ✅ Deployment succeeds
+
+#### Test: Zero Windows Clients
+
+```hcl
+# terraform.tfvars
+windows_client_count = 0
+client_count = 2
+```
+
+**Expected Results**:
+- ✅ No Windows AMI built
+- ✅ No Windows ASG created
+- ✅ Only Linux resources created
+- ✅ Backward compatible behavior
+
+#### Test: Invalid Windows AMI
+
+```hcl
+# terraform.tfvars
+windows_ami = "ami-invalid"
+windows_client_count = 1
+```
+
+**Expected Results**:
+- ✅ Terraform plan fails with clear error
+- ✅ No resources created
+- ✅ Error message indicates invalid AMI
+
 aws ec2 describe-instances \
   --filters "Name=tag:OwnerName,Values=*" \
            "Name=instance-state-name,Values=running,pending" \

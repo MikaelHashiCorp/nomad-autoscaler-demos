@@ -5,7 +5,7 @@
 - **AMI ID**: ami-0d4f68180eaf66dac
 - **Test Instance**: i-0859b5e555095dcde
 - **Public IP**: 54.185.37.56
-- **Instance Type**: t3.medium
+- **Instance Type**: t3a.xlarge
 - **Key Pair**: aws-mikael-test
 
 ## Validation Summary

@@ -111,7 +111,7 @@ Current working order:
 ```bash
 aws ec2 run-instances \
     --image-id ami-0a7ba5fe6ab153cd6 \
-    --instance-type t3.medium \
+    --instance-type t3a.xlarge \
     --key-name YOUR-KEY-NAME \
     --security-group-ids sg-xxxxx \
     --region us-west-2

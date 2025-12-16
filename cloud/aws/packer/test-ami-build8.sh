@@ -6,7 +6,7 @@ set -e
 
 AMI_ID="ami-0a7ba5fe6ab153cd6"
 REGION="us-west-2"
-INSTANCE_TYPE="t3.medium"
+INSTANCE_TYPE="t3a.xlarge"
 KEY_NAME="aws-mikael-test"
 SECURITY_GROUP_NAME="test-build8-sg-$(date +%s)"
 
