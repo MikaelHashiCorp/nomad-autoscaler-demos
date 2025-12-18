@@ -50,16 +50,16 @@ resource "null_resource" "packer_build" {
   provisioner "local-exec" {
     working_dir = "${path.root}/../../packer"
     command = <<EOF
-source env-pkr-var.sh && \
-  packer build -force \
-    -var 'created_name=${var.owner_name}' \
-    -var 'created_email=${var.owner_email}' \
-    -var 'region=${var.region}' \
-    -var 'name_prefix=${var.stack_name}' \
-    -var 'os=${var.packer_os}' \
-    -var 'os_version=${var.packer_os_version}' \
-    -var 'os_name=${var.packer_os_name}' \
-    .
+packer build -force \
+  -only='${var.packer_os == "Windows" ? "windows" : "linux"}.amazon-ebs.hashistack' \
+  -var 'created_name=${var.owner_name}' \
+  -var 'created_email=${var.owner_email}' \
+  -var 'region=${var.region}' \
+  -var 'name_prefix=${var.stack_name}' \
+  -var 'os=${var.packer_os}' \
+  -var 'os_version=${var.packer_os_version}' \
+  -var 'os_name=${var.packer_os_name}' \
+  .
 EOF
   }
 }

@@ -180,3 +180,186 @@ After `terraform apply`, outputs provide:
 2. Watch Grafana: Open dashboard to see `running_allocs_demo` and `current_connections` metrics
 3. Observe scaling: `nomad node status` shows new nodes joining after ~2min cooldown
 4. Check ASG activity: `aws autoscaling describe-scaling-activities --auto-scaling-group-name <client_asg_name>`
+
+## Windows Client Support (Added 2025-12-16)
+
+### Overview
+
+The project now supports **mixed OS deployments** with three flexible scenarios:
+1. **Linux-only** (default): Linux servers + Linux clients
+2. **Windows-only clients**: Linux servers + Windows clients
+3. **Mixed OS**: Linux servers + BOTH Linux AND Windows clients
+
+### Architecture
+
+**Key Design**: Dual AMI strategy with separate autoscaling groups
+- **Linux AMI**: Always built (needed for servers and Linux clients)
+- **Windows AMI**: Built conditionally when `windows_client_count > 0`
+- **Linux Client ASG**: `nomad_client_linux` with node class `hashistack-linux`
+- **Windows Client ASG**: `nomad_client_windows` with node class `hashistack-windows`
+
+### Configuration Variables
+
+**New Variables in terraform.tfvars**:
+```hcl
+# Windows Client Configuration (optional)
+windows_client_instance_type = "t3a.medium"  # Windows needs more resources
+windows_client_count         = 1             # Set to 0 to disable
+windows_ami                  = ""            # Empty = auto-build
+packer_windows_version       = "2022"        # Windows Server version
+```
+
+### Deployment Scenarios
+
+**Linux-only (default)**:
+```hcl
+client_count = 1
+windows_client_count = 0  # or omit
+```
+
+**Windows-only clients**:
+```hcl
+client_count = 0
+windows_client_count = 1
+```
+
+**Mixed OS**:
+```hcl
+client_count = 1
+windows_client_count = 1
+```
+
+### Building Windows AMIs
+
+**Windows AMI Build**:
+```bash
+cd cloud/aws/packer/
+source env-pkr-var.sh
+packer build -var-file=windows-2022.pkrvars.hcl .
+```
+
+**Critical**: Always include `-var-file=windows-2022.pkrvars.hcl` to set `os = "Windows"`.
+
+### Job Targeting
+
+**Target Windows clients**:
+```hcl
+job "windows-app" {
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "windows"
+  }
+  # or use node class
+  constraint {
+    attribute = "${node.class}"
+    value     = "hashistack-windows"
+  }
+}
+```
+
+**Target Linux clients**:
+```hcl
+job "linux-app" {
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+  # or use node class
+  constraint {
+    attribute = "${node.class}"
+    value     = "hashistack-linux"
+  }
+}
+```
+
+### Key Implementation Patterns
+
+#### 1. Dual AMI Module Pattern
+```hcl
+# Linux AMI (always)
+module "hashistack_image_linux" {
+  source = "../modules/aws-nomad-image"
+  ami_id = var.ami
+  packer_os = var.packer_os
+}
+
+# Windows AMI (conditional)
+module "hashistack_image_windows" {
+  count = var.windows_client_count > 0 ? 1 : 0
+  source = "../modules/aws-nomad-image"
+  ami_id = var.windows_ami
+  packer_os = "Windows"
+}
+```
+
+#### 2. Conditional Resource Creation
+```hcl
+resource "aws_autoscaling_group" "nomad_client_windows" {
+  count = var.windows_client_count > 0 ? 1 : 0
+  # configuration
+}
+```
+
+**Access**: Always use index: `aws_autoscaling_group.nomad_client_windows[0]`
+
+#### 3. Resource Naming Convention
+- Linux resources: `nomad_client_linux`, `hashistack-linux`
+- Windows resources: `nomad_client_windows`, `hashistack-windows`
+- Include OS tags for easy identification
+
+### User Data Templates
+
+**Linux**: `templates/user-data-client.sh` (bash)
+- Calls `/ops/scripts/client.sh`
+- Uses systemd for service management
+
+**Windows**: `templates/user-data-client-windows.ps1` (PowerShell)
+- Calls `C:\ops\scripts\client.ps1`
+- Uses Windows Services for service management
+
+### Common Pitfalls
+
+1. **Module reference errors**: After renaming resources, update ALL references in outputs.tf, templates.tf, etc.
+2. **Conditional resource access**: Always check count before accessing: `var.windows_client_count > 0 ? resource[0] : ""`
+3. **Block device names**: Linux uses `/dev/xvdd`, Windows uses `/dev/sda1`
+4. **Instance sizing**: Windows requires larger instances (t3.medium minimum vs t3.small for Linux)
+5. **Cost implications**: Windows instances cost ~20-30% more than Linux
+
+### Backward Compatibility
+
+✅ **Fully backward compatible**:
+- Default behavior unchanged (Linux-only)
+- Existing terraform.tfvars work without modification
+- Windows support is opt-in via `windows_client_count`
+
+### Testing Windows Deployments
+
+**Verify Windows clients joined**:
+```bash
+nomad node status
+# Look for nodes with class "hashistack-windows"
+```
+
+**Check Windows node attributes**:
+```bash
+WINDOWS_NODE=$(nomad node status -json | jq -r '.[] | select(.NodeClass=="hashistack-windows") | .ID' | head -1)
+nomad node status -verbose $WINDOWS_NODE | grep -i "kernel.name\|os.name"
+```
+
+**Deploy Windows-targeted job**:
+```bash
+nomad job run windows-test-job.nomad
+nomad job status windows-test
+```
+
+### Documentation
+
+Comprehensive documentation available:
+- [`WINDOWS_CLIENT_ARCHITECTURE.md`](../WINDOWS_CLIENT_ARCHITECTURE.md) - Design decisions
+- [`WINDOWS_CLIENT_IMPLEMENTATION.md`](../WINDOWS_CLIENT_IMPLEMENTATION.md) - Implementation details
+- [`WINDOWS_CLIENT_QUICK_START.md`](../WINDOWS_CLIENT_QUICK_START.md) - Quick reference
+- [`TESTING_PLAN.md`](../TESTING_PLAN.md) - Phase 4 Windows testing scenarios
+- [`VALIDATION_RESULTS.md`](../VALIDATION_RESULTS.md) - Validation proof
+
+### Updates
+- 2025-12-16: Added Windows client support with mixed OS deployment capability
