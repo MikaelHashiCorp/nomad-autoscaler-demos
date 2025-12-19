@@ -82,21 +82,9 @@ if NODE_OUTPUT=$(nomad node status 2>&1); then
   if [ "$NODE_COUNT" -gt 0 ]; then
     log_success "Found $NODE_COUNT ready Nomad client node(s)"
     
-    # Check for Linux nodes
-    LINUX_NODES=$(echo "$NODE_OUTPUT" | grep "ready" | grep -c "hashistack-linux" || true)
-    if [ "$LINUX_NODES" -gt 0 ]; then
-      log_success "   Linux nodes (hashistack-linux): $LINUX_NODES"
-    fi
-    
-    # Check for Windows nodes
-    WINDOWS_NODES=$(echo "$NODE_OUTPUT" | grep "ready" | grep -c "hashistack-windows" || true)
-    if [ "$WINDOWS_NODES" -gt 0 ]; then
-      log_success "   Windows nodes (hashistack-windows): $WINDOWS_NODES"
-    fi
-    
     # Get first node ID
     NODE_ID=$(echo "$NODE_OUTPUT" | grep "ready" | head -1 | awk '{print $1}')
-    log_info "   Sample Node ID: $NODE_ID"
+    log_info "   Node ID: $NODE_ID"
   else
     log_warn "No ready nodes found yet (may still be starting up)"
   fi
@@ -106,42 +94,26 @@ else
 fi
 echo ""
 
-# Test 2: Get Client Instance IPs
-log_info "Test 2: Finding client instance IP addresses..."
+# Test 2: Get Client Instance IP
+log_info "Test 2: Finding client instance IP address..."
 
 # Check if AWS credentials are available
 if ! aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
   log_warn "AWS credentials not found. Skipping client IP lookup."
   log_warn "   To authenticate: doormat login -f && eval \$(doormat aws export --account <account>)"
-  LINUX_CLIENT_IP=""
-  WINDOWS_CLIENT_IP=""
+  CLIENT_IP=""
 else
-  # Get Linux client IPs
-  LINUX_CLIENT_IP=$(aws ec2 describe-instances \
+  CLIENT_IP=$(aws ec2 describe-instances \
     --region "${AWS_REGION}" \
-    --filters "Name=tag:OS,Values=Linux" "Name=instance-state-name,Values=running" \
+    --filters "Name=tag:Name,Values=*-client" "Name=instance-state-name,Values=running" \
     --query 'Reservations[0].Instances[0].PublicIpAddress' \
     --output text 2>/dev/null || echo "")
 
-  if [ -n "$LINUX_CLIENT_IP" ] && [ "$LINUX_CLIENT_IP" != "None" ]; then
-    log_success "Linux client instance IP: $LINUX_CLIENT_IP"
+  if [ -n "$CLIENT_IP" ] && [ "$CLIENT_IP" != "None" ]; then
+    log_success "Client instance IP: $CLIENT_IP"
   else
-    log_info "   No Linux client instances found"
-    LINUX_CLIENT_IP=""
-  fi
-  
-  # Get Windows client IPs
-  WINDOWS_CLIENT_IP=$(aws ec2 describe-instances \
-    --region "${AWS_REGION}" \
-    --filters "Name=tag:OS,Values=Windows" "Name=instance-state-name,Values=running" \
-    --query 'Reservations[0].Instances[0].PublicIpAddress' \
-    --output text 2>/dev/null || echo "")
-
-  if [ -n "$WINDOWS_CLIENT_IP" ] && [ "$WINDOWS_CLIENT_IP" != "None" ]; then
-    log_success "Windows client instance IP: $WINDOWS_CLIENT_IP"
-  else
-    log_info "   No Windows client instances found"
-    WINDOWS_CLIENT_IP=""
+    log_warn "Could not retrieve client instance IP (may not be needed if jobs are running)"
+    CLIENT_IP=""
   fi
 fi
 echo ""
@@ -376,19 +348,18 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
     fi
   fi
   
-  # Get Linux client instances
-  if LINUX_CLIENT_INSTANCES=$(aws ec2 describe-instances \
+  # Get client instances
+  if CLIENT_INSTANCES=$(aws ec2 describe-instances \
     --region "${AWS_REGION}" \
-    --filters "Name=tag:OS,Values=Linux" "Name=instance-state-name,Values=running" \
-    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress,Tags[?Key==`OS`].Value|[0]]' \
+    --filters "Name=tag:Name,Values=*-client" "Name=instance-state-name,Values=running" \
+    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress]' \
     --output text 2>/dev/null); then
     
-    if [ -n "$LINUX_CLIENT_INSTANCES" ]; then
-      echo "  Linux Client Nodes:"
-      echo "$LINUX_CLIENT_INSTANCES" | while IFS=$'\t' read -r instance_id name public_ip private_ip os; do
+    if [ -n "$CLIENT_INSTANCES" ]; then
+      echo "  Client Nodes:"
+      echo "$CLIENT_INSTANCES" | while IFS=$'\t' read -r instance_id name public_ip private_ip; do
         echo "    - Instance: $instance_id"
         echo "      Name:     $name"
-        echo "      OS:       $os"
         echo "      Public:   $public_ip"
         echo "      Private:  $private_ip"
         echo "      SSH:      ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${public_ip}"
@@ -396,35 +367,10 @@ if aws sts get-caller-identity --region "${AWS_REGION}" >/dev/null 2>&1; then
       done
     fi
   fi
-  
-  # Get Windows client instances
-  if WINDOWS_CLIENT_INSTANCES=$(aws ec2 describe-instances \
-    --region "${AWS_REGION}" \
-    --filters "Name=tag:OS,Values=Windows" "Name=instance-state-name,Values=running" \
-    --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress,Tags[?Key==`OS`].Value|[0]]' \
-    --output text 2>/dev/null); then
-    
-    if [ -n "$WINDOWS_CLIENT_INSTANCES" ]; then
-      echo "  Windows Client Nodes:"
-      echo "$WINDOWS_CLIENT_INSTANCES" | while IFS=$'\t' read -r instance_id name public_ip private_ip os; do
-        echo "    - Instance: $instance_id"
-        echo "      Name:     $name"
-        echo "      OS:       $os"
-        echo "      Public:   $public_ip"
-        echo "      Private:  $private_ip"
-        echo "      RDP:      Use AWS Systems Manager Session Manager or RDP to ${public_ip}"
-        echo ""
-      done
-    fi
-  fi
 else
   # Fallback if AWS credentials not available
-  if [ -n "$LINUX_CLIENT_IP" ]; then
-    echo "Linux Client Node SSH: ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${LINUX_CLIENT_IP}"
-    echo ""
-  fi
-  if [ -n "$WINDOWS_CLIENT_IP" ]; then
-    echo "Windows Client Node: Use AWS Systems Manager Session Manager or RDP to ${WINDOWS_CLIENT_IP}"
+  if [ -n "$CLIENT_IP" ]; then
+    echo "Client Node SSH: ssh -i ~/.ssh/${SSH_KEY}.pem ${SSH_USER}@${CLIENT_IP}"
     echo ""
   fi
 fi

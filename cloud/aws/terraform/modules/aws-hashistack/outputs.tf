@@ -48,19 +48,11 @@ output "hosts_file" {
 }
 
 output "client_asg_arn" {
-  value = aws_autoscaling_group.nomad_client_linux.arn
+  value = aws_autoscaling_group.nomad_client.arn
 }
 
 output "client_asg_name" {
-  value = aws_autoscaling_group.nomad_client_linux.name
-}
-
-output "windows_client_asg_arn" {
-  value = var.windows_client_count > 0 ? aws_autoscaling_group.nomad_client_windows[0].arn : ""
-}
-
-output "windows_client_asg_name" {
-  value = var.windows_client_count > 0 ? aws_autoscaling_group.nomad_client_windows[0].name : ""
+  value = aws_autoscaling_group.nomad_client.name
 }
 
 output "ssh_file" {

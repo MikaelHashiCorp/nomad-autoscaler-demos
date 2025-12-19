@@ -1,10 +1,6 @@
 #!/bin/bash
 # Quick Test Script for Multi-OS Support
-# Usage: ./quick-test.sh [ubuntu|redhat|windows|mixed] [packer-only|terraform]
-#   ubuntu:      Test Ubuntu Linux clients only (default)
-#   redhat:      Test RedHat Linux clients only
-#   windows:     Test Windows clients only
-#   mixed:       Test both Linux and Windows clients together
+# Usage: ./quick-test.sh [ubuntu|redhat] [packer-only|terraform]
 #   packer-only: Only test Packer build (no Terraform)
 #   terraform:   Run Terraform apply (default - Terraform will call Packer if needed)
 #
@@ -42,9 +38,9 @@ warn() {
 }
 
 # Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKER_DIR="$SCRIPT_DIR/packer"
-TERRAFORM_DIR="$SCRIPT_DIR/terraform/control"
+REPO_ROOT="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud"
+PACKER_DIR="$REPO_ROOT/aws/packer"
+TERRAFORM_DIR="$REPO_ROOT/aws/terraform/control"
 
 # Read region from terraform.tfvars
 if [ -f "$TERRAFORM_DIR/terraform.tfvars" ]; then
@@ -70,8 +66,6 @@ if [[ "$OS_TYPE" == "ubuntu" ]]; then
   TF_OS="Ubuntu"
   TF_OS_VERSION="24.04"
   TF_OS_NAME="noble"
-  TF_LINUX_COUNT="1"
-  TF_WINDOWS_COUNT="0"
 elif [[ "$OS_TYPE" == "redhat" ]]; then
   log "Testing RedHat build..."
   PACKER_VARS="-var 'os=RedHat' -var 'os_version=9.6.0' -var 'os_name=' -var 'name_prefix=scale-mws-rhel'"
@@ -82,35 +76,8 @@ elif [[ "$OS_TYPE" == "redhat" ]]; then
   TF_OS="RedHat"
   TF_OS_VERSION="9.6.0"
   TF_OS_NAME=""
-  TF_LINUX_COUNT="1"
-  TF_WINDOWS_COUNT="0"
-elif [[ "$OS_TYPE" == "windows" ]]; then
-  log "Testing Windows build..."
-  PACKER_VARS="-var 'os=Windows' -var 'os_version=2022' -var 'os_name=' -var 'name_prefix=scale-mws-win'"
-  NAME_FILTER="scale-mws-win-*"
-  SSH_USER="Administrator"
-  EXPECTED_OS_ID="windows"
-  EXPECTED_PKG_MGR="choco"
-  # For Windows-only clients, we still need Ubuntu for the server
-  TF_OS="Ubuntu"
-  TF_OS_VERSION="24.04"
-  TF_OS_NAME="noble"
-  TF_LINUX_COUNT="0"
-  TF_WINDOWS_COUNT="1"
-elif [[ "$OS_TYPE" == "mixed" ]]; then
-  log "Testing mixed Linux + Windows deployment..."
-  PACKER_VARS=""
-  NAME_FILTER="scale-mws-*"
-  SSH_USER="ubuntu"  # For Linux instances
-  EXPECTED_OS_ID="ubuntu"
-  EXPECTED_PKG_MGR="apt-get"
-  TF_OS="Ubuntu"
-  TF_OS_VERSION="24.04"
-  TF_OS_NAME="noble"
-  TF_LINUX_COUNT="1"
-  TF_WINDOWS_COUNT="1"
 else
-  error "Invalid OS type. Use 'ubuntu', 'redhat', 'windows', or 'mixed'"
+  error "Invalid OS type. Use 'ubuntu' or 'redhat'"
   exit 1
 fi
 
@@ -223,8 +190,6 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
     -var "packer_os=$TF_OS" \
     -var "packer_os_version=$TF_OS_VERSION" \
     -var "packer_os_name=$TF_OS_NAME" \
-    -var "client_count=$TF_LINUX_COUNT" \
-    -var "windows_client_count=$TF_WINDOWS_COUNT" \
     -out="$LOG_DIR/plan-$OS_TYPE.tfplan" 2>&1 | tee "$LOG_DIR/terraform-plan-$OS_TYPE-$TIMESTAMP.log"
   log "✅ Terraform plan created"
 
@@ -364,19 +329,10 @@ if [[ "$TEST_MODE" == "terraform" ]]; then
   if [[ -n "$SERVER_LB" && -n "$CLIENT_LB" ]]; then
     log "1. Open UIs in browser to verify functionality"
     log "2. SSH into instance to verify OS-specific settings"
-    if [[ "$OS_TYPE" == "windows" || "$OS_TYPE" == "mixed" ]]; then
-      log "   For Windows: Use RDP or AWS Systems Manager Session Manager"
-      log "   Windows instances use node class: hashistack-windows"
-    fi
-    if [[ "$OS_TYPE" == "mixed" ]]; then
-      log "   Linux instances use node class: hashistack-linux"
-    fi
     log "3. Test autoscaling by generating load:"
     log "   for i in {1..100}; do curl http://$CLIENT_LB; sleep 1; done"
     log "4. Monitor Grafana: http://$CLIENT_LB:3000/d/AQphTqmMk/demo"
-    log "5. Verify node classes in Nomad UI:"
-    log "   http://$SERVER_LB:4646/ui/clients"
-    log "6. When done testing, destroy infrastructure"
+    log "5. When done testing, destroy infrastructure"
   else
     log "1. Check terraform outputs for connection details:"
     log "   cd $TERRAFORM_DIR && terraform output"

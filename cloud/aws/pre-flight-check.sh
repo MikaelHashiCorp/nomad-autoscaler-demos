@@ -4,10 +4,6 @@
 
 set -euo pipefail
 
-# Ensure logs directory exists
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p "$SCRIPT_DIR/logs"
-
 echo "=== Pre-flight Checks for Multi-OS Testing ==="
 echo ""
 
@@ -68,7 +64,7 @@ fi
 # Check 3: Terraform configuration
 echo ""
 echo "3. Checking Terraform configuration..."
-TF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/terraform/control"
+TF_DIR="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control"
 if [ -f "$TF_DIR/terraform.tfvars" ]; then
   echo "   ✅ terraform.tfvars exists"
   
@@ -89,7 +85,7 @@ fi
 # Check 4: Packer files
 echo ""
 echo "4. Checking Packer configuration..."
-PACKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/packer"
+PACKER_DIR="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/packer"
 if [ -f "$PACKER_DIR/aws-packer.pkr.hcl" ]; then
   echo "   ✅ Packer configuration exists"
 else
@@ -145,8 +141,7 @@ echo "  ✅ All pre-flight checks passed!"
 echo "============================================"
 echo ""
 echo "You can now run the test:"
-echo "  ./quick-test.sh ubuntu          # Test Ubuntu Linux clients"
-echo "  ./quick-test.sh redhat          # Test RedHat Linux clients"
-echo "  ./quick-test.sh windows         # Test Windows clients"
-echo "  ./quick-test.sh mixed           # Test mixed Linux + Windows"
+echo "  ./quick-test.sh ubuntu"
+echo "  or"
+echo "  ./quick-test.sh redhat"
 echo ""

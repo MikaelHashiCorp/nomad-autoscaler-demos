@@ -68,11 +68,6 @@ source "amazon-ebs" "hashistack" {
   # User data for Windows to configure WinRM
   user_data_file = var.os == "Windows" ? "${path.root}/windows-userdata.ps1" : null
 
-  # Tags for the temporary build instance
-  run_tags = {
-    Name = format("%s-packer-build-%s", var.name_prefix, var.os)
-  }
-
   tags = {
     Name                    = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
     Architecture            = var.architecture
@@ -143,12 +138,14 @@ build {
   provisioner "shell" {
     script = "../../shared/packer/scripts/setup.sh"
     environment_vars = [
-      "TARGET_OS=${var.os}",
-      "CNIVERSION=${var.cni_version}",
-      "CONSULVERSION=${var.consul_version}",
-      "NOMADVERSION=${var.nomad_version}",
-      "VAULTVERSION=${var.vault_version}"
+      "TARGET_OS=${var.os}"
     ]
+    # Version environment variables removed to allow script to auto-fetch latest versions
+    # To use specific versions, set environment variables before running packer:
+    #   export CNIVERSION=v1.8.0
+    #   export CONSULVERSION=1.22.1
+    #   export NOMADVERSION=1.11.1
+    # Or source env-pkr-var.sh to fetch latest versions into environment
   }
 }
 
@@ -167,42 +164,9 @@ build {
     ]
   }
 
-  # Explicit directory copies to avoid Windows file provisioner issues with nested directories
   provisioner "file" {
-    source      = "../../shared/packer/scripts/"
-    destination = "C:\\ops\\scripts\\"
-  }
-
-  provisioner "file" {
-    source      = "../../shared/packer/config/"
-    destination = "C:\\ops\\config\\"
-  }
-
-  # Verify all required files were copied successfully
-  provisioner "powershell" {
-    inline = [
-      "Write-Host 'Verifying C:\\ops directory structure...' -ForegroundColor Cyan",
-      "Write-Host ''",
-      "Write-Host 'Scripts directory:' -ForegroundColor Yellow",
-      "Get-ChildItem -Path C:\\ops\\scripts | Select-Object Name, Length | Format-Table -AutoSize",
-      "Write-Host 'Config directory:' -ForegroundColor Yellow",
-      "Get-ChildItem -Path C:\\ops\\config | Select-Object Name, Length | Format-Table -AutoSize",
-      "Write-Host ''",
-      "",
-      "# Verify critical files exist",
-      "$missingFiles = @()",
-      "if (-not (Test-Path 'C:\\ops\\scripts\\client.ps1')) { $missingFiles += 'client.ps1' }",
-      "if (-not (Test-Path 'C:\\ops\\config\\consul_client.hcl')) { $missingFiles += 'consul_client.hcl' }",
-      "if (-not (Test-Path 'C:\\ops\\config\\nomad_client.hcl')) { $missingFiles += 'nomad_client.hcl' }",
-      "",
-      "if ($missingFiles.Count -gt 0) {",
-      "  Write-Host 'ERROR: Missing required files:' -ForegroundColor Red",
-      "  $missingFiles | ForEach-Object { Write-Host \"  - $_\" -ForegroundColor Red }",
-      "  exit 1",
-      "}",
-      "",
-      "Write-Host 'All required files verified successfully!' -ForegroundColor Green"
-    ]
+    source      = "../../shared/packer/"
+    destination = "C:\\ops\\"
   }
 
   provisioner "powershell" {
@@ -237,8 +201,7 @@ build {
       "  Write-Host 'Docker verification complete (service is running)'",
       "} else {",
       "  Write-Host 'Docker service not running (non-critical)'",
-      "}",
-      "exit 0"
+      "}"
     ]
   }
 
@@ -262,120 +225,6 @@ build {
       "Get-ChildItem C:\\HashiCorp\\bin\\*.exe | ForEach-Object { Write-Host \"  - $($_.Name)\" }",
       "Write-Host 'Docker service status:'",
       "Get-Service docker | Format-List Name,Status,StartType"
-    ]
-  }
-  
-  # Configure EC2Launch v2 to execute user-data on every boot
-  # This replaces the default agent-config.yml with one that includes the executeScript task
-  provisioner "file" {
-    source      = "config/ec2launch-agent-config.yml"
-    destination = "C:\\ProgramData\\Amazon\\EC2Launch\\config\\agent-config.yml"
-  }
-  
-  # Verify the EC2Launch v2 configuration was applied correctly
-  provisioner "powershell" {
-    inline = [
-      "Write-Host 'Verifying EC2Launch v2 configuration...'",
-      "$configPath = 'C:\\ProgramData\\Amazon\\EC2Launch\\config\\agent-config.yml'",
-      "if (Test-Path $configPath) {",
-      "  $config = Get-Content $configPath -Raw",
-      "  # EC2Launch v2 handles user-data automatically - no executeScript task needed",
-      "  if ($config -match 'executeScript') {",
-      "    Write-Host '[WARNING] executeScript task found - this is not needed as EC2Launch v2 handles user-data automatically'",
-      "    Write-Host '[INFO] Consider removing executeScript task from configuration'",
-      "  }",
-      "  # Verify essential tasks are present",
-      "  if ($config -match 'startSsm') {",
-      "    Write-Host '[OK] startSsm task found in configuration'",
-      "  } else {",
-      "    Write-Host '[WARNING] startSsm task not found - SSM may not be available'",
-      "  }",
-      "  Write-Host '[SUCCESS] EC2Launch v2 configuration verified'",
-      "  Write-Host '[INFO] User-data will be executed automatically by EC2Launch v2 on every boot'",
-      "} else {",
-      "  Write-Host '[ERROR] Configuration file not found at expected location'",
-      "  exit 1",
-      "}"
-    ]
-  }
-  
-  # Clean up HashiStack state and config files from Packer build
-  # This prevents leftover server configs and state data from being baked into the AMI
-  # Bug #12: AMI was containing Packer build artifacts that conflicted with runtime config
-  provisioner "powershell" {
-    inline = [
-      "Write-Host 'Cleaning up HashiStack state and config files from Packer build...' -ForegroundColor Yellow",
-      "",
-      "# Remove Consul state and config subdirectories",
-      "Write-Host '  Cleaning Consul directories...'",
-      "if (Test-Path 'C:\\HashiCorp\\Consul\\data') {",
-      "  Remove-Item 'C:\\HashiCorp\\Consul\\data' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Consul data directory' -ForegroundColor Green",
-      "}",
-      "if (Test-Path 'C:\\HashiCorp\\Consul\\config') {",
-      "  Remove-Item 'C:\\HashiCorp\\Consul\\config' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Consul config directory' -ForegroundColor Green",
-      "}",
-      "if (Test-Path 'C:\\HashiCorp\\Consul\\logs') {",
-      "  Remove-Item 'C:\\HashiCorp\\Consul\\logs' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Consul logs directory' -ForegroundColor Green",
-      "}",
-      "",
-      "# Remove Nomad state and config subdirectories",
-      "Write-Host '  Cleaning Nomad directories...'",
-      "if (Test-Path 'C:\\HashiCorp\\Nomad\\data') {",
-      "  Remove-Item 'C:\\HashiCorp\\Nomad\\data' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Nomad data directory' -ForegroundColor Green",
-      "}",
-      "if (Test-Path 'C:\\HashiCorp\\Nomad\\config') {",
-      "  Remove-Item 'C:\\HashiCorp\\Nomad\\config' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Nomad config directory' -ForegroundColor Green",
-      "}",
-      "if (Test-Path 'C:\\HashiCorp\\Nomad\\logs') {",
-      "  Remove-Item 'C:\\HashiCorp\\Nomad\\logs' -Recurse -Force -ErrorAction SilentlyContinue",
-      "  Write-Host '    [OK] Removed Nomad logs directory' -ForegroundColor Green",
-      "}",
-      "",
-      "# Recreate empty directories for runtime use",
-      "Write-Host '  Recreating empty directories...'",
-      "New-Item -Path 'C:\\HashiCorp\\Consul\\data' -ItemType Directory -Force | Out-Null",
-      "New-Item -Path 'C:\\HashiCorp\\Consul\\logs' -ItemType Directory -Force | Out-Null",
-      "New-Item -Path 'C:\\HashiCorp\\Nomad\\data' -ItemType Directory -Force | Out-Null",
-      "New-Item -Path 'C:\\HashiCorp\\Nomad\\config' -ItemType Directory -Force | Out-Null",
-      "New-Item -Path 'C:\\HashiCorp\\Nomad\\logs' -ItemType Directory -Force | Out-Null",
-      "Write-Host '    [OK] Empty directories created' -ForegroundColor Green",
-      "",
-      "# Verify cleanup",
-      "Write-Host '  Verifying cleanup...'",
-      "$consulFiles = Get-ChildItem 'C:\\HashiCorp\\Consul' -Recurse -File -ErrorAction SilentlyContinue",
-      "$nomadFiles = Get-ChildItem 'C:\\HashiCorp\\Nomad' -Recurse -File -ErrorAction SilentlyContinue",
-      "if ($consulFiles -or $nomadFiles) {",
-      "  Write-Host '    [WARNING] Some files remain:' -ForegroundColor Yellow",
-      "  $consulFiles | ForEach-Object { Write-Host \"      Consul: $($_.FullName)\" -ForegroundColor Yellow }",
-      "  $nomadFiles | ForEach-Object { Write-Host \"      Nomad: $($_.FullName)\" -ForegroundColor Yellow }",
-      "} else {",
-      "  Write-Host '    [OK] All state and config files removed' -ForegroundColor Green",
-      "}",
-      "",
-      "Write-Host '[SUCCESS] HashiStack cleanup complete - AMI is ready for runtime configuration' -ForegroundColor Green"
-    ]
-  }
-  
-  # Reset EC2Launch v2 state files (secondary cleanup)
-  # Removes state files created during Packer build
-  provisioner "powershell" {
-    inline = [
-      "Write-Host 'Cleaning up EC2Launch v2 state files...'",
-      "$statePath = 'C:\\ProgramData\\Amazon\\EC2Launch\\state'",
-      "if (Test-Path \"$statePath\\.run-once\") {",
-      "  Remove-Item \"$statePath\\.run-once\" -Force",
-      "  Write-Host 'Removed .run-once file'",
-      "}",
-      "if (Test-Path \"$statePath\\state.json\") {",
-      "  Remove-Item \"$statePath\\state.json\" -Force",
-      "  Write-Host 'Removed state.json file'",
-      "}",
-      "Write-Host 'EC2Launch v2 state reset complete'"
     ]
   }
 }

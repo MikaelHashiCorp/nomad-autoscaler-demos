@@ -4,17 +4,17 @@
 output "ip_addresses" {
   value = <<CONFIGURATION
 
-Linux AMI Information:
-  ID:         ${module.hashistack_image_linux.id}
-  OS:         ${module.hashistack_image_linux.os} ${module.hashistack_image_linux.os_version}
-  SSH User:   ${module.hashistack_image_linux.ssh_user}
+AMI Information:
+  ID:         ${module.hashistack_image.id}
+  OS:         ${module.hashistack_image.os} ${module.hashistack_image.os_version}
+  SSH User:   ${module.hashistack_image.ssh_user}
 
 Server IPs:
 ${module.hashistack_cluster.server_addresses}
 
 
 To connect, add your private key and SSH into any client or server with
-`ssh ${module.hashistack_image_linux.ssh_user}@PUBLIC_IP`. You can test the integrity of the cluster by running:
+`ssh ${module.hashistack_image.ssh_user}@PUBLIC_IP`. You can test the integrity of the cluster by running:
 
   $ consul members
   $ nomad server members
