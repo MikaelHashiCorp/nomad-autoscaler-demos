@@ -3,7 +3,7 @@
 ## Project Overview
 Add Windows client support to the Nomad Autoscaler demo environment on AWS, enabling mixed OS deployments with both Linux and Windows Nomad clients.
 
-## Current Status: ✅ Build 15 SUCCESS - Windows Clients Operational
+## Current Status: 🔧 Build 10 Required - Bug #11 Discovered in Build 9
 
 ### Completed Work ✅
 
@@ -27,7 +27,7 @@ Add Windows client support to the Nomad Autoscaler demo environment on AWS, enab
 - ✅ `TESTING_PLAN.md` - Comprehensive Windows testing scenarios
 - ✅ `quick-test.sh` - Multi-OS testing script with Windows mode
 
-### Critical Bugs Fixed 🐛 (Total: 16)
+### Critical Bugs Fixed 🐛 (Total: 11)
 
 #### Bug #1: Windows Config Files Missing
 **File**: `packer/aws-packer.pkr.hcl`
@@ -88,85 +88,73 @@ Add Windows client support to the Nomad Autoscaler demo environment on AWS, enab
 **File**: Generated `consul.hcl`
 **Issue**: Malformed retry_join line in generated config
 **Root Cause**: Caused by Bug #8 (UTF-8 BOM corruption)
-**Status**: ✅ Resolved by Bug #8 fix
-
-#### Bug #10: Case-Insensitive String Replace
-**File**: `../shared/packer/scripts/client.ps1`
-**Issue**: PowerShell's `-replace` operator is case-insensitive, causing `RETRY_JOIN` placeholder to match `retry_join` in config
-**Solution**: Use `-creplace` for case-sensitive replacement
-**Status**: ✅ Fixed (Build 10)
-
-#### Bug #11-15: Various Configuration Issues
-**Status**: ✅ Fixed in Builds 10-14
-**Documentation**: See individual build documentation
-
-#### Bug #16: Log File Path Trailing Slash
-**File**: `../shared/packer/scripts/client.ps1` (lines 66, 124)
-**Issue**: Path replacement removed trailing slashes from log directories
-- Source: `/opt/consul/logs/` → Target: `C:/HashiCorp/Consul/logs` (missing trailing slash)
-- Source: `/opt/nomad/logs/` → Target: `C:/HashiCorp/Nomad/logs` (missing trailing slash)
-- Services expect directory with trailing slash to create timestamped log files
-- Without trailing slash, services attempt to open directory as file, causing failure
-**Solution**: Preserve trailing slashes in both source and target paths
-**Status**: ✅ Fixed (Build 15)
-**Documentation**: `DUE_DILIGENCE_BUG_16_ANALYSIS.md`
+**Status**: ✅ Will be resolved by Bug #8 fix
 
 ### Current Infrastructure State 🏗️
-- **Deployment**: Build 15 (SUCCESS - All 16 bugs fixed)
-- **Linux AMI**: ami-096aaae0bc50ad23f (Ubuntu 24.04) - ✅ Built
-- **Windows AMI**: ami-064e18a7f9c54c998 (Build 15) - ✅ Operational
-- **Instances**:
-  - i-0666ca6fd4c5fe276 (Server) - ✅ Running
-  - i-0fe3b25ecb13b95a8 (Linux Client) - ✅ Running
-  - i-0f2e74fcb95361c77 (Windows Client) - ✅ Running, joined cluster
-- **Status**: ✅ Windows clients successfully joining Nomad cluster
+- **Deployment**: Build 8 (FAILED - Consul service crashes due to UTF-8 BOM)
+- **Linux AMI**: ami-0cee268c18e66d56a (Ubuntu 24.04) - ✅ Built
+- **Windows AMI**: ami-00fb221f488bcf6f9 (Build 8) - ❌ Has UTF-8 BOM bug
+- **Instance**: i-031f4337072cd1e9c (Build 8) - ❌ Consul service crashes
+- **Status**: Ready to destroy and rebuild with all fixes (Build 9)
 
 ### Next Steps 📋
 
-#### Build 15 Testing Status
+#### Immediate Action: Build 10 Deployment
 
-**Completed Tests** ✅:
-- ✅ Test 1: Windows client joins cluster (TESTING_PLAN.md Section 4.4 Test 1)
-- ✅ Test 2: Node attributes verified (TESTING_PLAN.md Section 4.4 Test 2)
-- ✅ Test 3: Infrastructure jobs running (grafana, prometheus, webapp)
-- ✅ Test 4: Windows batch job deployed successfully
+**Current Situation**:
+- Build 9 deployed with ami-092311cecadfef280
+- Instance i-0edc2ea48989d62dd running
+- Consul service failing due to Bug #11 (case-insensitive replace)
 
-**Remaining Tests**:
-- [ ] Test 5: Windows autoscaling (TESTING_PLAN.md Section 4.5)
-- [ ] Test 6: Dual AMI cleanup (TESTING_PLAN.md Section 4.6)
+**Step 1: Destroy Build 9 Infrastructure**
+```bash
+cd terraform/control
+terraform destroy -auto-approve
+```
 
-#### Important Discovery: ASG Architecture
+**Step 2: Rebuild Windows AMI (Build 10)** with ALL fixes:
+- ✅ Bug #1-10: All previous fixes applied
+- ✅ Bug #11: Case-sensitive `-creplace` operator for RETRY_JOIN replacement
 
-**Issue Identified**: Build 15 deployment revealed configuration mismatch
-- Configuration: `client_count=0` (Windows-only clients)
-- Reality: Infrastructure jobs require Linux clients
-- Fix Applied: Scaled Linux client ASG to 1
-- Result: Mixed OS deployment (1 Linux + 1 Windows client)
+```bash
+cd terraform/control
+terraform apply -auto-approve
+```
 
-**See**: [`ASG_ARCHITECTURE_ANALYSIS.md`](ASG_ARCHITECTURE_ANALYSIS.md) for complete analysis
+Expected duration: ~20-25 minutes for Windows AMI build
 
-**Key Findings**:
-1. ASG architecture is CORRECT - each ASG only manages its own OS type
-2. Windows ASG will only replace Windows instances
-3. Linux ASG will only replace Linux instances
-4. Infrastructure jobs (grafana, prometheus, webapp) target Linux nodes
-5. For true Windows-only deployment, infrastructure jobs must be modified
+**Step 3: Verify Deployment**
+```bash
+./verify-deployment.sh
+```
 
-#### Recommended Next Actions
+#### Testing Phase (After Build 10 Deploys)
 
-**Option 1: Keep Mixed OS Deployment (Current State)**
-- Maintain `client_count=1` for infrastructure jobs
-- Maintain `windows_client_count=1` for Windows workloads
-- Test Windows ASG autoscaling (Test 5)
-- Test dual AMI cleanup (Test 6)
-- Document as "Mixed OS" deployment model
+**Test 1: Verify Windows Client Joins Cluster** (TESTING_PLAN.md Section 4.4 Test 1)
+   ```bash
+   export NOMAD_ADDR=http://<server_lb_dns>:4646
+   nomad node status
+   # Should show Windows node with class: hashistack-windows
+   ```
 
-**Option 2: Implement Pure Windows-Only Deployment**
-- Modify infrastructure jobs to target Windows nodes
-- Change constraint from `hashistack-linux` to `hashistack-windows`
-- Set `client_count=0` (no Linux clients)
-- Redeploy and verify all jobs run on Windows
-- Document as "Windows-Only" deployment model
+**Test 2: Verify Node Attributes** (TESTING_PLAN.md Section 4.4 Test 2)
+   ```bash
+   WINDOWS_NODE=$(nomad node status -json | jq -r '.[] | select(.NodeClass=="hashistack-windows") | .ID' | head -1)
+   nomad node status -verbose $WINDOWS_NODE | grep -i "kernel.name\|os.name"
+   # Expected: kernel.name = windows, os.name = Windows Server 2022
+   ```
+
+**Test 3: Deploy Windows-Targeted Job** (TESTING_PLAN.md Section 4.4 Test 3)
+   - Create test job with Windows constraint
+   - Verify job placement on Windows node
+
+**Test 4: Test Windows Autoscaling** (TESTING_PLAN.md Section 4.5)
+   - Generate load
+   - Verify ASG scales Windows clients
+
+**Test 5: Test Dual AMI Cleanup** (TESTING_PLAN.md Section 4.6)
+   - Run `terraform destroy`
+   - Verify both AMIs are deregistered
 
 #### Documentation Tasks
 - [ ] Update `TASK_REQUIREMENTS.md` with final results
@@ -219,13 +207,7 @@ Add Windows client support to the Nomad Autoscaler demo environment on AWS, enab
    - Use `-creplace` for case-sensitive replacements
    - Use `-ireplace` for explicit case-insensitive replacements
    - Example: `$config -creplace 'RETRY_JOIN', $value` to avoid matching `retry_join`
-
-6. **Path Replacement Trailing Characters**:
-   - When replacing directory paths, preserve trailing slashes
-   - `log_file` with trailing slash = directory for log files
-   - `log_file` without trailing slash = attempt to open as file (will fail if it's a directory)
-   - Example: `-replace '/opt/consul/logs/', 'C:/HashiCorp/Consul/logs/'` (both have trailing slash)
-   - ALWAYS verify source and target have matching trailing characters
+   - Verify with hexdump: `hexdump -C file.hcl | head -1` should NOT start with `ef bb bf`
 
 5. **EC2Launch v2 Behavior**:
    - EC2Launch v2 automatically executes user-data - no configuration needed
@@ -244,37 +226,6 @@ Add Windows client support to the Nomad Autoscaler demo environment on AWS, enab
 2. **Verification**: Always add verification provisioners after file operations
 3. **Path Separators**: Use forward slashes in Packer, backslashes in PowerShell
 
-### Mandatory Pre-Build Due Diligence Process
-
-**CRITICAL**: Before EVERY build deployment, you MUST complete the 5-phase verification process:
-
-1. **Run the pre-build checklist script**:
-   ```bash
-   ./pre-build-checklist.sh <BUILD_NUMBER>
-   ```
-
-2. **Complete ALL phases** in the generated checklist:
-   - Phase 1: Template Analysis (read all config templates)
-   - Phase 2: Transformation Analysis (verify all string replacements)
-   - Phase 3: Semantic Verification (understand parameter requirements)
-   - Phase 4: Cross-Reference Check (compare with working examples)
-   - Phase 5: Simulation (mentally execute transformations)
-
-3. **Sign off** on the checklist with >95% confidence
-
-4. **Only then** proceed with `terraform apply`
-
-**Files**:
-- `pre-build-checklist.sh` - Generates mandatory checklist
-- `DUE_DILIGENCE_BUG_16_ANALYSIS.md` - Detailed process explanation
-- `BUILD_15_PRE_DEPLOYMENT_DUE_DILIGENCE.md` - Example completed checklist
-
-**Why This Matters**: Bug #16 was missed because due diligence was incomplete. This process ensures:
-- ALL path replacements are verified
-- Trailing slashes are preserved where needed
-- Semantic correctness is confirmed
-- No syntax errors slip through
-
 ### Testing Strategy
 1. **AMI Baking**: Scripts are baked into AMI - fixes require rebuild
 2. **User-Data Execution**: Takes 2-3 minutes after instance launch
@@ -282,42 +233,30 @@ Add Windows client support to the Nomad Autoscaler demo environment on AWS, enab
 4. **Bob-Instructions**: Always use `logcmd` wrapper and `source ~/.zshrc`
 
 ## Success Criteria ✓
-- ✅ Windows clients successfully join Nomad cluster
-- ✅ Windows node attributes correctly identified
-- ✅ Windows-targeted jobs deploy successfully
-- ⏳ Windows autoscaling functions correctly (Test 5 pending)
-- ⏳ Dual AMI cleanup works on destroy (Test 6 pending)
-- ✅ Documentation complete and accurate
+- [ ] Windows clients successfully join Nomad cluster
+- [ ] Windows node attributes correctly identified
+- [ ] Windows-targeted jobs deploy successfully
+- [ ] Windows autoscaling functions correctly
+- [ ] Dual AMI cleanup works on destroy
+- [ ] Documentation complete and accurate
 
 ## Timeline
-- **Start**: 2025-12-16 (early morning PST)
-- **Build 8**: 2025-12-17 ~14:00 PST - UTF-8 BOM bug
-- **Build 9-14**: 2025-12-17 - Various bug fixes
-- **Build 15 Deployed**: 2025-12-17 22:56 PST (06:56 UTC 2025-12-18)
-- **Windows Node Joined**: 2025-12-17 22:57 PST (7 minutes after deployment)
-- **Infrastructure Fix**: 2025-12-18 13:37 PST (scaled Linux ASG)
-- **All Jobs Running**: 2025-12-18 13:42 PST (5 minutes after fix)
-- **Current**: 2025-12-18 13:49 PST
-- **Status**: ✅ Build 15 SUCCESS - Windows clients operational
+- **Start**: 2025-12-16 (early morning)
+- **Build 8 Deployed**: 2025-12-17 ~14:00 PST
+- **Bugs #8 & #9 Fixed**: 2025-12-17 14:54 PST
+- **Current**: 2025-12-17 14:56 PST
+- **Status**: ✅ Ready for Build 9 - All bugs fixed, awaiting deployment
 
 ## Build History
-- **Build 1-7**: Fixed config files, paths, escape sequences, EC2Launch v2
+- **Build 1-3**: Fixed config files, paths, escape sequences
+- **Build 4**: Fixed EC2Launch v2 state files
+- **Build 5**: Fixed UTF-8 checkmarks
+- **Build 6**: Fixed EC2Launch v2 frequency setting
+- **Build 7**: ❌ FAILED - EC2Launch service crash (missing content field)
 - **Build 8**: ❌ FAILED - Consul service crash (UTF-8 BOM in HCL files)
-- **Build 9**: ❌ FAILED - Case-insensitive string replace
-- **Build 10-14**: ❌ FAILED - Various configuration issues (Bugs #11-15)
-- **Build 15**: ✅ SUCCESS - All 16 bugs fixed, Windows clients operational
+- **Build 9**: ⏳ READY - All bugs fixed, ready to deploy
 
-## Project Status
-**OPERATIONAL (90%)** - Windows clients successfully joining Nomad cluster and running workloads.
+## Confidence Level
+**VERY HIGH (95%)** - All critical bugs identified and fixed through thorough root cause analysis using SSM debugging.
 
-**Remaining Work**:
-- Test Windows ASG autoscaling (Test 5)
-- Test dual AMI cleanup (Test 6)
-- Decide on deployment model (Mixed OS vs Windows-only)
-- Final documentation updates
-
-**Key Documentation**:
-- [`BUILD_15_SUCCESS_SUMMARY.md`](BUILD_15_SUCCESS_SUMMARY.md) - Build 15 results
-- [`ASG_ARCHITECTURE_ANALYSIS.md`](ASG_ARCHITECTURE_ANALYSIS.md) - ASG architecture explanation
-- [`TESTING_PLAN.md`](TESTING_PLAN.md) - Comprehensive testing procedures
-- [`DUE_DILIGENCE_BUG_16_ANALYSIS.md`](DUE_DILIGENCE_BUG_16_ANALYSIS.md) - Pre-build process
+See [`BUILD_9_PREPARATION.md`](BUILD_9_PREPARATION.md) for complete details.

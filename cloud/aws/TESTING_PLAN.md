@@ -23,41 +23,6 @@ This document outlines the comprehensive testing strategy to validate that Ubunt
 12. ⏳ Verify job targeting via OS constraints
 13. ⏳ Verify dual AMI cleanup on terraform destroy
 
-## Critical Success Criteria
-
-### Deployment Success Requirements
-A deployment is considered **SUCCESSFUL** only when ALL of the following conditions are met:
-
-1. **All ASGs have appropriate capacity**:
-   - Linux client ASG: desired ≥ 1 (if Linux workloads expected)
-   - Windows client ASG: desired ≥ 1 (if Windows workloads expected)
-
-2. **All expected nodes join cluster within 5 minutes**:
-   - Linux server nodes
-   - Linux client nodes (if configured)
-   - Windows client nodes (if configured)
-
-3. **All infrastructure jobs reach "running" status within 5 minutes**:
-   - `traefik`: must be "running"
-   - `grafana`: must be "running"
-   - `prometheus`: must be "running"
-   - `webapp`: must be "running"
-
-4. **Job Status Validation**:
-   ```bash
-   nomad job status
-   # ALL jobs must show Status: running
-   # NO jobs should be in "pending" state after 5 minutes
-   ```
-
-### 5-Minute Rule
-**CRITICAL**: If any infrastructure job remains in "pending" state for more than 5 minutes after deployment, the deployment has **FAILED** and must be investigated.
-
-Common causes of pending jobs:
-- Missing client nodes (ASG desired capacity = 0)
-- Node constraints not met (wrong OS, insufficient resources)
-- Service failures preventing node registration
-
 ## Prerequisites
 
 - AWS CLI configured with appropriate credentials
