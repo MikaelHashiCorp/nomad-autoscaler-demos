@@ -137,7 +137,7 @@ bash ./test-ami-build11.sh
 # Launch instance manually
 aws ec2 run-instances \
   --image-id ami-0d4f68180eaf66dac \
-  --instance-type t3a.xlarge \
+  --instance-type t3.medium \
   --key-name nomad-autoscaler \
   --security-group-ids <your-sg-id> \
   --region us-west-2

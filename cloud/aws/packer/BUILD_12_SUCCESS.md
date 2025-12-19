@@ -112,7 +112,7 @@
 
 ## Build Process Summary
 
-1. **Instance Launch**: t3a.xlarge Windows Server 2022 base AMI
+1. **Instance Launch**: t3.medium Windows Server 2022 base AMI
 2. **HashiStack Installation**: Downloaded and installed latest versions
 3. **Service Registration**: Registered Consul and Nomad as Windows services
 4. **SSH Configuration**: Configured OpenSSH with key authentication

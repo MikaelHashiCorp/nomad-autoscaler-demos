@@ -48,7 +48,7 @@ variable "key_name" {
 variable "server_instance_type" {
   description = "The EC2 instance type to launch for Nomad servers."
   type        = string
-  default     = "t3a.medium"
+  default     = "t3.small"
 }
 
 variable "server_count" {
@@ -60,30 +60,12 @@ variable "server_count" {
 variable "client_instance_type" {
   description = "The EC2 instance type to launch for Nomad clients."
   type        = string
-  default     = "t3a.medium"
+  default     = "t3.small"
 }
 variable "client_count" {
-  description = "The number of Linux Nomad clients to run."
+  description = "The number of Nomad clients to run."
   type        = number
   default     = 1
-}
-
-variable "windows_ami" {
-  description = "The Windows AMI to use for Windows clients."
-  type        = string
-  default     = ""
-}
-
-variable "windows_client_instance_type" {
-  description = "The EC2 instance type to launch for Windows Nomad clients."
-  type        = string
-  default     = "t3a.xlarge"
-}
-
-variable "windows_client_count" {
-  description = "The number of Windows Nomad clients to run."
-  type        = number
-  default     = 0
 }
 
 variable "root_block_device_size" {

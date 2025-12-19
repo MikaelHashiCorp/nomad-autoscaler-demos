@@ -12,12 +12,6 @@ client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]
 
-# Windows Client Configuration (optional)
-# Uncomment to enable Windows clients alongside or instead of Linux clients
-# windows_client_instance_type = "t3a.medium"
-# windows_client_count         = 1
-# windows_ami                  = ""  # Leave empty to build automatically, or specify existing Windows AMI
-
 # Operating System Configuration (for Packer builds only)
 # If 'ami' is empty, Packer will build a new AMI with these settings
 # If 'ami' is specified, these are ignored and OS info comes from AMI tags
@@ -25,13 +19,4 @@ allowlist_ip            = []   # example: ["73.001.01.170/32", "97.001.01.2/32"]
 #
 # To build with RedHat 9, add to terraform apply command:
 #   terraform apply -var="packer_os=RedHat" -var="packer_os_version=9.6.0" -var="packer_os_name="
-#
-# Windows Client Configuration:
-# Windows clients use a separate AMI from Linux servers/clients
-# packer_windows_version = "2022"  # Windows Server version (default: 2022)
-#
-# Deployment Scenarios:
-# 1. Linux-only (default):     client_count=1, windows_client_count=0
-# 2. Windows-only clients:     client_count=0, windows_client_count=1
-# 3. Mixed OS (both):          client_count=1, windows_client_count=1
 

@@ -15,15 +15,3 @@ client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []  # example:  ["73.001.01.170/32", "97.001.01.2/32"]; empty list means local ISP IP only.
 
-# Windows Client Configuration (optional)
-# Uncomment to enable Windows clients alongside or instead of Linux clients
-# windows_client_instance_type = "t3a.xlarge"
-# windows_client_count         = 1
-# windows_ami                  = ""  # Leave empty to build automatically, or specify existing Windows AMI
-# packer_windows_version       = "2022"  # Windows Server version (default: 2022)
-
-# Deployment Scenarios:
-# 1. Linux-only (default):     client_count=1, windows_client_count=0 (or commented out)
-# 2. Windows-only clients:     client_count=0, windows_client_count=1
-# 3. Mixed OS (both):          client_count=1, windows_client_count=1
-

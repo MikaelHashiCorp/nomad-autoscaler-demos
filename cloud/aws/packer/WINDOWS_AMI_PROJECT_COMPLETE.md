@@ -203,7 +203,7 @@ StartType: Automatic
 # Launch instance
 aws ec2 run-instances \
   --image-id ami-0196ee4a6c6596efe \
-  --instance-type t3a.xlarge \
+  --instance-type t3.medium \
   --key-name your-key-name \
   --security-group-ids sg-xxxxxxxxx \
   --subnet-id subnet-xxxxxxxxx \
@@ -242,7 +242,7 @@ data "aws_ami" "windows_hashistack" {
 
 resource "aws_instance" "nomad_client" {
   ami           = data.aws_ami.windows_hashistack.id
-  instance_type = "t3a.xlarge"
+  instance_type = "t3.medium"
   key_name      = var.key_name
   
   tags = {

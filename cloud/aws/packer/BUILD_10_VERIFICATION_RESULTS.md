@@ -137,7 +137,7 @@ Build #10 (ami-0be5bc02dfba10f4d) is recommended as the new production AMI, repl
 - **Instance ID**: i-0c1ea298d1386efcf
 - **Public IP**: 54.200.226.150
 - **Region**: us-west-2
-- **Instance Type**: t3a.xlarge
+- **Instance Type**: t3.medium
 - **Security Group**: sg-0a66baa454f936a1c
 
 **Cleanup Commands**:

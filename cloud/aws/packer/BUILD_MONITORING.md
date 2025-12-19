@@ -152,7 +152,7 @@ After successful build:
 1. **Find the AMI ID** in packer output
 2. **Launch test instance**:
    ```bash
-   aws ec2 run-instances --image-id ami-XXXXX --instance-type t3a.xlarge --key-name your-key
+   aws ec2 run-instances --image-id ami-XXXXX --instance-type t3.medium --key-name your-key
    ```
 3. **Verify installations**:
    - RDP into instance
