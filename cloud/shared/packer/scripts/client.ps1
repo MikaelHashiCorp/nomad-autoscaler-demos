@@ -63,7 +63,7 @@ $ConsulConfig = Get-Content $ConsulConfigTemplate -Raw
 $ConsulConfig = $ConsulConfig -replace 'IP_ADDRESS', $IP_ADDRESS
 $ConsulConfig = $ConsulConfig -creplace 'RETRY_JOIN', $RetryJoin
 $ConsulConfig = $ConsulConfig -replace '/opt/consul/data', 'C:/HashiCorp/Consul/data'
-$ConsulConfig = $ConsulConfig -replace '/opt/consul/logs/', 'C:/HashiCorp/Consul/logs'
+$ConsulConfig = $ConsulConfig -replace '/opt/consul/logs/', 'C:/HashiCorp/Consul/logs/'
 
 # Write Consul config (without BOM to avoid HCL parse errors)
 $ConsulConfigFile = "$CONSULCONFIGDIR\consul.hcl"
@@ -121,7 +121,7 @@ if (-not (Test-Path $NomadConfigTemplate)) {
 $NomadConfig = Get-Content $NomadConfigTemplate -Raw
 $NomadConfig = $NomadConfig -creplace 'NODE_CLASS', "`"$NodeClass`""
 $NomadConfig = $NomadConfig -replace '/opt/nomad/data', 'C:/HashiCorp/Nomad/data'
-$NomadConfig = $NomadConfig -replace '/opt/nomad/logs/', 'C:/HashiCorp/Nomad/logs'
+$NomadConfig = $NomadConfig -replace '/opt/nomad/logs/', 'C:/HashiCorp/Nomad/logs/'
 
 # Write Nomad config to the config subdirectory (without BOM to avoid HCL parse errors)
 $NomadConfigFile = "$NOMADCONFIGDIR\config\nomad.hcl"
