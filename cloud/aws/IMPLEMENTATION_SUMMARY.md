@@ -1,4 +1,4 @@
-# Windows Client Support - Implementation Summary
+ # Windows Client Support - Implementation Summary
 
 ## Executive Summary
 

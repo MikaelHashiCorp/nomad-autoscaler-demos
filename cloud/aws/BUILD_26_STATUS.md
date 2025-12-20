@@ -244,12 +244,46 @@ vault version   # Should be 1.21.1
 - [ ] Windows client has Docker available
 - [ ] Linux client running all 4 infrastructure jobs
 
+## Important Note: Windows Version Mismatch ⚠️
+
+**Current Deployment:** Windows Server 2022 (ami-00b5c2912ac32b41b)
+**KB Article Target:** Windows Server 2016
+
+The KB article [`1-KB-Nomad-Allocation-Failure.md`](1-KB-Nomad-Allocation-Failure.md:1) documents a desktop heap exhaustion issue that was primarily reported on **Windows Server 2016**. The issue occurs when Nomad clients reach ~20-25 allocations due to the default 768KB desktop heap limit for non-interactive processes.
+
+**Key Differences:**
+- **Windows Server 2016:** Known to have desktop heap exhaustion issues with Nomad
+- **Windows Server 2022:** May have different default heap limits or improved resource management
+- **Packer Config:** Currently set to `Windows_Server-2022-English-Full-Base-*` (line 37 in packer/aws-packer.pkr.hcl)
+
+**Options for KB Validation:**
+
+### Option 1: Test on Windows Server 2022 (Current)
+- **Pros:** Already deployed, ready to test
+- **Cons:** May not reproduce the issue if 2022 has higher defaults
+- **Action:** Deploy 30 allocations and monitor for failures
+- **Outcome:** If no failure, document that issue is specific to 2016
+
+### Option 2: Switch to Windows Server 2016
+- **Pros:** Matches KB article target OS, more likely to reproduce issue
+- **Cons:** Requires AMI rebuild and redeployment (~25 minutes)
+- **Action:** Change Packer filter to `Windows_Server-2016-English-Full-Base-*`
+- **Outcome:** Should reproduce desktop heap exhaustion at ~20-25 allocations
+
+### Option 3: Test Both Versions
+- **Pros:** Complete validation, documents behavior on both OS versions
+- **Cons:** Requires two full deployment cycles (~50 minutes total)
+- **Action:** Test 2022 first, then rebuild with 2016 if needed
+- **Outcome:** Comprehensive KB validation with version-specific notes
+
 ## Next Milestone
 
-**Goal:** Validate KB article `1-KB-Nomad-Alloc-Fail-On-Windows.md`  
-**Test:** Deploy 30 allocations to Windows client and monitor for desktop heap exhaustion  
-**Expected:** Failure at ~20-25 allocations on Windows Server 2016  
-**Note:** Build 26 uses Windows Server 2022, may need to switch to 2016 for KB validation
+**Immediate Goal:** Validate cluster health on Windows Server 2022
+**Then Decide:** Whether to test KB on 2022 or rebuild with 2016
+**KB Article:** [`1-KB-Nomad-Allocation-Failure.md`](1-KB-Nomad-Allocation-Failure.md:1)
+**Test Procedure:** Deploy 30 allocations and monitor for desktop heap exhaustion
+**Expected (2016):** Failure at ~20-25 allocations
+**Expected (2022):** Unknown - may have higher limits or better resource management
 
 ---
 
