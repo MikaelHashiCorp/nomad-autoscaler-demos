@@ -23,6 +23,20 @@ This document outlines the comprehensive testing strategy to validate that Ubunt
 12. ⏳ Verify job targeting via OS constraints
 13. ⏳ Verify dual AMI cleanup on terraform destroy
 
+### Current Focus: Windows Server 2016 KB Validation (Builds 21-26)
+14. ⏳ Verify Windows Server 2016 AMI builds successfully
+15. ⏳ Validate KB article: Desktop heap exhaustion at ~20-25 allocations
+16. ⏳ Test desktop heap fix (768 KB → 4096 KB)
+17. ⏳ Verify version compatibility between server and Windows clients
+18. ⏳ Document lessons learned from build failures
+
+**Current Goal**: Deploy Windows Server 2016 infrastructure to validate KB article `1-KB-Nomad-Alloc-Fail-On-Windows.md` which documents desktop heap exhaustion causing Nomad clients to fail after ~20-25 allocations.
+
+**Target Architecture**:
+- 1 Linux Server (Ubuntu 24.04) - Nomad 1.11.1
+- 1 Linux Client (Ubuntu 24.04) - For infrastructure jobs (traefik, grafana, prometheus, webapp)
+- 1 Windows Client (Windows Server 2016) - For KB validation testing
+
 ## Critical Success Criteria
 
 ### Deployment Success Requirements
@@ -1397,6 +1411,215 @@ log "All tests complete. Log saved to: $LOG_FILE"
 
 Before considering testing complete:
 
+
+## Lessons Learned: Builds 21-25
+
+### Build History Summary
+
+#### Build 20 ✅ SUCCESS
+- **Status**: Successful deployment with Bug #17 and Bug #18 fixes
+- **Configuration**: Ubuntu 24.04 server + clients, Nomad 1.11.1
+- **Key Achievement**: Docker service starts automatically, version compatibility confirmed
+
+#### Build 21 ❌ FAILED - Version Mismatch Redux
+- **Issue**: Windows client had Nomad 1.10.5, server had 1.11.1
+- **Root Cause**: Packer configuration had environment variables "intentionally removed"
+- **Impact**: Windows client couldn't join cluster (RPC protocol incompatibility)
+- **Lesson**: Always verify version compatibility between server and clients
+
+#### Build 22 ❌ FAILED - Missing User-Data Template
+- **Issue**: File `terraform/modules/aws-hashistack/templates/user-data-client-windows.ps1` not found
+- **Root Cause**: Template file was never created during Windows implementation
+- **Fix**: Created Windows user-data template with logging and EC2Launch v2 documentation
+- **Lesson**: Verify all referenced files exist before deployment
+
+#### Build 23 ❌ FAILED - Missing Environment Variables
+- **Issue**: Linux build failed with "CNIVERSION: unbound variable"
+- **Root Cause**: CNIVERSION not included in environment_vars list for shell provisioner
+- **Fix**: Added CNIVERSION to environment_vars parameter
+- **Lesson**: Both shell and PowerShell provisioners need explicit environment_vars in Packer
+
+#### Build 24 ❌ FAILED - Windows SCP Path Error
+- **Issue**: `scp: c:/Windows/Temp: No such file or directory`
+- **Root Cause**: Packer's PowerShell provisioner with environment_vars tries to upload temp script to non-existent path
+- **Fix**: Changed from environment_vars to inline script that sets variables and calls setup script
+- **Lesson**: Packer's environment_vars parameter has platform-specific issues on Windows
+
+#### Build 25 ⚠️ PARTIAL SUCCESS - Wrong Versions
+- **Linux AMI**: ✅ Created successfully (ami-0a91d5b822ca3c233)
+- **Windows AMI**: ✅ Created successfully (ami-06ee351ed56954425)
+- **Issue**: Both AMIs have wrong versions (Nomad 1.10.5 instead of 1.11.1)
+- **Root Cause**: Missing `source env-pkr-var.sh &&` in terraform/modules/aws-nomad-image/image.tf
+- **Impact**: Packer used hardcoded defaults instead of fetching from HashiCorp APIs
+- **Lesson**: Always verify the complete command chain when refactoring
+
+### Critical Lessons Learned
+
+#### 1. Environment Variable Inheritance in Packer
+**Problem**: Bash environment variables don't automatically pass to Packer provisioners.
+
+**Solution**: Must explicitly use `environment_vars` parameter for BOTH shell and PowerShell provisioners:
+```hcl
+provisioner "shell" {
+  script = "setup.sh"
+  environment_vars = [
+    "CONSULVERSION=${var.consul_version}",
+    "NOMADVERSION=${var.nomad_version}",
+    "VAULTVERSION=${var.vault_version}",
+    "CNIVERSION=${var.cni_version}"
+  ]
+}
+```
+
+**Exception**: Windows PowerShell provisioner with environment_vars has SCP path issues. Use inline script instead:
+```hcl
+provisioner "powershell" {
+  inline = [
+    "$env:NOMADVERSION = '${var.nomad_version}'",
+    "& C:\\ops\\scripts\\setup-windows.ps1"
+  ]
+}
+```
+
+#### 2. Version Management Strategy
+**Problem**: Multiple version sources causing confusion and drift.
+
+**Version Sources**:
+1. `env-pkr-var.sh` - Fetches latest from HashiCorp APIs (dynamic)
+2. `packer/variables.pkr.hcl` - Hardcoded defaults (static fallback)
+3. Terraform variables - Can override Packer variables (optional)
+
+**Best Practice**: Use `source env-pkr-var.sh` in Terraform's local-exec provisioner to ensure consistent versions across all builds.
+
+**Critical**: The command must be:
+```bash
+source env-pkr-var.sh && packer build ...
+```
+NOT just:
+```bash
+packer build ...
+```
+
+#### 3. Infrastructure Job Requirements
+**Problem**: Infrastructure jobs (traefik, grafana, prometheus, webapp) remained in "pending" state.
+
+**Root Cause**: These jobs use Docker Linux containers and require Linux clients. Setting `client_count = 0` causes jobs to never run.
+
+**Solution**: Always maintain at least 1 Linux client for infrastructure jobs:
+```hcl
+server_count = 1              # Linux server
+client_count = 1              # Linux client (for infrastructure jobs)
+windows_client_count = 1      # Windows client (for Windows workloads)
+```
+
+#### 4. Due Diligence Process
+**Problem**: Initial hypothesis about PowerShell environment variable inheritance was wrong.
+
+**Correct Process**:
+1. ✅ Check build logs for actual evidence
+2. ✅ Compare current vs. working version in git history
+3. ✅ Verify assumptions with data before proposing solutions
+4. ✅ Document findings with evidence
+
+**Key Insight**: Build logs contained the truth all along - environment variables WERE being passed correctly to scripts. The real issue was that wrong values were set at the Packer level.
+
+#### 5. Terraform State Management
+**Problem**: Orphaned resources (ELBs) blocking security group deletion.
+
+**Solution**: Manually clean up orphaned resources:
+```bash
+aws elb delete-load-balancer --load-balancer-name <name> --region <region>
+```
+
+**Prevention**: Use `terraform destroy` carefully and verify all resources are removed.
+
+#### 6. Git Merge Conflict Resolution
+**Problem**: Merge conflict markers in code causing syntax errors.
+
+**Solution**: Always escape conflict markers in apply_diff:
+```
+\<<<<<<< Updated upstream
+\=======
+\>>>>>>> Stashed changes
+```
+
+**Prevention**: Resolve conflicts properly before committing, use git status to check for unresolved conflicts.
+
+### Testing Best Practices
+
+#### Pre-Deployment Checklist
+Before running `terraform apply`:
+1. ✅ Verify terraform.tfvars configuration
+   - server_count ≥ 1
+   - client_count ≥ 1 (for infrastructure jobs)
+   - windows_client_count as needed
+2. ✅ Verify image.tf has `source env-pkr-var.sh &&`
+3. ✅ Check for merge conflicts in code
+4. ✅ Review bob-instructions.md for command format
+5. ✅ Verify all referenced files exist
+
+#### Post-Deployment Verification
+After `terraform apply` completes:
+1. ✅ Check all nodes joined cluster: `nomad node status`
+2. ✅ Verify versions match: `nomad node status -json <ID> | jq '.Attributes["nomad.version"]'`
+3. ✅ Check job status: `nomad job status` (all should be "running" within 5 minutes)
+4. ✅ Verify ASG desired capacity matches configuration
+5. ✅ Check for any "pending" jobs and investigate immediately
+
+#### Build Failure Response
+When a build fails:
+1. ✅ Check build logs for error messages
+2. ✅ Verify all fixes were applied
+3. ✅ Compare with last working version
+4. ✅ Document the failure and root cause
+5. ✅ Test fix in isolation if possible
+6. ✅ Update documentation with lessons learned
+
+### Version Compatibility Matrix
+
+| Component | Build 20 | Build 25 | Current API |
+|-----------|----------|----------|-------------|
+| Consul    | 1.22.2   | 1.21.4   | 1.21.4      |
+| Nomad     | 1.11.1   | 1.10.5   | 1.10.5      |
+| Vault     | 1.21.1   | 1.20.3   | 1.20.3      |
+| CNI       | v1.9.0   | v1.8.0   | v1.8.0      |
+
+**Note**: API versions change over time. Build 20 used versions from an earlier API fetch. Build 25 used current API versions (via hardcoded defaults that happened to match).
+
+### Next Steps for Build 26
+
+1. ⏳ Fix terraform.tfvars: `client_count = 1`
+2. ⏳ Fix image.tf: Add `source env-pkr-var.sh &&`
+3. ⏳ Destroy Build 25 infrastructure
+4. ⏳ Deploy Build 26 with corrected configuration
+5. ⏳ Verify all nodes join cluster with matching versions
+6. ⏳ Verify all infrastructure jobs reach "running" status
+7. ⏳ Proceed with Windows Server 2016 KB validation testing
+
+### Documentation Updates
+
+New documentation created during Builds 21-25:
+- `BUILD_25_STATUS.md` - Build 25 results and analysis
+- `BUILD_25_ROOT_CAUSE_ANALYSIS.md` - Complete root cause investigation
+- `BUILD_26_PREFLIGHT_CHECKLIST.md` - Pre-flight checklist for Build 26
+- `TESTING_PLAN.md` (this file) - Updated with current goals and lessons learned
+
+### Success Metrics
+
+**Build Success Rate**: 1/5 (20%) for Builds 21-25
+- Build 21: ❌ Version mismatch
+- Build 22: ❌ Missing template
+- Build 23: ❌ Missing env var
+- Build 24: ❌ SCP path error
+- Build 25: ⚠️ Wrong versions
+
+**Key Improvements Needed**:
+- Better pre-flight validation
+- Automated version verification
+- Comprehensive testing before deployment
+- Documentation of all configuration dependencies
+
+**Target for Build 26**: 100% success rate with all fixes applied and verified.
 - [ ] Both OS types tested in same AWS region
 - [ ] All UIs accessible for both OS types
 - [ ] SSH access verified with correct usernames

@@ -8,11 +8,11 @@ cleanup_ami_on_destroy  = true  # Set to false to keep AMI when running terrafor
 key_name                = "mhc-aws-mws-west-2"
 owner_name              = "Mikael Sikora"
 owner_email             = "mikael.sikora@hashicorp.com"
-stack_name              = "mws-scale"   # (19 char max) Mikael, autoscaler, 1-new-main branch
+stack_name              = "mws-scale-bob"   # (19 char max) Mikael, autoscaler, 1-new-main branch
 server_instance_type    = "t3a.medium"
 server_count            = 1
 client_instance_type    = "t3a.medium"
-client_count            = 0
+client_count            = 1
 allowlist_ip            = []  # example:  ["73.001.01.170/32", "97.001.01.2/32"]; empty list means local ISP IP only.
 
 # Windows Client Configuration (optional)

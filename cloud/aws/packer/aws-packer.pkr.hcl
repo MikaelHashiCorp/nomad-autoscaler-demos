@@ -144,10 +144,10 @@ build {
     script = "../../shared/packer/scripts/setup.sh"
     environment_vars = [
       "TARGET_OS=${var.os}",
-      "CNIVERSION=${var.cni_version}",
       "CONSULVERSION=${var.consul_version}",
       "NOMADVERSION=${var.nomad_version}",
-      "VAULTVERSION=${var.vault_version}"
+      "VAULTVERSION=${var.vault_version}",
+      "CNIVERSION=${var.cni_version}"
     ]
   }
 }
@@ -205,14 +205,21 @@ build {
     ]
   }
 
+  # Set environment variables and run setup script
+  # Note: We use inline to avoid Packer's SCP upload issues with environment_vars on Windows
   provisioner "powershell" {
-    script = "../../shared/packer/scripts/setup-windows.ps1"
-    # Environment variables removed to allow script to auto-fetch latest versions
-    # To use specific versions, set environment variables before running packer:
-    #   export CONSULVERSION=1.22.1
-    #   export NOMADVERSION=1.11.1
-    #   export VAULTVERSION=1.21.1
-    # Or source env-pkr-var.sh to fetch latest versions into environment
+    inline = [
+      "Write-Host 'Setting HashiCorp product versions...' -ForegroundColor Cyan",
+      "$env:CONSULVERSION = '${var.consul_version}'",
+      "$env:NOMADVERSION = '${var.nomad_version}'",
+      "$env:VAULTVERSION = '${var.vault_version}'",
+      "Write-Host \"  Consul: $env:CONSULVERSION\" -ForegroundColor Yellow",
+      "Write-Host \"  Nomad: $env:NOMADVERSION\" -ForegroundColor Yellow",
+      "Write-Host \"  Vault: $env:VAULTVERSION\" -ForegroundColor Yellow",
+      "Write-Host ''",
+      "Write-Host 'Running setup-windows.ps1...' -ForegroundColor Cyan",
+      "& C:\\ops\\scripts\\setup-windows.ps1"
+    ]
   }
 
   # Restart Windows to complete Windows Containers feature installation
