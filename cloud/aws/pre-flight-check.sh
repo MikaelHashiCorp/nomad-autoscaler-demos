@@ -64,28 +64,53 @@ fi
 # Check 3: Terraform configuration
 echo ""
 echo "3. Checking Terraform configuration..."
-TF_DIR="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/terraform/control"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TF_DIR="$SCRIPT_DIR/terraform/control"
+
 if [ -f "$TF_DIR/terraform.tfvars" ]; then
   echo "   ✅ terraform.tfvars exists"
   
-  # Check key_name
-  if grep -q "^key_name" "$TF_DIR/terraform.tfvars"; then
-    KEY_NAME=$(grep "^key_name" "$TF_DIR/terraform.tfvars" | cut -d'"' -f2)
-    echo "   ✅ SSH key configured: $KEY_NAME"
+  # Check required variables
+  MISSING_VARS=()
+  
+  if ! grep -q "^key_name" "$TF_DIR/terraform.tfvars"; then
+    MISSING_VARS+=("key_name")
   else
-    echo "   ❌ key_name not set in terraform.tfvars"
+    KEY_NAME=$(grep "^key_name" "$TF_DIR/terraform.tfvars" | sed 's/.*=\s*"\([^"]*\)".*/\1/')
+    echo "   ✅ SSH key configured: $KEY_NAME"
+  fi
+  
+  if ! grep -q "^owner_name" "$TF_DIR/terraform.tfvars"; then
+    MISSING_VARS+=("owner_name")
+  fi
+  
+  if ! grep -q "^owner_email" "$TF_DIR/terraform.tfvars"; then
+    MISSING_VARS+=("owner_email")
+  fi
+  
+  if [ ${#MISSING_VARS[@]} -ne 0 ]; then
+    echo "   ❌ Missing required variables in terraform.tfvars: ${MISSING_VARS[*]}"
+    echo "      Edit $TF_DIR/terraform.tfvars and set these values"
     exit 1
   fi
+  
+  echo "   ✅ All required variables are configured"
 else
   echo "   ❌ terraform.tfvars not found"
   echo "      Expected location: $TF_DIR/terraform.tfvars"
+  echo ""
+  echo "      The file terraform.tfvars.sample exists but needs to be copied:"
+  if [ -f "$TF_DIR/terraform.tfvars.sample" ]; then
+    echo "      cp $TF_DIR/terraform.tfvars.sample $TF_DIR/terraform.tfvars"
+    echo "      Then edit terraform.tfvars and set your values"
+  fi
   exit 1
 fi
 
 # Check 4: Packer files
 echo ""
 echo "4. Checking Packer configuration..."
-PACKER_DIR="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud/aws/packer"
+PACKER_DIR="$SCRIPT_DIR/packer"
 if [ -f "$PACKER_DIR/aws-packer.pkr.hcl" ]; then
   echo "   ✅ Packer configuration exists"
 else

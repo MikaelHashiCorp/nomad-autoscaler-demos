@@ -17,10 +17,10 @@ data "external" "ami_check" {
 
 locals {
   # Check if we need to build an image:
-  # - If no ami_id is provided (empty string)
-  # - If ami_id is provided but the AMI doesn't exist
+  # - If no ami_id is provided (empty string), always build
+  # - If ami_id is provided, check if it exists; if not, build
   ami_exists  = var.ami_id != "" && length(data.external.ami_check) > 0 && data.external.ami_check[0].result.exists == "true"
-  build_image = var.ami_id == "" || !local.ami_exists
+  build_image = var.ami_id == ""  # Simplified: if no AMI ID provided, build it
 }
 
 # Try to find existing AMI if ami_id is provided and it exists
@@ -38,12 +38,19 @@ data "aws_ami" "existing" {
 
 locals {
   # Select the appropriate image based on whether we built it or found an existing one
-  image       = local.build_image ? data.aws_ami.built[0] : data.aws_ami.existing[0]
-  image_id    = local.image.id
-  snapshot_id = [for b in local.image.block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0]
+  # Use conditional references to avoid evaluating data sources that don't exist
+  image_id    = local.build_image ? (length(data.aws_ami.built) > 0 ? data.aws_ami.built[0].id : "") : (length(data.aws_ami.existing) > 0 ? data.aws_ami.existing[0].id : "")
+  
+  # Get the snapshot ID for cleanup (only when building)
+  built_snapshot_id = local.build_image && length(data.aws_ami.built) > 0 ? [for b in data.aws_ami.built[0].block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0] : ""
+  existing_snapshot_id = !local.build_image && length(data.aws_ami.existing) > 0 ? [for b in data.aws_ami.existing[0].block_device_mappings : lookup(b.ebs, "snapshot_id", "")][0] : ""
+  snapshot_id = local.build_image ? local.built_snapshot_id : local.existing_snapshot_id
+  
+  # Get tags for outputs
+  image_tags = local.build_image ? (length(data.aws_ami.built) > 0 ? data.aws_ami.built[0].tags : {}) : (length(data.aws_ami.existing) > 0 ? data.aws_ami.existing[0].tags : {})
 }
 
-# Step 1: Build the AMI with Packer (blocks until complete)
+# Step 1: Build the AMI with Packer (blocks until complete), then capture the AMI ID
 resource "null_resource" "packer_build" {
   count = local.build_image ? 1 : 0
 
@@ -51,7 +58,8 @@ resource "null_resource" "packer_build" {
     working_dir = "${path.root}/../../packer"
     command = <<EOF
 source env-pkr-var.sh && \
-  packer build -force \
+  bash ./run-with-timestamps.sh \
+    -only='${var.packer_os == "Windows" ? "windows" : "linux"}.amazon-ebs.hashistack' \
     -var 'created_name=${var.owner_name}' \
     -var 'created_email=${var.owner_email}' \
     -var 'region=${var.region}' \
@@ -62,9 +70,29 @@ source env-pkr-var.sh && \
     .
 EOF
   }
+
+  # After Packer completes, query for the AMI ID
+  provisioner "local-exec" {
+    working_dir = "${path.root}"
+    command = <<EOF
+aws ec2 describe-images \
+  --region ${var.region} \
+  --owners self \
+  --filters "Name=name,Values=${var.stack_name}-*" "Name=tag:OS,Values=${var.packer_os}" \
+  --query 'sort_by(Images, &CreationDate)[-1].ImageId' \
+  --output text > .built-ami-id
+EOF
+  }
+
+  triggers = {
+    # Force rebuild if any of these change
+    stack_name = var.stack_name
+    os = var.packer_os
+    os_version = var.packer_os_version
+  }
 }
 
-# Step 2: Find the AMI that was just built (depends on Packer completing)
+# Step 2: Get the AMI that was just built
 data "aws_ami" "built" {
   depends_on = [null_resource.packer_build]
   count      = local.build_image ? 1 : 0
@@ -75,6 +103,11 @@ data "aws_ami" "built" {
   filter {
     name   = "name"
     values = ["${var.stack_name}-*"]
+  }
+
+  filter {
+    name   = "tag:OS"
+    values = [var.packer_os]
   }
 }
 

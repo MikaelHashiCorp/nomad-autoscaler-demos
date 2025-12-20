@@ -24,15 +24,15 @@ output "snapshot_id" {
 
 output "os" {
   description = "Operating system type from AMI tags."
-  value       = lookup(local.image.tags, "OS", "Unknown")
+  value       = lookup(local.image_tags, "OS", "Unknown")
 }
 
 output "os_version" {
   description = "Operating system version from AMI tags."
-  value       = lookup(local.image.tags, "OS_Version", "Unknown")
+  value       = lookup(local.image_tags, "OS_Version", "Unknown")
 }
 
 output "ssh_user" {
   description = "SSH username based on OS type from AMI tags."
-  value       = lookup(local.image.tags, "OS", "Unknown") == "Ubuntu" ? "ubuntu" : "ec2-user"
+  value       = lookup(local.image_tags, "OS", "Unknown") == "Ubuntu" ? "ubuntu" : "ec2-user"
 }

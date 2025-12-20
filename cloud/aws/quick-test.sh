@@ -37,16 +37,21 @@ warn() {
   echo -e "${YELLOW}[WARN]${NC} $*"
 }
 
-# Configuration
-REPO_ROOT="/Users/mikael/2-git/repro/nomad-autoscaler-demos/1-add-redhat/cloud"
-PACKER_DIR="$REPO_ROOT/aws/packer"
-TERRAFORM_DIR="$REPO_ROOT/aws/terraform/control"
+# Configuration - Use dynamic path resolution
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PACKER_DIR="$SCRIPT_DIR/packer"
+TERRAFORM_DIR="$SCRIPT_DIR/terraform/control"
 
-# Read region from terraform.tfvars
+# Read region and stack_name from terraform.tfvars
 if [ -f "$TERRAFORM_DIR/terraform.tfvars" ]; then
   REGION=$(grep '^region' "$TERRAFORM_DIR/terraform.tfvars" | sed 's/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
+  STACK_NAME=$(grep '^stack_name' "$TERRAFORM_DIR/terraform.tfvars" | sed 's/stack_name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/' | tr -d ' ')
   if [ -z "$REGION" ]; then
     error "Could not read region from terraform.tfvars"
+    exit 1
+  fi
+  if [ -z "$STACK_NAME" ]; then
+    error "Could not read stack_name from terraform.tfvars"
     exit 1
   fi
 else
@@ -54,12 +59,13 @@ else
   exit 1
 fi
 log "Using AWS Region: $REGION"
+log "Using Stack Name: $STACK_NAME"
 
 # OS-specific variables
 if [[ "$OS_TYPE" == "ubuntu" ]]; then
   log "Testing Ubuntu build..."
   PACKER_VARS=""
-  NAME_FILTER="scale-mws-*"
+  NAME_FILTER="${STACK_NAME}-ubuntu-*"
   SSH_USER="ubuntu"
   EXPECTED_OS_ID="ubuntu"
   EXPECTED_PKG_MGR="apt-get"
@@ -68,8 +74,8 @@ if [[ "$OS_TYPE" == "ubuntu" ]]; then
   TF_OS_NAME="noble"
 elif [[ "$OS_TYPE" == "redhat" ]]; then
   log "Testing RedHat build..."
-  PACKER_VARS="-var 'os=RedHat' -var 'os_version=9.6.0' -var 'os_name=' -var 'name_prefix=scale-mws-rhel'"
-  NAME_FILTER="scale-mws-rhel-*"
+  PACKER_VARS="-var 'os=RedHat' -var 'os_version=9.6.0' -var 'os_name='"
+  NAME_FILTER="${STACK_NAME}-redhat-*"
   SSH_USER="ec2-user"
   EXPECTED_OS_ID="rhel"
   EXPECTED_PKG_MGR="dnf"

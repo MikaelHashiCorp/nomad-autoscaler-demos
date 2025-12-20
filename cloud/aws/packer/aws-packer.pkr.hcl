@@ -34,7 +34,7 @@ source "amazon-ebs" "hashistack" {
   source_ami_filter {
     filters = var.os == "Windows" ? {
       virtualization-type = "hvm"
-      name                = "Windows_Server-2022-English-Full-Base-*"
+      name                = "Windows_Server-${var.os_version}-English-Full-Base-*"
       root-device-type    = "ebs"
       } : var.os == "Ubuntu" ? {
       virtualization-type = "hvm"
@@ -68,6 +68,12 @@ source "amazon-ebs" "hashistack" {
   # User data for Windows to configure WinRM
   user_data_file = var.os == "Windows" ? "${path.root}/windows-userdata.ps1" : null
 
+  # Tags for the temporary EC2 instance during build
+  run_tags = {
+    Name = "${var.name_prefix}-packer-build"
+  }
+
+  # Tags for the final AMI
   tags = {
     Name                    = format("%s%s", var.name_prefix, formatdate("'_'YYYY-MM-DD", timestamp()))
     Architecture            = var.architecture
@@ -138,14 +144,13 @@ build {
   provisioner "shell" {
     script = "../../shared/packer/scripts/setup.sh"
     environment_vars = [
-      "TARGET_OS=${var.os}"
+      "TARGET_OS=${var.os}",
+      "CNIVERSION=${var.cni_version}",
+      "CONSULVERSION=${var.consul_version}",
+      "NOMADVERSION=${var.nomad_version}",
+      "VAULTVERSION=${var.vault_version}",
+      "CONSULTEMPLATEVERSION=${var.consul_template_version}"
     ]
-    # Version environment variables removed to allow script to auto-fetch latest versions
-    # To use specific versions, set environment variables before running packer:
-    #   export CNIVERSION=v1.8.0
-    #   export CONSULVERSION=1.22.1
-    #   export NOMADVERSION=1.11.1
-    # Or source env-pkr-var.sh to fetch latest versions into environment
   }
 }
 
@@ -171,12 +176,12 @@ build {
 
   provisioner "powershell" {
     script = "../../shared/packer/scripts/setup-windows.ps1"
-    # Environment variables removed to allow script to auto-fetch latest versions
-    # To use specific versions, set environment variables before running packer:
-    #   export CONSULVERSION=1.22.1
-    #   export NOMADVERSION=1.11.1
-    #   export VAULTVERSION=1.21.1
-    # Or source env-pkr-var.sh to fetch latest versions into environment
+    environment_vars = [
+      "CONSULVERSION=${var.consul_version}",
+      "NOMADVERSION=${var.nomad_version}",
+      "VAULTVERSION=${var.vault_version}",
+      "CONSULTEMPLATEVERSION=${var.consul_template_version}"
+    ]
   }
 
   # Restart Windows to complete Windows Containers feature installation

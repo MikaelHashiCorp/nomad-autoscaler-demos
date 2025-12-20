@@ -27,8 +27,12 @@ log_warn() {
   echo -e "${YELLOW}[!]${NC} $*"
 }
 
+# Get script directory and navigate to Terraform control directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TERRAFORM_DIR="$SCRIPT_DIR/terraform/control"
+
 # Get Terraform outputs
-cd terraform/control
+cd "$TERRAFORM_DIR"
 
 log_info "Fetching Terraform outputs..."
 NOMAD_SERVER_LB=$(terraform output -raw ip_addresses | grep "Nomad UI" | sed 's/.*http:\/\/\(.*\):4646.*/\1/')
