@@ -39,7 +39,7 @@ resource "aws_launch_template" "clients" {
   block_device_mappings {
     device_name = "/dev/xvdd"
     ebs {
-      volume_type           = "gp2"
+      volume_type           = "gp3"
       volume_size           = "50"
       delete_on_termination = "true"
     }

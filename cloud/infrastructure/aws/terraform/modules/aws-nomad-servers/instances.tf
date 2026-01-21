@@ -19,7 +19,7 @@ resource "aws_instance" "servers" {
     })
 
   root_block_device {
-    volume_type           = "gp2"
+    volume_type           = "gp3"
     volume_size           = "16"
     delete_on_termination = "true"
   }

@@ -35,10 +35,21 @@ resource "aws_launch_template" "nomad_client" {
     }
   }
 
+  # Root block device
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_type           = "gp3"
+      volume_size           = 20
+      delete_on_termination = true
+    }
+  }
+
+  # Additional data volume (existing)
   block_device_mappings {
     device_name = "/dev/xvdd"
     ebs {
-      volume_type           = "gp2"
+      volume_type           = "gp3"
       volume_size           = "50"
       delete_on_termination = "true"
     }

@@ -23,7 +23,7 @@ resource "aws_instance" "nomad_server" {
   }
 
   root_block_device {
-    volume_type           = "gp2"
+    volume_type           = "gp3"
     volume_size           = var.root_block_device_size
     delete_on_termination = "true"
   }

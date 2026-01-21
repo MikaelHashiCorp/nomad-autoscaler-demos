@@ -71,7 +71,7 @@ variable "client_count" {
 variable "root_block_device_size" {
   description = "The number of GB to assign as a block device on instances."
   type        = number
-  default     = 16
+  default     = 20
 }
 
 variable "retry_join" {
