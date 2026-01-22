@@ -66,6 +66,14 @@ build {
     ]
   }
 
+  # OS package upgrade for both Ubuntu and RedHat
+  provisioner "shell" {
+    inline = [
+      "if [ -f /etc/debian_version ]; then sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get autoremove -y; fi",
+      "if [ -f /etc/redhat-release ]; then sudo yum update -y && sudo yum autoremove -y; fi"
+    ]
+  }
+
   # Conditional debconf setup for Ubuntu only (inline conditional)
   provisioner "shell" {
     valid_exit_codes = [
