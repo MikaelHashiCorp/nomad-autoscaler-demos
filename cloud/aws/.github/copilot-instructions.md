@@ -45,7 +45,7 @@ Then authenticate:
 doormat login -f ; eval $(doormat aws export --account <your_doormat_account>) ; curl https://ipinfo.io/ip ; echo ; aws sts get-caller-identity --output table
 ```
 
-**Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test`).
+**Note**: Replace `<your_doormat_account>` with your Doormat AWS account name (e.g., `aws_mikael.sikora_test` or `support_nomad_dev`).
 
 **Verification**: The `aws sts get-caller-identity` command should show your authenticated identity.
 
