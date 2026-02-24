@@ -64,22 +64,34 @@ echo "Driver Status:"
 nomad node status -verbose "$WINDOWS_NODE_ID" | grep -E "driver.docker|driver.exec|driver.raw_exec" || echo "  (Driver attributes not found)"
 echo ""
 
-# Test 4: Check Consul members
-echo "Test 4: Checking Consul cluster..."
+# Test 4: Check Consul members via server ELB (not localhost)
+echo "Test 4: Checking Consul cluster membership via server..."
 echo "----------------------------------------"
-if command -v consul &> /dev/null; then
-    consul members
+# Derive Consul address from NOMAD_ADDR (replace port 4646 with 8500)
+CONSUL_SERVER=$(echo "$NOMAD_ADDR" | sed 's|http://||' | sed 's|:4646||')
+CONSUL_HTTP_ADDR="http://${CONSUL_SERVER}:8500"
+echo "Using Consul address: $CONSUL_HTTP_ADDR"
+echo ""
+
+if CONSUL_OUTPUT=$(curl -sf --max-time 10 "${CONSUL_HTTP_ADDR}/v1/agent/members" 2>/dev/null); then
+    CONSUL_MEMBER_COUNT=$(echo "$CONSUL_OUTPUT" | jq '. | length' 2>/dev/null || echo "0")
+    echo "Consul LAN members:"
+    echo "$CONSUL_OUTPUT" | jq -r '.[] | "  \(.Name)  \(.Addr)  Status:\(.Status)"' 2>/dev/null || echo "$CONSUL_OUTPUT"
     echo ""
-    
-    CONSUL_MEMBERS=$(consul members | wc -l | tr -d ' ')
-    # Subtract 1 for header line
-    CONSUL_MEMBERS=$((CONSUL_MEMBERS - 1))
-    echo "Total Consul members: $CONSUL_MEMBERS"
+    echo "Total Consul members: $CONSUL_MEMBER_COUNT"
     echo ""
+    if [ "$CONSUL_MEMBER_COUNT" -ge 2 ]; then
+        echo "✅ PASS: Consul cluster has $CONSUL_MEMBER_COUNT members (server + client joined)"
+    elif [ "$CONSUL_MEMBER_COUNT" -eq 1 ]; then
+        echo "⚠️  WARNING: Only 1 Consul member found — Windows client may not have joined yet"
+    else
+        echo "❌ FAIL: No Consul members found"
+        exit 1
+    fi
 else
-    echo "⚠️  WARNING: consul CLI not available, skipping Consul check"
-    echo ""
+    echo "⚠️  WARNING: Could not reach Consul API at $CONSUL_HTTP_ADDR, skipping Consul check"
 fi
+echo ""
 
 # Test 5: Check node health
 echo "Test 5: Node health status..."

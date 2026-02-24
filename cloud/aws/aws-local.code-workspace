@@ -13,6 +13,24 @@
     "security.workspace.trust.enabled": true,
     "security.workspace.trust.untrustedFiles": "open",
     "security.workspace.trust.startupPrompt": false,
-    "security.workspace.trust.autoTrustFiles": true
+    "security.workspace.trust.autoTrustFiles": true,
+    "chat.tools.terminal.autoApprove": {
+      "/^cd cloud/aws && source ~/\\.zshrc 2>/dev/null && logcmd bash pre-flight-check\\.sh$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^source ~/\\.zshrc 2>/dev/null && logcmd bash pre-flight-check\\.sh$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^source ~/\\.zshrc 2>/dev/null && aws sts get-caller-identity --output table$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^source ~/\\.zshrc 2>/dev/null && eval \\$\\(doormat aws export --account aws_mikael\\.sikora_test\\) && aws sts get-caller-identity --output table$/": {
+        "approve": true,
+        "matchCommandLine": true
+      }
+    }
   }
 }

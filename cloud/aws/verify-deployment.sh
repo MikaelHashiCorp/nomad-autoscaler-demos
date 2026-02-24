@@ -76,6 +76,8 @@ log_info "Using SSH Key: ${SSH_KEY}"
 log_info ""
 
 # Test 1: Nomad Node Status
+LINUX_NODES=0
+WINDOWS_NODES=0
 log_info "Test 1: Checking Nomad node status..."
 if NODE_OUTPUT=$(nomad node status 2>&1); then
   NODE_COUNT=$(echo "$NODE_OUTPUT" | grep -c "ready" || true)
@@ -105,6 +107,17 @@ else
   exit 1
 fi
 echo ""
+
+# Detect deployment type — Windows-only clusters cannot run Linux container workloads
+IS_WINDOWS_ONLY=false
+WIN_NODE_ID=""
+if [ "$WINDOWS_NODES" -gt 0 ] && [ "$LINUX_NODES" -eq 0 ]; then
+  IS_WINDOWS_ONLY=true
+  WIN_NODE_ID=$(nomad node status -json 2>/dev/null | jq -r '.[] | select(.NodeClass=="hashistack-windows") | .ID' | head -1)
+  log_warn "Windows-only deployment detected — adapting tests 4-8 for Windows"
+  log_warn "   (Linux container workloads: grafana, prometheus, webapp not applicable)"
+  echo ""
+fi
 
 # Test 2: Get Client Instance IPs
 log_info "Test 2: Finding client instance IP addresses..."
@@ -168,41 +181,61 @@ else
 fi
 echo ""
 
-# Test 4: Webapp Job Detailed Status (key DNS verification)
-log_info "Test 4: Checking webapp job allocation status (verifies DNS/Docker pulls)..."
-if WEBAPP_STATUS=$(nomad job status webapp 2>&1); then
-  RUNNING_ALLOCS=$(echo "$WEBAPP_STATUS" | grep "^demo" | awk '{print $3}' | tr -d '\r\n ')
-  FAILED_ALLOCS=$(echo "$WEBAPP_STATUS" | grep "^demo" | awk '{print $4}' | tr -d '\r\n ')
-  
-  if [ "$RUNNING_ALLOCS" -gt 0 ]; then
-    log_success "Webapp has $RUNNING_ALLOCS running allocation(s)"
-    
-    # Get allocation ID and check events
-    ALLOC_ID=$(echo "$WEBAPP_STATUS" | grep -A20 "Allocations" | grep "run" | head -1 | awk '{print $1}')
-    if [ -n "$ALLOC_ID" ]; then
-      log_info "   Checking allocation $ALLOC_ID for Docker pull errors..."
-      
-      if ALLOC_EVENTS=$(nomad alloc status "$ALLOC_ID" 2>&1 | grep -A10 "Recent Events"); then
-        if echo "$ALLOC_EVENTS" | grep -qi "error\|failed"; then
-          log_error "Found errors in allocation events:"
-          echo "$ALLOC_EVENTS" | grep -i "error\|failed"
-          exit 1
-        else
-          log_success "   No errors found in allocation events"
-          if echo "$ALLOC_EVENTS" | grep -q "Downloading image"; then
-            log_success "   Docker image download completed successfully (DNS working!)"
-          fi
-        fi
-      fi
-    fi
+# Test 4
+if [ "$IS_WINDOWS_ONLY" = true ]; then
+  # Windows-only: verify OS attributes on the Windows node instead of webapp scheduling
+  log_info "Test 4: Verifying Windows node OS attributes (kernel.name, os.name)..."
+  if [ -z "$WIN_NODE_ID" ]; then
+    log_error "Could not retrieve Windows node ID"
+    exit 1
+  fi
+  NODE_ATTRS=$(nomad node status -verbose "$WIN_NODE_ID" 2>&1)
+  KERNEL_NAME=$(echo "$NODE_ATTRS" | grep "kernel.name" | awk -F'=' '{gsub(/ /, "", $2); print $2}' | tr -d '\r\n')
+  if [ "$KERNEL_NAME" = "windows" ]; then
+    log_success "Windows node kernel confirmed (kernel.name=windows)"
+    OS_NAME=$(echo "$NODE_ATTRS" | grep "os.name" | awk -F'=' '{print $2}' | sed 's/^ //' | tr -d '\r\n')
+    OS_VER=$(echo "$NODE_ATTRS" | grep "os.version" | awk -F'=' '{print $2}' | sed 's/^ //' | tr -d '\r\n')
+    log_success "   OS: $OS_NAME"
+    log_success "   Version: $OS_VER"
   else
-    log_error "Webapp has no running allocations (Failed: $FAILED_ALLOCS)"
-    echo "$WEBAPP_STATUS"
+    log_error "Unexpected kernel.name: '$KERNEL_NAME' (expected 'windows')"
     exit 1
   fi
 else
-  log_error "Failed to query webapp job status"
-  exit 1
+  # Linux: check webapp allocations (verifies DNS/Docker pulls)
+  log_info "Test 4: Checking webapp job allocation status (verifies DNS/Docker pulls)..."
+  if WEBAPP_STATUS=$(nomad job status webapp 2>&1); then
+    RUNNING_ALLOCS=$(echo "$WEBAPP_STATUS" | grep "^demo" | awk '{print $3}' | tr -d '\r\n ')
+    FAILED_ALLOCS=$(echo "$WEBAPP_STATUS" | grep "^demo" | awk '{print $4}' | tr -d '\r\n ')
+    
+    if [ "$RUNNING_ALLOCS" -gt 0 ]; then
+      log_success "Webapp has $RUNNING_ALLOCS running allocation(s)"
+      
+      ALLOC_ID=$(echo "$WEBAPP_STATUS" | grep -A20 "Allocations" | grep "run" | head -1 | awk '{print $1}')
+      if [ -n "$ALLOC_ID" ]; then
+        log_info "   Checking allocation $ALLOC_ID for Docker pull errors..."
+        if ALLOC_EVENTS=$(nomad alloc status "$ALLOC_ID" 2>&1 | grep -A10 "Recent Events"); then
+          if echo "$ALLOC_EVENTS" | grep -qi "error\|failed"; then
+            log_error "Found errors in allocation events:"
+            echo "$ALLOC_EVENTS" | grep -i "error\|failed"
+            exit 1
+          else
+            log_success "   No errors found in allocation events"
+            if echo "$ALLOC_EVENTS" | grep -q "Downloading image"; then
+              log_success "   Docker image download completed successfully (DNS working!)"
+            fi
+          fi
+        fi
+      fi
+    else
+      log_error "Webapp has no running allocations (Failed: $FAILED_ALLOCS)"
+      echo "$WEBAPP_STATUS"
+      exit 1
+    fi
+  else
+    log_error "Failed to query webapp job status"
+    exit 1
+  fi
 fi
 echo ""
 
@@ -230,111 +263,179 @@ test_endpoint() {
 
 ENDPOINTS_OK=true
 
-test_endpoint "Consul UI    " "http://${NOMAD_SERVER_LB}:8500/ui" "200|301|302" || ENDPOINTS_OK=false
-test_endpoint "Nomad UI     " "http://${NOMAD_SERVER_LB}:4646/ui" "200|301|302" || ENDPOINTS_OK=false
-test_endpoint "Grafana      " "http://${CLIENT_LB}:3000" "200|302" || ENDPOINTS_OK=false
-test_endpoint "Prometheus   " "http://${CLIENT_LB}:9090" "200|302" || ENDPOINTS_OK=false
-test_endpoint "Webapp       " "http://${CLIENT_LB}:80" "200" || ENDPOINTS_OK=false
+if [ "$IS_WINDOWS_ONLY" = true ]; then
+  # Windows-only: only server-side endpoints are reliable; Linux container services are not running
+  test_endpoint "Consul UI    " "http://${NOMAD_SERVER_LB}:8500/ui" "200|301|302" || ENDPOINTS_OK=false
+  test_endpoint "Nomad UI     " "http://${NOMAD_SERVER_LB}:4646/ui" "200|301|302" || ENDPOINTS_OK=false
+  log_warn "   Skipping Grafana/Prometheus/Webapp — Linux container workloads not applicable on Windows-only cluster"
+else
+  test_endpoint "Consul UI    " "http://${NOMAD_SERVER_LB}:8500/ui" "200|301|302" || ENDPOINTS_OK=false
+  test_endpoint "Nomad UI     " "http://${NOMAD_SERVER_LB}:4646/ui" "200|301|302" || ENDPOINTS_OK=false
+  test_endpoint "Grafana      " "http://${CLIENT_LB}:3000" "200|302" || ENDPOINTS_OK=false
+  test_endpoint "Prometheus   " "http://${CLIENT_LB}:9090" "200|302" || ENDPOINTS_OK=false
+  test_endpoint "Webapp       " "http://${CLIENT_LB}:80" "200" || ENDPOINTS_OK=false
+fi
 
 if [ "$ENDPOINTS_OK" = false ]; then
   log_warn "Some endpoints are not accessible yet (may still be starting)"
 else
-  log_success "All service endpoints are accessible"
+  log_success "All applicable service endpoints are accessible"
 fi
 echo ""
 
-# Test 6: Webapp Response Content
-log_info "Test 6: Testing webapp response content..."
-if WEBAPP_RESPONSE=$(curl -s --max-time 10 "http://${CLIENT_LB}:80" 2>/dev/null); then
-  if echo "$WEBAPP_RESPONSE" | grep -q "Welcome"; then
-    log_success "Webapp returned expected content:"
-    log_success "   $(echo "$WEBAPP_RESPONSE" | head -1)"
+# Test 6
+if [ "$IS_WINDOWS_ONLY" = true ]; then
+  # Windows-only: verify Consul cluster membership count via HTTP API
+  log_info "Test 6: Verifying Consul cluster membership (via HTTP API)..."
+  CONSUL_NODES=$(curl -s --max-time 10 "http://${NOMAD_SERVER_LB}:8500/v1/catalog/nodes" 2>/dev/null | jq '. | length' 2>/dev/null || echo "0")
+  if [ "$CONSUL_NODES" -gt 1 ]; then
+    log_success "Consul has $CONSUL_NODES registered nodes (server + Windows client joined)"
+  elif [ "$CONSUL_NODES" -eq 1 ]; then
+    log_warn "Consul has only 1 node — Windows client may not have joined Consul yet"
   else
-    log_warn "Webapp returned unexpected content: $WEBAPP_RESPONSE"
-  fi
-else
-  log_error "Failed to get webapp response"
-fi
-echo ""
-
-# Test 7: Prometheus Metrics Collection
-log_info "Test 7: Verifying Prometheus is collecting metrics..."
-if PROM_UP=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=up" 2>/dev/null); then
-  UP_COUNT=$(echo "$PROM_UP" | jq -r '.data.result | length' 2>/dev/null || echo "0")
-  
-  if [ "$UP_COUNT" -gt 0 ]; then
-    log_success "Prometheus is scraping $UP_COUNT target(s)"
-    
-    # List the targets
-    echo "$PROM_UP" | jq -r '.data.result[] | "   - \(.metric.job): \(.value[1])"' 2>/dev/null | while read -r line; do
-      log_success "$line"
-    done
-    
-    # Check for Nomad-specific metrics
-    if NOMAD_METRICS=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=nomad_client_allocated_cpu" 2>/dev/null); then
-      NOMAD_METRIC_COUNT=$(echo "$NOMAD_METRICS" | jq -r '.data.result | length' 2>/dev/null || echo "0")
-      
-      if [ "$NOMAD_METRIC_COUNT" -gt 0 ]; then
-        log_success "   Nomad client metrics available ($NOMAD_METRIC_COUNT series)"
-      else
-        log_warn "   Nomad client metrics not yet available (may need time to populate)"
-      fi
-    fi
-  else
-    log_error "Prometheus has no active targets"
+    log_error "Could not retrieve Consul node count (API returned: $CONSUL_NODES)"
     exit 1
   fi
 else
-  log_error "Failed to query Prometheus"
-  exit 1
+  # Linux: check webapp response content
+  log_info "Test 6: Testing webapp response content..."
+  if WEBAPP_RESPONSE=$(curl -s --max-time 10 "http://${CLIENT_LB}:80" 2>/dev/null); then
+    if echo "$WEBAPP_RESPONSE" | grep -q "Welcome"; then
+      log_success "Webapp returned expected content:"
+      log_success "   $(echo "$WEBAPP_RESPONSE" | head -1)"
+    else
+      log_warn "Webapp returned unexpected content: $WEBAPP_RESPONSE"
+    fi
+  else
+    log_error "Failed to get webapp response"
+  fi
 fi
 echo ""
 
-# Test 8: Grafana-Prometheus Integration
-log_info "Test 8: Verifying Grafana can connect to Prometheus..."
-
-# Check Grafana logs for DNS errors
-if GRAFANA_JOB=$(nomad job status grafana 2>&1); then
-  GRAFANA_ALLOC_ID=$(echo "$GRAFANA_JOB" | grep -A20 "Allocations" | grep "running" | head -1 | awk '{print $1}')
-  
-  if [ -n "$GRAFANA_ALLOC_ID" ]; then
-    log_info "   Checking Grafana allocation $GRAFANA_ALLOC_ID for DNS errors..."
-    
-    # Check recent logs for DNS resolution errors
-    if GRAFANA_LOGS=$(nomad alloc logs "$GRAFANA_ALLOC_ID" grafana 2>&1 | tail -50); then
-      if echo "$GRAFANA_LOGS" | grep -qi "no such host\|connection refused\|dial tcp.*error"; then
-        log_error "   Found connection errors in Grafana logs:"
-        echo "$GRAFANA_LOGS" | grep -i "error" | tail -5
-        log_warn "   Grafana may not be able to connect to Prometheus"
-      else
-        log_success "   No DNS/connection errors in Grafana logs"
-      fi
-      
-      # Verify datasource was provisioned
-      if echo "$GRAFANA_LOGS" | grep -q "inserting datasource from configuration"; then
-        log_success "   Prometheus datasource provisioned successfully"
-      fi
-    fi
-    
-    # Verify Prometheus service is registered in Consul
-    if PROM_SERVICE=$(curl -s --max-time 10 "http://${NOMAD_SERVER_LB}:8500/v1/catalog/service/prometheus" 2>/dev/null); then
-      PROM_ADDR=$(echo "$PROM_SERVICE" | jq -r '.[0] | "\(.ServiceAddress):\(.ServicePort)"' 2>/dev/null || echo "")
-      
-      if [ -n "$PROM_ADDR" ] && [ "$PROM_ADDR" != "null:null" ]; then
-        log_success "   Prometheus registered in Consul at $PROM_ADDR"
-        
-        # Verify Grafana can resolve this via template
-        log_info "   Grafana datasource uses Consul service discovery template"
-        log_success "   Template resolves to: http://$PROM_ADDR"
-      else
-        log_warn "   Could not verify Prometheus Consul registration"
-      fi
-    fi
+# Test 7
+if [ "$IS_WINDOWS_ONLY" = true ]; then
+  # Windows-only: verify node is ready and eligible for scheduling
+  log_info "Test 7: Verifying Windows node scheduling readiness..."
+  if [ -z "$WIN_NODE_ID" ]; then
+    log_error "Windows node ID not found"
+    exit 1
+  fi
+  NODE_JSON=$(nomad node status -json "$WIN_NODE_ID" 2>/dev/null)
+  NODE_STATUS=$(echo "$NODE_JSON" | jq -r '.Status' 2>/dev/null || echo "")
+  NODE_ELIGIBILITY=$(echo "$NODE_JSON" | jq -r '.SchedulingEligibility' 2>/dev/null || echo "")
+  if [ "$NODE_STATUS" = "ready" ]; then
+    log_success "Windows node status: ready"
   else
-    log_warn "Could not find running Grafana allocation"
+    log_error "Windows node status: '$NODE_STATUS' (expected 'ready')"
+    exit 1
+  fi
+  if [ "$NODE_ELIGIBILITY" = "eligible" ]; then
+    log_success "Windows node scheduling eligibility: eligible"
+  else
+    log_error "Windows node eligibility: '$NODE_ELIGIBILITY' (expected 'eligible')"
+    exit 1
   fi
 else
-  log_warn "Could not query Grafana job status"
+  # Linux: check Prometheus is collecting metrics
+  log_info "Test 7: Verifying Prometheus is collecting metrics..."
+  if PROM_UP=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=up" 2>/dev/null); then
+    UP_COUNT=$(echo "$PROM_UP" | jq -r '.data.result | length' 2>/dev/null || echo "0")
+    
+    if [ "$UP_COUNT" -gt 0 ]; then
+      log_success "Prometheus is scraping $UP_COUNT target(s)"
+      
+      echo "$PROM_UP" | jq -r '.data.result[] | "   - \(.metric.job): \(.value[1])"' 2>/dev/null | while read -r line; do
+        log_success "$line"
+      done
+      
+      if NOMAD_METRICS=$(curl -s --max-time 10 "http://${CLIENT_LB}:9090/api/v1/query?query=nomad_client_allocated_cpu" 2>/dev/null); then
+        NOMAD_METRIC_COUNT=$(echo "$NOMAD_METRICS" | jq -r '.data.result | length' 2>/dev/null || echo "0")
+        if [ "$NOMAD_METRIC_COUNT" -gt 0 ]; then
+          log_success "   Nomad client metrics available ($NOMAD_METRIC_COUNT series)"
+        else
+          log_warn "   Nomad client metrics not yet available (may need time to populate)"
+        fi
+      fi
+    else
+      log_error "Prometheus has no active targets"
+      exit 1
+    fi
+  else
+    log_error "Failed to query Prometheus"
+    exit 1
+  fi
+fi
+echo ""
+
+# Test 8
+if [ "$IS_WINDOWS_ONLY" = true ]; then
+  # Windows-only: verify traefik system job has an allocation placed on the Windows node
+  log_info "Test 8: Verifying traefik system job allocation on Windows node..."
+  if TRAEFIK_OUTPUT=$(nomad job status traefik 2>/dev/null); then
+    TRAEFIK_JOB_STATUS=$(echo "$TRAEFIK_OUTPUT" | grep "^Status" | awk '{print $3}' | tr -d '\r\n')
+    log_info "   Traefik job status: $TRAEFIK_JOB_STATUS"
+    
+    # For a system job, check there is at least one allocation (placed on the Windows node)
+    TRAEFIK_ALLOC_COUNT=$(echo "$TRAEFIK_OUTPUT" | grep -c "run\|pending\|failed" || true)
+    TRAEFIK_ALLOC_ID=$(echo "$TRAEFIK_OUTPUT" | grep -E "^[a-f0-9]{8}" | head -1 | awk '{print $1}' || echo "")
+    
+    if [ -n "$TRAEFIK_ALLOC_ID" ]; then
+      ALLOC_STATUS=$(nomad alloc status "$TRAEFIK_ALLOC_ID" 2>/dev/null | grep "^Status" | awk '{print $3}' | tr -d '\r\n' || echo "unknown")
+      log_success "   Traefik system job placed — allocation $TRAEFIK_ALLOC_ID (status: $ALLOC_STATUS)"
+    else
+      log_warn "   Traefik allocation ID not parsed (job output format may differ)"
+      if [ "$TRAEFIK_JOB_STATUS" = "running" ]; then
+        log_success "   Traefik job is in running state"
+      fi
+    fi
+    
+    # Verify autoscaler jobspec was generated
+    if [ -f "aws_autoscaler.nomad" ]; then
+      log_success "   Autoscaler jobspec generated (aws_autoscaler.nomad exists)"
+    fi
+  else
+    log_warn "Could not query traefik job status"
+  fi
+else
+  # Linux: check Grafana-Prometheus integration
+  log_info "Test 8: Verifying Grafana can connect to Prometheus..."
+  
+  if GRAFANA_JOB=$(nomad job status grafana 2>&1); then
+    GRAFANA_ALLOC_ID=$(echo "$GRAFANA_JOB" | grep -A20 "Allocations" | grep "running" | head -1 | awk '{print $1}')
+    
+    if [ -n "$GRAFANA_ALLOC_ID" ]; then
+      log_info "   Checking Grafana allocation $GRAFANA_ALLOC_ID for DNS errors..."
+      
+      if GRAFANA_LOGS=$(nomad alloc logs "$GRAFANA_ALLOC_ID" grafana 2>&1 | tail -50); then
+        if echo "$GRAFANA_LOGS" | grep -qi "no such host\|connection refused\|dial tcp.*error"; then
+          log_error "   Found connection errors in Grafana logs:"
+          echo "$GRAFANA_LOGS" | grep -i "error" | tail -5
+          log_warn "   Grafana may not be able to connect to Prometheus"
+        else
+          log_success "   No DNS/connection errors in Grafana logs"
+        fi
+        
+        if echo "$GRAFANA_LOGS" | grep -q "inserting datasource from configuration"; then
+          log_success "   Prometheus datasource provisioned successfully"
+        fi
+      fi
+      
+      if PROM_SERVICE=$(curl -s --max-time 10 "http://${NOMAD_SERVER_LB}:8500/v1/catalog/service/prometheus" 2>/dev/null); then
+        PROM_ADDR=$(echo "$PROM_SERVICE" | jq -r '.[0] | "\(.ServiceAddress):\(.ServicePort)"' 2>/dev/null || echo "")
+        if [ -n "$PROM_ADDR" ] && [ "$PROM_ADDR" != "null:null" ]; then
+          log_success "   Prometheus registered in Consul at $PROM_ADDR"
+          log_info "   Grafana datasource uses Consul service discovery template"
+          log_success "   Template resolves to: http://$PROM_ADDR"
+        else
+          log_warn "   Could not verify Prometheus Consul registration"
+        fi
+      fi
+    else
+      log_warn "Could not find running Grafana allocation"
+    fi
+  else
+    log_warn "Could not query Grafana job status"
+  fi
 fi
 echo ""
 
