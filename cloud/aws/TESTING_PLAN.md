@@ -1,11 +1,12 @@
-# Testing Plan: Multi-OS Support (Ubuntu & RedHat)
+# Testing Plan: Multi-OS Support (Ubuntu, RedHat & Windows Clients)
 
 ## Overview
 
-This document outlines the comprehensive testing strategy to validate that both Ubuntu and RedHat builds work correctly with the Packer → Terraform → HashiStack deployment pipeline.
+This document outlines the comprehensive testing strategy to validate that Ubuntu, RedHat, and Windows builds work correctly with the Packer → Terraform → HashiStack deployment pipeline. This includes testing mixed OS deployments with Linux servers and flexible client configurations.
 
 ## Test Objectives
 
+### Linux Server & Client Testing
 1. ✅ Verify Packer builds succeed for both Ubuntu and RedHat
 2. ✅ Verify Terraform can deploy infrastructure using both AMI types
 3. ✅ Verify HashiStack services (Consul, Nomad, Vault) function correctly on both OS types
@@ -13,6 +14,63 @@ This document outlines the comprehensive testing strategy to validate that both 
 5. ✅ Verify cleanup process removes both AMIs and instances (or preserves them based on configuration)
 6. ✅ Verify DNS resolution works on both OS types, especially RedHat 9+ with systemd-resolved
 7. ✅ Verify region configuration is read from terraform.tfvars in all scripts
+
+### Windows Client Testing (New)
+8. ⏳ Verify Packer builds succeed for Windows Server 2022
+9. ⏳ Verify Windows clients can join Linux-based HashiStack cluster
+10. ⏳ Verify mixed OS deployments (Linux + Windows clients simultaneously)
+11. ⏳ Verify Windows-specific autoscaling
+12. ⏳ Verify job targeting via OS constraints
+13. ⏳ Verify dual AMI cleanup on terraform destroy
+
+### Current Focus: Windows Server 2016 KB Validation (Builds 21-26)
+14. ⏳ Verify Windows Server 2016 AMI builds successfully
+15. ⏳ Validate KB article: Desktop heap exhaustion at ~20-25 allocations
+16. ⏳ Test desktop heap fix (768 KB → 4096 KB)
+17. ⏳ Verify version compatibility between server and Windows clients
+18. ⏳ Document lessons learned from build failures
+
+**Current Goal**: Deploy Windows Server 2016 infrastructure to validate KB article `1-KB-Nomad-Alloc-Fail-On-Windows.md` which documents desktop heap exhaustion causing Nomad clients to fail after ~20-25 allocations.
+
+**Target Architecture**:
+- 1 Linux Server (Ubuntu 24.04) - Nomad 1.11.1
+- 1 Linux Client (Ubuntu 24.04) - For infrastructure jobs (traefik, grafana, prometheus, webapp)
+- 1 Windows Client (Windows Server 2016) - For KB validation testing
+
+## Critical Success Criteria
+
+### Deployment Success Requirements
+A deployment is considered **SUCCESSFUL** only when ALL of the following conditions are met:
+
+1. **All ASGs have appropriate capacity**:
+   - Linux client ASG: desired ≥ 1 (if Linux workloads expected)
+   - Windows client ASG: desired ≥ 1 (if Windows workloads expected)
+
+2. **All expected nodes join cluster within 5 minutes**:
+   - Linux server nodes
+   - Linux client nodes (if configured)
+   - Windows client nodes (if configured)
+
+3. **All infrastructure jobs reach "running" status within 5 minutes**:
+   - `traefik`: must be "running"
+   - `grafana`: must be "running"
+   - `prometheus`: must be "running"
+   - `webapp`: must be "running"
+
+4. **Job Status Validation**:
+   ```bash
+   nomad job status
+   # ALL jobs must show Status: running
+   # NO jobs should be in "pending" state after 5 minutes
+   ```
+
+### 5-Minute Rule
+**CRITICAL**: If any infrastructure job remains in "pending" state for more than 5 minutes after deployment, the deployment has **FAILED** and must be investigated.
+
+Common causes of pending jobs:
+- Missing client nodes (ASG desired capacity = 0)
+- Node constraints not met (wrong OS, insufficient resources)
+- Service failures preventing node registration
 
 ## Prerequisites
 
@@ -570,6 +628,370 @@ aws ec2 describe-images \
   --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ AMI deleted" || echo "❌ AMI still exists"
 
 # Verify instances are terminated
+
+---
+
+## Phase 4: Windows Client Testing
+
+### 4.1 Windows AMI Build Test
+
+**Location**: `aws/packer/`
+
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-win-bob/cloud/aws/packer
+
+# Clean any previous builds
+rm -f packer.log
+rm -f .cleanup-*
+
+# Set environment variables
+source env-pkr-var.sh
+
+# Build Windows AMI
+packer build -var-file=windows-2022.pkrvars.hcl .
+```
+
+**Expected Results**:
+- ✅ Packer build completes successfully (may take 30-45 minutes)
+- ✅ AMI created with name: `scale-mws-windows-<timestamp>`
+- ✅ AMI tags include: OS=Windows, OS_Version=2022
+- ✅ HashiStack components installed in `C:\HashiCorp\bin\`
+- ✅ Docker service installed and configured
+- ✅ WinRM communication successful during build
+
+**Verification**:
+```bash
+# Save the Windows AMI ID
+export WINDOWS_AMI_ID=$(aws ec2 describe-images \
+  --owners self \
+  --filters "Name=name,Values=*-windows-*" \
+  --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+  --output text \
+  --region us-west-2)
+
+echo "Windows AMI ID: $WINDOWS_AMI_ID"
+
+# Verify AMI details
+aws ec2 describe-images \
+  --image-ids $WINDOWS_AMI_ID \
+  --region us-west-2 \
+  --query 'Images[0].[ImageId,Name,State,Platform,Tags]' \
+  --output table
+```
+
+### 4.2 Windows-Only Client Deployment
+
+**Location**: `aws/terraform/control/`
+
+**Test Configuration** (`terraform.tfvars`):
+```hcl
+region             = "us-west-2"
+availability_zones = ["us-west-2a"]
+key_name           = "my-dev-ec2-keypair"
+owner_name         = "test-user"
+owner_email        = "test@example.com"
+stack_name         = "win-test"
+
+# Linux servers only
+server_count = 1
+client_count = 0  # No Linux clients
+
+# Windows clients only
+windows_client_count = 2
+windows_client_instance_type = "t3a.xlarge"
+# windows_ami = ""  # Leave empty to auto-build
+```
+
+**Deploy**:
+```bash
+cd /Users/mikael/2-git/repro/nomad-autoscaler-demos/1-win-bob/cloud/aws/terraform/control
+
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+**Expected Results**:
+- ✅ Linux AMI built automatically (for servers)
+- ✅ Windows AMI built automatically (for clients)
+- ✅ 1 Linux server instance created
+- ✅ 2 Windows client instances created via ASG
+- ✅ Both AMIs tagged correctly
+- ✅ Resources named with `-linux` and `-windows` suffixes
+
+**Verification**:
+```bash
+# Check instances
+aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=win-test-*" \
+  --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],State.Name,Platform]' \
+  --output table
+
+# Verify ASGs
+aws autoscaling describe-auto-scaling-groups \
+  --query 'AutoScalingGroups[?contains(AutoScalingGroupName, `win-test`)].{Name:AutoScalingGroupName,Desired:DesiredCapacity,Current:Instances|length(@)}' \
+  --output table
+```
+
+### 4.3 Mixed OS Deployment (Linux + Windows Clients)
+
+**Test Configuration** (`terraform.tfvars`):
+```hcl
+region             = "us-west-2"
+availability_zones = ["us-west-2a"]
+key_name           = "my-dev-ec2-keypair"
+owner_name         = "test-user"
+owner_email        = "test@example.com"
+stack_name         = "mixed-test"
+
+# Linux infrastructure
+server_count = 1
+client_count = 2  # Linux clients
+
+# Windows clients
+windows_client_count = 2
+windows_client_instance_type = "t3a.xlarge"
+```
+
+**Deploy**:
+```bash
+terraform apply -auto-approve
+```
+
+**Expected Results**:
+- ✅ 2 AMIs built (Linux and Windows)
+- ✅ 1 Linux server
+- ✅ 2 Linux clients (via linux ASG)
+- ✅ 2 Windows clients (via windows ASG)
+- ✅ Total: 5 instances (1 server + 4 clients)
+
+### 4.4 Service Validation - Windows Clients
+
+#### Test 1: Verify Windows Clients Join Cluster
+
+```bash
+# Get Nomad server address
+export NOMAD_ADDR=$(terraform output -raw nomad_addr)
+
+# List all clients
+nomad node status
+
+# Expected output should show both Linux and Windows nodes
+# Look for node class: hashistack-linux and hashistack-windows
+```
+
+**Expected Results**:
+- ✅ All Windows clients appear in `nomad node status`
+- ✅ Node class is `hashistack-windows`
+- ✅ Status is `ready`
+- ✅ Consul and Nomad services running
+
+#### Test 2: Verify Node Attributes
+
+```bash
+# Get a Windows node ID
+WINDOWS_NODE=$(nomad node status -json | jq -r '.[] | select(.NodeClass=="hashistack-windows") | .ID' | head -1)
+
+# Inspect Windows node
+nomad node status $WINDOWS_NODE
+
+# Check attributes
+nomad node status -verbose $WINDOWS_NODE | grep -i "kernel.name\|os.name"
+```
+
+**Expected Results**:
+- ✅ `kernel.name = windows`
+- ✅ `os.name = Windows Server 2022`
+- ✅ Docker driver available
+- ✅ Correct node class
+
+#### Test 3: Deploy Windows-Targeted Job
+
+Create `test-windows-job.nomad`:
+```hcl
+job "windows-test" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "windows"
+  }
+
+  group "test" {
+    count = 1
+
+    task "powershell" {
+      driver = "exec"
+
+      config {
+        command = "powershell.exe"
+        args    = ["-Command", "while($true) { Write-Host 'Windows task running'; Start-Sleep -Seconds 10 }"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}
+```
+
+**Deploy**:
+```bash
+nomad job run test-windows-job.nomad
+nomad job status windows-test
+nomad alloc logs <alloc-id>
+```
+
+**Expected Results**:
+- ✅ Job placed on Windows node only
+- ✅ Allocation running successfully
+- ✅ Logs show "Windows task running"
+
+#### Test 4: Deploy Linux-Targeted Job
+
+Create `test-linux-job.nomad`:
+```hcl
+job "linux-test" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "test" {
+    count = 1
+
+    task "bash" {
+      driver = "exec"
+
+      config {
+        command = "bash"
+        args    = ["-c", "while true; do echo 'Linux task running'; sleep 10; done"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 128
+      }
+    }
+  }
+}
+```
+
+**Deploy**:
+```bash
+nomad job run test-linux-job.nomad
+nomad job status linux-test
+```
+
+**Expected Results**:
+- ✅ Job placed on Linux node only
+- ✅ Does NOT run on Windows nodes
+- ✅ Allocation running successfully
+
+### 4.5 Windows Autoscaling Test
+
+**Trigger Scale-Up**:
+```bash
+# Deploy multiple Windows jobs to trigger autoscaling
+for i in {1..5}; do
+  nomad job run -detach test-windows-job.nomad
+done
+
+# Monitor ASG
+watch -n 5 'aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-names mixed-test-client-windows \
+  --query "AutoScalingGroups[0].{Desired:DesiredCapacity,Current:Instances|length(@),Min:MinSize,Max:MaxSize}"'
+```
+
+**Expected Results**:
+- ✅ Windows ASG scales up based on demand
+- ✅ New Windows instances join cluster automatically
+- ✅ Jobs are placed on new instances
+- ✅ Linux ASG remains unchanged
+
+### 4.6 Dual AMI Cleanup Test
+
+```bash
+# Capture AMI IDs before destroy
+export LINUX_AMI=$(terraform output -raw ami_id 2>/dev/null || echo "")
+export WINDOWS_AMI=$(aws ec2 describe-images \
+  --owners self \
+  --filters "Name=name,Values=*-windows-*" \
+  --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' \
+  --output text)
+
+echo "Linux AMI: $LINUX_AMI"
+echo "Windows AMI: $WINDOWS_AMI"
+
+# Destroy infrastructure
+terraform destroy -auto-approve
+
+# Wait for cleanup
+sleep 30
+
+# Verify both AMIs are deregistered
+aws ec2 describe-images --image-ids $LINUX_AMI --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ Linux AMI cleaned up" || echo "❌ Linux AMI still exists"
+
+aws ec2 describe-images --image-ids $WINDOWS_AMI --region us-west-2 2>&1 | grep -q "InvalidAMIID.NotFound" && echo "✅ Windows AMI cleaned up" || echo "❌ Windows AMI still exists"
+```
+
+**Expected Results**:
+- ✅ All instances terminated
+- ✅ Both ASGs deleted
+- ✅ Linux AMI deregistered
+- ✅ Windows AMI deregistered
+- ✅ Both snapshots deleted
+- ✅ No orphaned resources
+
+### 4.7 Edge Cases - Windows
+
+#### Test: Windows-Only with Existing AMI
+
+```hcl
+# terraform.tfvars
+windows_ami = "ami-xxxxx"  # Specify existing Windows AMI
+windows_client_count = 2
+client_count = 0
+```
+
+**Expected Results**:
+- ✅ No Windows AMI build triggered
+- ✅ Uses specified AMI
+- ✅ Deployment succeeds
+
+#### Test: Zero Windows Clients
+
+```hcl
+# terraform.tfvars
+windows_client_count = 0
+client_count = 2
+```
+
+**Expected Results**:
+- ✅ No Windows AMI built
+- ✅ No Windows ASG created
+- ✅ Only Linux resources created
+- ✅ Backward compatible behavior
+
+#### Test: Invalid Windows AMI
+
+```hcl
+# terraform.tfvars
+windows_ami = "ami-invalid"
+windows_client_count = 1
+```
+
+**Expected Results**:
+- ✅ Terraform plan fails with clear error
+- ✅ No resources created
+- ✅ Error message indicates invalid AMI
+
 aws ec2 describe-instances \
   --filters "Name=tag:OwnerName,Values=*" \
            "Name=instance-state-name,Values=running,pending" \
@@ -989,6 +1411,215 @@ log "All tests complete. Log saved to: $LOG_FILE"
 
 Before considering testing complete:
 
+
+## Lessons Learned: Builds 21-25
+
+### Build History Summary
+
+#### Build 20 ✅ SUCCESS
+- **Status**: Successful deployment with Bug #17 and Bug #18 fixes
+- **Configuration**: Ubuntu 24.04 server + clients, Nomad 1.11.1
+- **Key Achievement**: Docker service starts automatically, version compatibility confirmed
+
+#### Build 21 ❌ FAILED - Version Mismatch Redux
+- **Issue**: Windows client had Nomad 1.10.5, server had 1.11.1
+- **Root Cause**: Packer configuration had environment variables "intentionally removed"
+- **Impact**: Windows client couldn't join cluster (RPC protocol incompatibility)
+- **Lesson**: Always verify version compatibility between server and clients
+
+#### Build 22 ❌ FAILED - Missing User-Data Template
+- **Issue**: File `terraform/modules/aws-hashistack/templates/user-data-client-windows.ps1` not found
+- **Root Cause**: Template file was never created during Windows implementation
+- **Fix**: Created Windows user-data template with logging and EC2Launch v2 documentation
+- **Lesson**: Verify all referenced files exist before deployment
+
+#### Build 23 ❌ FAILED - Missing Environment Variables
+- **Issue**: Linux build failed with "CNIVERSION: unbound variable"
+- **Root Cause**: CNIVERSION not included in environment_vars list for shell provisioner
+- **Fix**: Added CNIVERSION to environment_vars parameter
+- **Lesson**: Both shell and PowerShell provisioners need explicit environment_vars in Packer
+
+#### Build 24 ❌ FAILED - Windows SCP Path Error
+- **Issue**: `scp: c:/Windows/Temp: No such file or directory`
+- **Root Cause**: Packer's PowerShell provisioner with environment_vars tries to upload temp script to non-existent path
+- **Fix**: Changed from environment_vars to inline script that sets variables and calls setup script
+- **Lesson**: Packer's environment_vars parameter has platform-specific issues on Windows
+
+#### Build 25 ⚠️ PARTIAL SUCCESS - Wrong Versions
+- **Linux AMI**: ✅ Created successfully (ami-0a91d5b822ca3c233)
+- **Windows AMI**: ✅ Created successfully (ami-06ee351ed56954425)
+- **Issue**: Both AMIs have wrong versions (Nomad 1.10.5 instead of 1.11.1)
+- **Root Cause**: Missing `source env-pkr-var.sh &&` in terraform/modules/aws-nomad-image/image.tf
+- **Impact**: Packer used hardcoded defaults instead of fetching from HashiCorp APIs
+- **Lesson**: Always verify the complete command chain when refactoring
+
+### Critical Lessons Learned
+
+#### 1. Environment Variable Inheritance in Packer
+**Problem**: Bash environment variables don't automatically pass to Packer provisioners.
+
+**Solution**: Must explicitly use `environment_vars` parameter for BOTH shell and PowerShell provisioners:
+```hcl
+provisioner "shell" {
+  script = "setup.sh"
+  environment_vars = [
+    "CONSULVERSION=${var.consul_version}",
+    "NOMADVERSION=${var.nomad_version}",
+    "VAULTVERSION=${var.vault_version}",
+    "CNIVERSION=${var.cni_version}"
+  ]
+}
+```
+
+**Exception**: Windows PowerShell provisioner with environment_vars has SCP path issues. Use inline script instead:
+```hcl
+provisioner "powershell" {
+  inline = [
+    "$env:NOMADVERSION = '${var.nomad_version}'",
+    "& C:\\ops\\scripts\\setup-windows.ps1"
+  ]
+}
+```
+
+#### 2. Version Management Strategy
+**Problem**: Multiple version sources causing confusion and drift.
+
+**Version Sources**:
+1. `env-pkr-var.sh` - Fetches latest from HashiCorp APIs (dynamic)
+2. `packer/variables.pkr.hcl` - Hardcoded defaults (static fallback)
+3. Terraform variables - Can override Packer variables (optional)
+
+**Best Practice**: Use `source env-pkr-var.sh` in Terraform's local-exec provisioner to ensure consistent versions across all builds.
+
+**Critical**: The command must be:
+```bash
+source env-pkr-var.sh && packer build ...
+```
+NOT just:
+```bash
+packer build ...
+```
+
+#### 3. Infrastructure Job Requirements
+**Problem**: Infrastructure jobs (traefik, grafana, prometheus, webapp) remained in "pending" state.
+
+**Root Cause**: These jobs use Docker Linux containers and require Linux clients. Setting `client_count = 0` causes jobs to never run.
+
+**Solution**: Always maintain at least 1 Linux client for infrastructure jobs:
+```hcl
+server_count = 1              # Linux server
+client_count = 1              # Linux client (for infrastructure jobs)
+windows_client_count = 1      # Windows client (for Windows workloads)
+```
+
+#### 4. Due Diligence Process
+**Problem**: Initial hypothesis about PowerShell environment variable inheritance was wrong.
+
+**Correct Process**:
+1. ✅ Check build logs for actual evidence
+2. ✅ Compare current vs. working version in git history
+3. ✅ Verify assumptions with data before proposing solutions
+4. ✅ Document findings with evidence
+
+**Key Insight**: Build logs contained the truth all along - environment variables WERE being passed correctly to scripts. The real issue was that wrong values were set at the Packer level.
+
+#### 5. Terraform State Management
+**Problem**: Orphaned resources (ELBs) blocking security group deletion.
+
+**Solution**: Manually clean up orphaned resources:
+```bash
+aws elb delete-load-balancer --load-balancer-name <name> --region <region>
+```
+
+**Prevention**: Use `terraform destroy` carefully and verify all resources are removed.
+
+#### 6. Git Merge Conflict Resolution
+**Problem**: Merge conflict markers in code causing syntax errors.
+
+**Solution**: Always escape conflict markers in apply_diff:
+```
+\<<<<<<< Updated upstream
+\=======
+\>>>>>>> Stashed changes
+```
+
+**Prevention**: Resolve conflicts properly before committing, use git status to check for unresolved conflicts.
+
+### Testing Best Practices
+
+#### Pre-Deployment Checklist
+Before running `terraform apply`:
+1. ✅ Verify terraform.tfvars configuration
+   - server_count ≥ 1
+   - client_count ≥ 1 (for infrastructure jobs)
+   - windows_client_count as needed
+2. ✅ Verify image.tf has `source env-pkr-var.sh &&`
+3. ✅ Check for merge conflicts in code
+4. ✅ Review bob-instructions.md for command format
+5. ✅ Verify all referenced files exist
+
+#### Post-Deployment Verification
+After `terraform apply` completes:
+1. ✅ Check all nodes joined cluster: `nomad node status`
+2. ✅ Verify versions match: `nomad node status -json <ID> | jq '.Attributes["nomad.version"]'`
+3. ✅ Check job status: `nomad job status` (all should be "running" within 5 minutes)
+4. ✅ Verify ASG desired capacity matches configuration
+5. ✅ Check for any "pending" jobs and investigate immediately
+
+#### Build Failure Response
+When a build fails:
+1. ✅ Check build logs for error messages
+2. ✅ Verify all fixes were applied
+3. ✅ Compare with last working version
+4. ✅ Document the failure and root cause
+5. ✅ Test fix in isolation if possible
+6. ✅ Update documentation with lessons learned
+
+### Version Compatibility Matrix
+
+| Component | Build 20 | Build 25 | Current API |
+|-----------|----------|----------|-------------|
+| Consul    | 1.22.2   | 1.21.4   | 1.21.4      |
+| Nomad     | 1.11.1   | 1.10.5   | 1.10.5      |
+| Vault     | 1.21.1   | 1.20.3   | 1.20.3      |
+| CNI       | v1.9.0   | v1.8.0   | v1.8.0      |
+
+**Note**: API versions change over time. Build 20 used versions from an earlier API fetch. Build 25 used current API versions (via hardcoded defaults that happened to match).
+
+### Next Steps for Build 26
+
+1. ⏳ Fix terraform.tfvars: `client_count = 1`
+2. ⏳ Fix image.tf: Add `source env-pkr-var.sh &&`
+3. ⏳ Destroy Build 25 infrastructure
+4. ⏳ Deploy Build 26 with corrected configuration
+5. ⏳ Verify all nodes join cluster with matching versions
+6. ⏳ Verify all infrastructure jobs reach "running" status
+7. ⏳ Proceed with Windows Server 2016 KB validation testing
+
+### Documentation Updates
+
+New documentation created during Builds 21-25:
+- `BUILD_25_STATUS.md` - Build 25 results and analysis
+- `BUILD_25_ROOT_CAUSE_ANALYSIS.md` - Complete root cause investigation
+- `BUILD_26_PREFLIGHT_CHECKLIST.md` - Pre-flight checklist for Build 26
+- `TESTING_PLAN.md` (this file) - Updated with current goals and lessons learned
+
+### Success Metrics
+
+**Build Success Rate**: 1/5 (20%) for Builds 21-25
+- Build 21: ❌ Version mismatch
+- Build 22: ❌ Missing template
+- Build 23: ❌ Missing env var
+- Build 24: ❌ SCP path error
+- Build 25: ⚠️ Wrong versions
+
+**Key Improvements Needed**:
+- Better pre-flight validation
+- Automated version verification
+- Comprehensive testing before deployment
+- Documentation of all configuration dependencies
+
+**Target for Build 26**: 100% success rate with all fixes applied and verified.
 - [ ] Both OS types tested in same AWS region
 - [ ] All UIs accessible for both OS types
 - [ ] SSH access verified with correct usernames

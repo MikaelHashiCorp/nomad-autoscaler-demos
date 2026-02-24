@@ -5,7 +5,7 @@ locals {
   rendered_template = templatefile(
     "${path.module}/templates/aws_autoscaler.nomad.tpl", {
       nomad_autoscaler_image = var.nomad_autoscaler_image
-      client_asg_name        = aws_autoscaling_group.nomad_client.name
+      client_asg_name        = aws_autoscaling_group.nomad_client_linux.name
     })
 }
 

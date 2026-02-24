@@ -5,9 +5,8 @@ advertise_addr = "IP_ADDRESS"
 bind_addr      = "0.0.0.0"
 client_addr    = "0.0.0.0"
 data_dir       = "/opt/consul/data"
-retry_join     = ["provider=aws tag_key=ConsulAutoJoin tag_value=auto-join"]
 ui             = true
-enable_syslog  = true
+enable_syslog  = false  # Windows doesn't have syslog daemon
 log_level      = "TRACE"
 log_file       = "/opt/consul/logs/"
 log_rotate_duration  = "1h"

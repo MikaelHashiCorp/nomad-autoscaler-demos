@@ -17,6 +17,10 @@ telemetry {
 client {
   enabled    = true
   node_class = NODE_CLASS
+  
+  # Server discovery using AWS EC2 tags
+  # This enables proper RPC authentication for allocation retrieval
+  servers = ["provider=aws tag_key=ConsulAutoJoin tag_value=auto-join"]
 
   options {
     "driver.raw_exec.enable"    = "1"

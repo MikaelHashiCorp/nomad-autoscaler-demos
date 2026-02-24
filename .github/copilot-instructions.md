@@ -45,6 +45,7 @@ The repository is organized into two main deployment patterns:
 - **Packer**: Build golden images with HashiStack (Nomad/Consul/Vault) pre-installed
 - **Terraform**: Deploy infrastructure using modular structure under `cloud/{provider}/terraform/`
 - **Nomad Provider**: Deploy jobs via Terraform using `nomad_job` resources
+- **AWS Windows Instances**: Default to EC2 instance type `t3a.xlarge` for Windows workloads
 
 ### Configuration Templates
 - Nomad jobs use `template` stanzas for dynamic configuration generation

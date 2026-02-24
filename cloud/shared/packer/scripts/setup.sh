@@ -76,21 +76,42 @@ pkg_install dnsmasq || log "dnsmasq install completed with warnings (systemctl n
 
 CONFIGDIR=/ops/config
 
-# CONSULVERSION=1.12.2
-# CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+# Fetch latest versions if not provided via environment variables
+if [ -z "${CONSULVERSION}" ]; then
+  log "Fetching latest Consul version from checkpoint API..."
+  CONSULVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r '.current_version')
+  log "Latest Consul version: ${CONSULVERSION}"
+else
+  log "Using Consul version from environment: ${CONSULVERSION}"
+fi
+
+if [ -z "${NOMADVERSION}" ]; then
+  log "Fetching latest Nomad version from checkpoint API..."
+  NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
+  log "Latest Nomad version: ${NOMADVERSION}"
+else
+  log "Using Nomad version from environment: ${NOMADVERSION}"
+fi
+
+if [ -z "${CNIVERSION}" ]; then
+  log "Fetching latest CNI plugins version from GitHub..."
+  CNIVERSION=$(curl -s https://api.github.com/repos/containernetworking/plugins/releases/latest | jq -r .tag_name)
+  log "Latest CNI version: ${CNIVERSION}"
+else
+  log "Using CNI version from environment: ${CNIVERSION}"
+fi
+
 CONSULDOWNLOAD=https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip
 echo "CONSULDOWNLOAD=${CONSULDOWNLOAD}"
 CONSULCONFIGDIR=/etc/consul.d
 CONSULDIR=/opt/consul
 
-# NOMADVERSION=1.1.1
-# NOMADVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r '.current_version')
 NOMADDOWNLOAD=https://releases.hashicorp.com/nomad/${NOMADVERSION}/nomad_${NOMADVERSION}_linux_amd64.zip
 echo "NOMADDOWNLOAD=${NOMADDOWNLOAD}"
 NOMADCONFIGDIR=/etc/nomad.d
 NOMADDIR=/opt/nomad
 
-# CNIVERSION=v1.3.0
+# CNIVERSION is now set above
 CNIDOWNLOAD=https://github.com/containernetworking/plugins/releases/download/${CNIVERSION}/cni-plugins-linux-amd64-${CNIVERSION}.tgz
 echo "CNIDOWNLOAD=${CNIDOWNLOAD}"
 CNIDIR=/opt/cni

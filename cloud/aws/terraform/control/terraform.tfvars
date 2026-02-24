@@ -8,10 +8,22 @@ cleanup_ami_on_destroy  = true  # Set to false to keep AMI when running terrafor
 key_name                = "mhc-aws-mws-west-2"
 owner_name              = "Mikael Sikora"
 owner_email             = "mikael.sikora@hashicorp.com"
-stack_name              = "mws-scale"   # (19 char max) Mikael, autoscaler, 1-new-main branch
-server_instance_type    = "t3a.medium" 
+stack_name              = "mws-scale-bob"   # (19 char max) Mikael, autoscaler, 1-new-main branch
+server_instance_type    = "t3a.medium"
 server_count            = 1
 client_instance_type    = "t3a.medium"
 client_count            = 1
 allowlist_ip            = []  # example:  ["73.001.01.170/32", "97.001.01.2/32"]; empty list means local ISP IP only.
+
+# Windows Client Configuration (optional)
+# Uncomment to enable Windows clients alongside or instead of Linux clients
+windows_client_instance_type = "t3a.xlarge"
+windows_client_count         = 1
+windows_ami                  = ""  # Leave empty to build automatically, or specify existing Windows AMI
+packer_windows_version       = "2022"  # Windows Server version (default: 2022)
+
+# Deployment Scenarios:
+# 1. Linux-only (default):     client_count=1, windows_client_count=0 (or commented out)
+# 2. Windows-only clients:     client_count=0, windows_client_count=1
+# 3. Mixed OS (both):          client_count=1, windows_client_count=1
 
