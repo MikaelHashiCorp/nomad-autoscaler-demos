@@ -151,6 +151,6 @@ variable "cleanup_ami_on_destroy" {
 variable "nomad_autoscaler_image" {
   description = "The Docker image to use for the Nomad Autoscaler job."
   type        = string
-  default     = "hashicorp/nomad-autoscaler:0.3.3"
+  default     = "hashicorp/nomad-autoscaler:0.5.0"
 }
 
